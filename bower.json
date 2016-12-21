@@ -1,0 +1,29 @@
+{
+  "name": "auctionit",
+  "description": "Real time auction app",
+  "main": "",
+  "authors": [
+    "Gary Mendonca"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.2",
+    "bootstrap-social": "~4.8.0",
+    "datatables": "~1.10.4",
+    "morris.js": "0.5.1",
+    "Flot": "flot#^0.8.3",
+    "flot.tooltip": "^0.8.7",
+    "datatables-plugins": "^1.10.11",
+    "metisMenu": "^2.4.3"
+}
+}

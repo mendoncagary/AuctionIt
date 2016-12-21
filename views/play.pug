@@ -1,0 +1,25 @@
+extends layout
+
+block content
+	div(class="container-fluid")
+		h1= title
+	
+  
+	div(class="container-fluid")
+		div(class="row")
+			div(class="col-sm-4")
+				div(class="input-group")
+					span(class="input-group-addon") Amount
+					input(id="input" type="text" class="form-control" name="msg" placeholder="Enter Amount")
+		div(class="row")
+			div(class="col-sm-4")
+				button(id="submit" type="button" class="btn btn-info btn-lg") Place Bid
+	
+	p(id="bids")
+	
+	
+	
+	#content(style='width: 500px; height: 300px; margin: 0 0 20px 0; border: solid 1px #999; overflow-y: scroll;')
+	.controls
+		input#field(style='width:350px;')
+		input#send(type='button', value='send')

@@ -1,0 +1,59 @@
+extends layout
+
+block content
+	
+
+
+	h1(align="center")= title
+
+	div(class="menu")
+		div(class="btn trigger") 
+			span(class="line")
+	
+		div(class="rotater")
+			div(class="btn btn-icon" onclick="window.location.href='/play'")
+				i(class="fa fa-html5")
+  
+		div(class="rotater")
+			div(class="btn btn-icon")
+				i(class="fa fa-facebook") 
+			
+		
+		div(class="rotater")
+			div(class="btn btn-icon")
+				i(class="fa fa-google-plus")
+		
+		div(class="rotater")
+			div(class="btn btn-icon")
+				i(class="fa fa-twitter")
+			
+		
+		div(class="rotater")
+			div(class="btn btn-icon")
+				i(class="fa fa-css3")
+				
+				
+		div(class="rotater")
+			div(class="btn btn-icon")
+				i(class="fa fa-instagram")
+	
+		div(class="rotater")
+			div(class="btn btn-icon")
+				i(class="fa fa-github")
+  
+		div(class="rotater")
+			div(class="btn btn-icon")
+				i(class="fa fa-linkedin")
+  
+	
+	script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
+
+	script.
+		$(document).ready(function() {
+			$(".trigger").click(function() {
+				$(".menu").toggleClass("active"); 
+			});
+		});
+	
+
+  
