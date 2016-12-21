@@ -10,6 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 * [Node.js](http://nodejs.org)
 
 <h2>Installing</h2>
+<h3>Terminal</h3>
 ```bash
 $ npm install
 $ bower install
