@@ -16,6 +16,6 @@ $ bower install
 ```
 
 <h2>License</h2>
-See the [LICENSE.md](http://nodejs.org) file for details
+See the [LICENSE](LICENSE) file for details
 
 
