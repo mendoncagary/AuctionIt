@@ -1,7 +1,7 @@
 /*!
  * Start Bootstrap - SB Admin 2 v3.3.7+1 (http://startbootstrap.com/template-overviews/sb-admin-2)
  * Copyright 2013-2016 Start Bootstrap
- * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+- * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 $(function() {
     $('#side-menu').metisMenu();
@@ -45,3 +45,45 @@ $(function() {
         }
     }
 });
+
+
+$(document).ready(function(){
+
+
+  var messages = [];
+  var chattime = [];
+  var sendername = [];
+  var field = document.getElementById("btn-input");
+  var sendButton = document.getElementById("btn-chat");
+  var reschat = document.getElementById('res-chat');
+  var socket = io('/play');
+
+
+  socket.on('message', function (data) {
+          if(data.message) {
+  						if(messages.length>=10)
+  						{
+  							messages.shift();
+  						}
+              messages.push(data.message);
+              chattime.push(data.time);
+              sendername.push(data.name);
+              var html = '';
+              for(var i=0; i<messages.length; i++) {
+                  html += "<li class='left clearfix'><span class='chat-img pull-left'><img src='http://placehold.it/50/55C1E7/fff&text=U' alt='User Avatar' class='img-circle' /></span><div class='chat-body clearfix'><div class='header'><strong class='primary-font'>"+sendername[i]+"</strong><small class='pull-right text-muted'><span class='glyphicon glyphicon-time'></span>"+chattime[i]+"</small></div><p>" +messages[i]+"</p></div></li>";
+              }
+
+            reschat.innerHTML = html;
+          } else {
+              console.log("There is a problem:", data);
+          }
+      });
+
+      sendButton.onclick = function() {
+          var text = field.value;
+          socket.emit('send', { message: text });
+      };
+
+
+
+  });

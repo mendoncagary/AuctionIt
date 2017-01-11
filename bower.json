@@ -24,6 +24,9 @@
     "Flot": "flot#^0.8.3",
     "flot.tooltip": "^0.8.7",
     "datatables-plugins": "^1.10.11",
-    "metisMenu": "^2.4.3"
-}
+    "metisMenu": "^2.4.3",
+    "angular": "^1.6.1",
+    "angular-route": "^1.6.1",
+    "angular-socket-io": "^0.7.0"
+  }
 }

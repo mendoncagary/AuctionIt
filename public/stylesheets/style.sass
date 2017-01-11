@@ -1,29 +1,29 @@
 body
 	padding: 50px
 	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif
-	color: white !important
-	
-a
-	color: #00B7FF	
-	
 
-	
-*,*:before,*:after 
+a
+	color: #00B7FF
+
+
+
+*,*:before,*:after
 	-moz-box-sizing: border-box
 	box-sizing: border-box
 	margin: 0
 	padding: 0
 
 
-html,body 
-	height: 100%
-	overflow: hidden
-
-body 
-	background: #104D61; 
+/*html,body
+/*	height: 100%
+/*	overflow: hidden
 
 
-.absolute-center,.menu,.menu .btn .fa,.menu .btn.trigger .line 
+body
+	background: #104D61;
+
+
+.absolute-center,.menu,.menu .btn .fa,.menu .btn.trigger .line
 	position: absolute
 	top: 50%
 	left: 50%
@@ -81,10 +81,10 @@ body
 .menu .btn.trigger:hover .line
 	background-color: rgba(255, 255, 255, 0.7)
 
-.menu .btn.trigger:hover .line:before,.menu .btn.trigger:hover .line:after 
+.menu .btn.trigger:hover .line:before,.menu .btn.trigger:hover .line:after
 	background-color: rgba(255, 255, 255, 0.7)
 
-.menu .btn.trigger .line 
+.menu .btn.trigger .line
 	width: 60%
 	height: 6px
 	background: #000
@@ -148,7 +148,7 @@ body
 	width: 110%
 
 
-.menu.active .trigger .line:after 
+.menu.active .trigger .line:after
 	-webkit-transform: rotate(-45deg)
 	-ms-transform: rotate(-45deg)
 	transform: rotate(-45deg)
@@ -192,7 +192,7 @@ body
 	-ms-transform: translateX(-10em) rotate(-67.5deg)
 	transform: translateX(-10em) rotate(-67.5deg)
 
-	
+
 
 .rotater:nth-child(4)
 	-webkit-transform: rotate(112.5deg)
@@ -200,19 +200,19 @@ body
 	transform: rotate(112.5deg)
 
 
-.menu.active .rotater:nth-child(4) .btn-icon 
+.menu.active .rotater:nth-child(4) .btn-icon
 	-webkit-transform: translateX(-10em) rotate(-112.5deg)
 	-ms-transform: translateX(-10em) rotate(-112.5deg)
 	transform: translateX(-10em) rotate(-112.5deg)
 
 
-.rotater:nth-child(5) 
+.rotater:nth-child(5)
 	-webkit-transform: rotate(157.5deg)
 	-ms-transform: rotate(157.5deg)
 	transform: rotate(157.5deg)
 
-  
-.menu.active .rotater:nth-child(5) .btn-icon 
+
+.menu.active .rotater:nth-child(5) .btn-icon
 	-webkit-transform: translateX(-10em) rotate(-157.5deg)
 	-ms-transform: translateX(-10em) rotate(-157.5deg)
 	transform: translateX(-10em) rotate(-157.5deg)
@@ -230,13 +230,13 @@ body
 	transform: translateX(-10em) rotate(-202.5deg)
 
 
-.rotater:nth-child(7) 
+.rotater:nth-child(7)
 	-webkit-transform: rotate(247.5deg)
 	-ms-transform: rotate(247.5deg)
 	transform: rotate(247.5deg)
 
 
-.menu.active .rotater:nth-child(7) .btn-icon 
+.menu.active .rotater:nth-child(7) .btn-icon
 	-webkit-transform: translateX(-10em) rotate(-247.5deg)
 	-ms-transform: translateX(-10em) rotate(-247.5deg)
 	transform: translateX(-10em) rotate(-247.5deg)
@@ -248,20 +248,138 @@ body
 	transform: rotate(292.5deg)
 
 
-.menu.active .rotater:nth-child(8) .btn-icon 
+.menu.active .rotater:nth-child(8) .btn-icon
 	-webkit-transform: translateX(-10em) rotate(-292.5deg)
 	-ms-transform: translateX(-10em) rotate(-292.5deg)
 	transform: translateX(-10em) rotate(-292.5deg)
 
 
-.rotater:nth-child(9) 
+.rotater:nth-child(9)
 	-webkit-transform: rotate(337.5deg)
 	-ms-transform: rotate(337.5deg)
 	transform: rotate(337.5deg)
 
 
-.menu.active .rotater:nth-child(9) .btn-icon 
+.menu.active .rotater:nth-child(9) .btn-icon
 	-webkit-transform: translateX(-10em) rotate(-337.5deg)
 	-ms-transform: translateX(-10em) rotate(-337.5deg)
 	transform: translateX(-10em) rotate(-337.5deg)
 
+
+
+//Responsive Chat code
+
+#chatbox
+	position: fixed
+	z-index: 99
+	bottom: 0px
+	
+.chat
+  list-style: none
+  margin: 0
+  padding: 0
+  li
+    margin-bottom: 10px
+    padding-bottom: 5px
+    border-bottom: 1px dotted #B3A9A9
+    &.left .chat-body
+      margin-left: 60px
+    &.right .chat-body
+      margin-right: 60px
+    .chat-body p
+      margin: 0
+      color: #777777
+
+.panel .slidedown .glyphicon, .chat .glyphicon
+  margin-right: 5px
+
+.panel-body
+  overflow-y: scroll
+  height: 250px
+
+\::-webkit-scrollbar-track
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3)
+  background-color: #F5F5F5
+
+\::-webkit-scrollbar
+  width: 12px
+  background-color: #F5F5F5
+
+\::-webkit-scrollbar-thumb
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3)
+  background-color: #555
+
+
+
+
+//Horizontal Scrolling Tab
+
+.wrapper
+  position: relative
+  margin: 0 auto
+  overflow: hidden
+  padding: 5px
+  height: 50px
+
+.list
+  position: absolute
+  left: 0px
+  top: 0px
+  min-width: 3000px
+  margin-left: 12px
+  margin-top: 0px
+  li
+    display: table-cell
+    position: relative
+    text-align: center
+    cursor: grab
+    cursor: -webkit-grab
+    color: #efefef
+    vertical-align: middle
+
+.scroller
+  text-align: center
+  cursor: pointer
+  display: none
+  padding: 7px
+  padding-top: 11px
+  white-space: no-wrap
+  vertical-align: middle
+  background-color: #fff
+
+.scroller-right
+  float: right
+
+.scroller-left
+  float: left
+
+
+
+//Speaker
+
+#player
+  height: 0
+  width: 0
+
+/* Apologies for the large base64 image file
+
+.speaker
+  background-image: url('/images/speaker.png')
+  background-repeat: no-repeat
+  background-size: 200%
+  background-position: 100% 0
+  height: 64px
+  width: 60px
+  cursor: pointer
+  display: block
+  display: block
+
+.speakerplay
+  background-position: 0 0
+
+
+#btnFullscreen:hover
+	cursor: pointer
+
+#btnFullscreen
+	text-shadow: 2px 2px #4F5052

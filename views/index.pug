@@ -1,59 +1,37 @@
-extends layout
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    base(href='/')
+    title= title
+    // CSS
+    link(rel='stylesheet', href='/bower_components//bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(href='/bower_components/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    // custom styles
+    // JS
+    script(type='text/javascript' src='/bower_components/angular/angular.js')
+    script(type='text/javascript' src='/bower_components/angular-route/angular-route.js')
+    // ANGULAR CUSTOM
+    script(src='/javascripts/controllers.js')
+    script(src='/javascripts/services.js')
+    script(src='/javascripts/appRoutes.js')
+    script(src='/javascripts/app.js')
+  body(ng-app='AuctionApp' ng-controller='IndexController')
+    .container
+      i#btnFullscreen(style="color:#E6C35C;",class="fa fa-arrows-alt fa-3x",aria-hidden="true")
+      .col-md-2.pull-right
+        .speaker.pull-right
+        audio#player
+          source(src='http://sifidesign.com/audio/explosion.mp3', type='audio/mp3')
+          source(src='http://sifidesign.com/audio/explosion.ogg', type='audio/ogg')
 
-block content
-	
 
 
-	h1(align="center")= title
+    div(ng-view='')
 
-	div(class="menu")
-		div(class="btn trigger") 
-			span(class="line")
-	
-		div(class="rotater")
-			div(class="btn btn-icon" onclick="window.location.href='/play'")
-				i(class="fa fa-html5")
-  
-		div(class="rotater")
-			div(class="btn btn-icon")
-				i(class="fa fa-facebook") 
-			
-		
-		div(class="rotater")
-			div(class="btn btn-icon")
-				i(class="fa fa-google-plus")
-		
-		div(class="rotater")
-			div(class="btn btn-icon")
-				i(class="fa fa-twitter")
-			
-		
-		div(class="rotater")
-			div(class="btn btn-icon")
-				i(class="fa fa-css3")
-				
-				
-		div(class="rotater")
-			div(class="btn btn-icon")
-				i(class="fa fa-instagram")
-	
-		div(class="rotater")
-			div(class="btn btn-icon")
-				i(class="fa fa-github")
-  
-		div(class="rotater")
-			div(class="btn btn-icon")
-				i(class="fa fa-linkedin")
-  
-	
-	script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
-
-	script.
-		$(document).ready(function() {
-			$(".trigger").click(function() {
-				$(".menu").toggleClass("active"); 
-			});
-		});
-	
-
-  
+  script(src="/socket.io/socket.io.js")
+  script(src='bower_components/angular-socket-io/socket.js')
+  script(src='/bower_components/jquery/dist/jquery.min.js')
+  script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
+  script(src='/javascripts/script.js')
