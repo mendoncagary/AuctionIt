@@ -6,8 +6,17 @@ var itemSchema = new Schema({
       type: String,
       unique: true
   },
+  i_desc:{
+      type: String,
+  },
   i_imgpath:{
       type:String
+  },
+  i_baseprice:{
+    type: Number
+  },
+  i_increment:{
+    type: Number
   },
   i_starttime:{
     type: Date
@@ -15,8 +24,9 @@ var itemSchema = new Schema({
   i_endtime:{
     type: Date
   },
-  i_baseprice:{
-    type: String
+  i_bidvalue:{
+    type: Number,
+    default: "0"
   }
 });
 

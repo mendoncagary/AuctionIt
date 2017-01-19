@@ -1,3 +1,29 @@
-
 div(class="container")
-	h1(style="color:#ffffff") Profile
+	h1(style="color:#ffffff;") Profile
+
+div(class="modal fade" id="player-profile" role="dialog")
+	div(class="modal-dialog")
+
+		div(class="modal-content")
+			div(class="modal-header")
+				button(type="button" class="close" data-dismiss="modal") &times;
+				h4(class="modal-title") Player Profile
+
+			div(class="modal-body")
+				div(class="profile-img")
+					img(src="images/profile_image.png" class="thumbnail" width="200px" height="200px")
+
+				div(class="profile-ifo")
+					span Teknack User ID:
+					br
+					span Teknack User Name:
+					br
+					span Cashbalance:
+					br
+					span Auction Points:
+					br
+					span Quiz Level:
+					br
+
+			div(class="modal-footer")
+				button(type="button" class="btn btn-default" data-dismiss="modal") Close

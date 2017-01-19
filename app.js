@@ -7,19 +7,33 @@ var bodyParser = require('body-parser');
 
 var mongoose = require('mongoose');
 var db = require('./config/db');
-//var routes = require('./routes');
 var api = require('./routes/api');
-//var index = require('./routes/index');
-//var users = require('./routes/users');
-//var play = require('./routes/play');
 var admin = require('./routes/admin');
 
 
-
-
+var session = require('express-session');
+var passport = require('passport');
+var flash = require('connect-flash');
+require('./config/account')(passport);
 
 
 var app = express();
+
+app.use(session({
+	secret: '4n4l29pdsmf93p96j4dlm323jdic',
+	resave: true,
+	saveUninitialized: true
+ } ));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated())
+    return next();
+  res.redirect('/login');
+}
+
 
 
 var socket_io    = require( "socket.io" );
@@ -37,16 +51,12 @@ io.on('connection', function(socket) {
 
   });
 
-
-
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('partials', path.join(__dirname, 'views/partials'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
+app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -60,31 +70,41 @@ app.use(require('node-sass-middleware')({
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+
 mongoose.connect(db.url);
-//app.use(function(req,res,next){
-  //  req.con = con;
-  //  next();
-//});
-
-app.get('/', routes.index);
-app.get('/auction/:id', routes.auction);
-app.get('/partials/:name', routes.partials);
-
-//app.get('/auction/:id', routes.auction);
-// JSON API
-
-app.get('/api/name', api.name);
-
-// redirect all others to the index (HTML5 history)
-app.get('*', routes.index);
 
 
-//app.use('/admin',admin);
+app.use('/admin',admin);
+app.get('/',isLoggedIn, routes.index);
+app.get('/login', function(req, res){
+  res.render('login', {title: 'AuctionIt', message: 'Login invalid' });
+ });
+app.get('/partials/:name', isLoggedIn, routes.partials);
 
-//app.use('/', index);
-//app.use('/users', users);
-//app.use('/play', play);
-//app.use('/admin',admin);
+app.get('/api/item/:id', isLoggedIn, api.item);
+
+app.get('*', isLoggedIn, routes.index);
+
+app.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/');
+});
+
+  app.post('/login', passport.authenticate('user-login', {
+              successRedirect : '/', // redirect to the secure profile section
+              failureRedirect : '/login', // redirect back to the signup page if there is an error
+              failureFlash : true // allow flash messages
+  		}),
+          function(req, res) {
+              console.log("hello");
+
+              if (req.body.remember) {
+                req.session.cookie.maxAge = 1000 * 60 * 3;
+              } else {
+                req.session.cookie.expires = false;
+              }
+          res.redirect('/');
+      });
 
 
 // catch 404 and forward to error handler

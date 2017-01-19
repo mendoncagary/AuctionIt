@@ -1,35 +1,71 @@
 var Item = require('../models/item');
 var Chat = require('../models/chat');
+var room = require('../routes/index');
+var fs = require('fs');
 
+module.exports = function (io) {
+var currentPrice = 1000;
 
-module.exports = function (io) { // io stuff here...
-var currentPrice = 99;
-
-  var auction = io.of('/play/auction');
+  var auction = io.of('/auction');
 
   auction.on('connection', function (socket) {
-    //console.log("A user connected");
+
+        socket.on('join:auction',function(data){
+          auction.room = data.id;
+          socket.join(auction.room);
+          console.log("Client Joined Room:",auction.room);
+        });
+
+
+        //Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:auction.room} ,function(err,item){
+        //if(err) throw err;
+        //if(item.length>0)
+        //{
+        //  for(var i in item)
+        //{
+
+
+      //}
+      //}
+      //});
+
 
     Chat.find({},{} ,{ limit:10, sort:{ _id: -1}},function(err,chat){
     if(err) throw err;
     for(var i in chat)
     {
       d=getUTC();
-    auction.emit('message',{message: chat[i].message,time:timeDifference(d,chat[i].time),name:chat[i].from_user});
-  }
+    socket.emit('message',{message: chat[i].message,time:timeDifference(d,chat[i].time),name:chat[i].from_user});
+    }
     });
 
 
-
-    auction.emit('priceUpdate',currentPrice);
+    socket.to(auction.room).emit('priceUpdate',currentPrice);
 
 
     socket.on('bid', function (data) {
-      console.log(data);
-      currentPrice = parseInt(data);
-      socket.emit('priceUpdate',currentPrice);
-      socket.broadcast.emit('priceUpdate',socket.id + 'bid:'+currentPrice);
+      if(data.value == 'but_1')
+      {
+        var bidvalue = 300;
+        currentPrice += 1000 ;
+      }
+      else if(data.value == 'but_2')
+      {
+        var bidvalue = 500;
+        currentPrice += 1500;
+      }
+      else if(data.value == 'but_3')
+      {
+        var bidvalue = 800;
+        currentPrice += 2000;
+      }
+
+      Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:auction.room}, { $set: { i_bidvalue: bidvalue} } , function(err,item){
+      if(err) throw err;
+         auction.in(auction.room).emit('priceUpdate',currentPrice);
+      
     });
+  });
 
 
 
@@ -40,20 +76,26 @@ var currentPrice = 99;
             var chat_message = new Chat({message:data.message,from_user:'gary',time:time});
             chat_message.save(function(err,rows){
             if(err) throw err;
-//            console.log('Chat inserted - ID:',rows);
 
           Chat.findOne({}, {}, { sort: { _id : -1 } }, function(err, chat) {
           if(err) throw err;
             d=getUTC();
-        nsp.emit('message',{message: chat.message,time:timeDifference(d,chat.time),name:chat.from_user});
+            auction.emit('message',{message: chat.message,time:timeDifference(d,chat.time),name:chat.from_user});
         });
     });
     }
     else
     {
-    auction.emit('message',{message: data.message,time:'Maximum message size is 100 characters.Message could not be sent',name:'gary'});
+    socket.emit('message',{message: data.message,time:'Maximum message size is 100 characters.Message could not be sent',name:'gary'});
     }
     	});
+
+
+    socket.on('disconnect',function(){
+      socket.leave(auction.room);
+      console.log("User disconnected");
+    });
+
 });
 
 function getDateTime() {

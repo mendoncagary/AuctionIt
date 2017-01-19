@@ -32,7 +32,7 @@ factory('socket', function ($rootScope) {
 }).
 
 factory('socketa', function ($rootScope) {
-  var socketa = io('/play/auction');
+  var socketa = io('/auction');
   return {
     on: function (eventName, callback) {
       socketa.on(eventName, function () {

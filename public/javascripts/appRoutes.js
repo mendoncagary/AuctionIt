@@ -14,15 +14,18 @@
         })
         .when('/profile', {
             templateUrl: 'partials/profile',
-            controller: 'JoinController'
         })
         .when('/quiz', {
             templateUrl: 'partials/quiz',
             controller: 'JoinController'
         })
         .when('/auction/:id', {
-            templateUrl: 'partials/play',
+            templateUrl: 'partials/auction',
             controller: 'AuctionController'
+        })
+        .when('/wheeloffortune', {
+            templateUrl: 'partials/wof',
+            controller: 'WheelController'
         })
         .otherwise({
           redirectTo: '/'

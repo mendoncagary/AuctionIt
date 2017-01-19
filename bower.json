@@ -27,6 +27,9 @@
     "metisMenu": "^2.4.3",
     "angular": "^1.6.1",
     "angular-route": "^1.6.1",
-    "angular-socket-io": "^0.7.0"
+    "angular-socket-io": "^0.7.0",
+    "moment": "^2.17.1",
+    "moment-timezone": "^0.5.11",
+    "phaser": "^2.6.2"
   }
 }

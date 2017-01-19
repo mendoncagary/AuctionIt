@@ -10,22 +10,6 @@ $(document).ready(function(){
 
 var socket = io('/play/auction');
 
-socket.on('check', function(data){
-  alert(data);
-});
-
-  socket.on('priceUpdate', function(data) {
-       $('#bids').html(data + "");
-
-  });
-
- $('#submit').click(function(){
-
-       socket.emit('bid',  $('#input').val() );
-
- });
-
-
 
  socket.on('message', function (data) {
         if(data.message) {
@@ -53,9 +37,5 @@ socket.on('check', function(data){
     });
 
 
-socket.on('check',function(data){
-
-  alert(data.message);
-})
 
 });

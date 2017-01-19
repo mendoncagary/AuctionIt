@@ -1,26 +1,49 @@
 
+div(class="container-fluid")
+	h2= item_name
 
-div(class="container")
-	h1(style="color:#ffffff") Current Auctions
 
-.container
-	.scroller.scroller-left
-		i.glyphicon.glyphicon-chevron-left
-	.scroller.scroller-right
-		i.glyphicon.glyphicon-chevron-right
-	.wrapper(style='height:450px;margin-top:20px;')
-		ul#myTab.nav.nav-tabs.list(style='padding-bottom:20px;')
 
-.container
-	h1(style="color:#ffffff") Upcoming Auctions
+div(class='container')
+	canvas(id="canvas" width="500" height="300" style="border:1px solid #000000;")
 
-.container
-	.scroller.scroller-left
-		i.glyphicon.glyphicon-chevron-left
-	.scroller.scroller-right
-		i.glyphicon.glyphicon-chevron-right
-	.wrapper(style='height:450px;margin-top:20px;')
-		ul#uptab.nav.nav-tabs.list(style='padding-bottom:20px;')
+	.row
+		.col-md-2
+			h3(style='color:white') Base Price:
+		.col-md-1
+			h3(id="item_price",style='color:white;')
+	.row
+		.col-md-4
+			h3(id="item_name",style='color:white;')
+	.row
+		.col-md-4
+			h3(id="item_desc",style='color:white;')
+
+	.row
+		.col-md-2
+			h3(style='color:white;') Current Price:
+		.col-md-2
+			h3(style="color:#fffff0;",id="bids")
+
+	.row
+		div(id="clock" class="col-md-4" style="color:white;")
+
+	.row
+		.col-md-4
+			span(style="color:white;font-size:20px") Place a bid
+
+
+	.row
+		.col-md-4
+			input(type="button" value="1000" id="but_1" class="btn-bid btn btn-lg btn-default")
+	.row
+		.col-md-4
+			input(type="button" value="1500" id="but_2" class="btn-bid btn btn-lg btn-default")
+	.row
+		.col-md-4
+			input(type="button" value="2000" id="but_3" class="btn-bid btn btn-lg btn-default")
+
+
 
 .container#chatbox
 		.row
@@ -90,3 +113,21 @@ div(class="container")
 						.btn-group.pull-right
 							a.btn.btn-default.btn-xs(type='button', data-toggle='collapse', data-parent='#accordion', data-target='#collapseOne')
 								span.glyphicon.glyphicon-chevron-up
+
+
+script.
+
+	var nextYear = moment.tz("2017-02-02 22:30", "America/Sao_Paulo");
+
+	$('#clock').countdown(nextYear.toDate(), function(event) {
+	$(this).html(event.strftime('%D days %H:%M:%S'));
+	});
+
+
+
+
+
+
+script(src="/bower_components/moment/moment.js")
+script(src="/bower_components/moment-timezone/moment-timezone.js")
+script(src="/javascripts/room.js")

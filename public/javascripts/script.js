@@ -1,8 +1,6 @@
 $(document).ready(function(){
 
- var messages = [];
- var chattime = [];
- var sendername = [];
+
 var socket = io('/play');
 
 
@@ -16,36 +14,6 @@ socket.on('login', function(){
  socket.on('end', function(data){
    window.location.reload(true);
  });
-
-socket.on('message', function (data) {
-
-        if(data.message) {
-						if(messages.length>=10)
-						{
-							messages.shift();
-              chattime.shift();
-              sendername.shift();
-						}
-            messages.push(data.message);
-            chattime.push(data.time);
-            sendername.push(data.name);
-            var html = '';
-            for(var i=0; i<messages.length; i++) {
-                html += "<li class='left clearfix'><span class='chat-img pull-left'><img src='http://placehold.it/50/55C1E7/fff&text=U' alt='User Avatar' class='img-circle' /></span><div class='chat-body clearfix'><div class='header'><strong class='primary-font'>"+sendername[i]+"</strong><small class='pull-right text-muted'><span class='glyphicon glyphicon-time'></span>"+chattime[i]+"</small></div><p>" +messages[i]+"</p></div></li>";
-            }
-          $('#res-chat').html(html);
-        }
-    });
-
-    $(document).on('click','#btn-chat',function() {
-      if($('#btn-input').val())
-      {
-        var text = $('#btn-input').val();
-        socket.emit('send', { message: text });
-        $("#btn-input").val('');
-      }
-    });
-
 
 
 //speaker

@@ -17,6 +17,8 @@ var nsp = io.of('/play');
 
 nsp.on('connection', function (socket,item) {
 
+
+
   cron.schedule('*/1 * * * *', function(){
     Item.find({i_starttime : getUTC()}, function(err,item){
     if(err) throw err;
@@ -27,7 +29,6 @@ nsp.on('connection', function (socket,item) {
           var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
           buffer = buf;
           img = true;
-              console.log(item[i].i_name);
       nsp.emit('item',{item_id: item[i].i_id, item_name: item[i].i_name, item_desc: item[i].i_desc, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64')});
         img=false;
         }
@@ -56,7 +57,7 @@ nsp.on('connection', function (socket,item) {
 
     buffer = buf;
     img = true;
-nsp.emit('item',{item_id: item[i]._id, item_name: item[i].i_name, item_desc: item[i].i_desc, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64') });
+socket.emit('item',{item_id: item[i]._id, item_name: item[i].i_name, item_desc: item[i].i_desc, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64') });
 img=false;
   }
   }
@@ -81,7 +82,7 @@ var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
   buffer = buf;
   img = true;
 
-nsp.emit('upcomingItem',{item_name: item[i].i_name, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64') });
+socket.emit('upcomingItem',{item_name: item[i].i_name, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64') });
 img=false;
 }
 }
@@ -93,7 +94,7 @@ img=false;
 
 	//console.log("A user connected");
 
-	nsp.emit('login');
+	socket.emit('login');
 
 	socket.on('username', function(username){
       socket.username = username;
@@ -111,7 +112,7 @@ img=false;
       //console.log(d,rows[i].time);
       //console.log(timeDifference(d,rows[i].time));
 
-    nsp.emit('message',{message: chat[i].message,time:timeDifference(d,chat[i].time),name:chat[i].from_user});
+    socket.emit('message',{message: chat[i].message,time:timeDifference(d,chat[i].time),name:chat[i].from_user});
   }
   //console.log('Messagesent');
     });
