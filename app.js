@@ -11,13 +11,15 @@ var api = require('./routes/api');
 var admin = require('./routes/admin');
 
 
+
+var app = express();
+
 var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
-require('./config/account')(passport);
 
 
-var app = express();
+
 
 app.use(session({
 	secret: '4n4l29pdsmf93p96j4dlm323jdic',
@@ -27,6 +29,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+require('./config/account')(passport);
+
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated())
@@ -36,8 +40,7 @@ function isLoggedIn(req, res, next) {
 
 
 
-var socket_io    = require( "socket.io" );
-var app          = express();
+var socket_io    = require( "socket.io");
 var io           = socket_io();
 app.io           = io;
 
@@ -75,15 +78,15 @@ mongoose.connect(db.url);
 
 
 app.use('/admin',admin);
-app.get('/',isLoggedIn, routes.index);
+app.get('/', isLoggedIn, routes.index);
 app.get('/login', function(req, res){
-  res.render('login', {title: 'AuctionIt', message: 'Login invalid' });
+  res.render('login', {title: 'AuctionIt', message: req.flash('loginMessage') });
  });
 app.get('/partials/:name', isLoggedIn, routes.partials);
 
 app.get('/api/item/:id', isLoggedIn, api.item);
 
-app.get('*', isLoggedIn, routes.index);
+app.get('*',isLoggedIn,  routes.index);
 
 app.get('/logout', function(req, res) {
   req.logout();

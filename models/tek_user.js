@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var tek_userSchema = new Schema({
-  user_id:{
+  username:{
       type: String,
       unique: true
   },
