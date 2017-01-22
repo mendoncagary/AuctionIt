@@ -1,9 +1,7 @@
 'use strict';
 
-/* Controllers */
-
 angular.module('AuctionIt.controllers', []).
-// public/js/controllers/MainCtrl.js
+
 controller('IndexController', function($scope,$location) {
 
   $scope.tagline = "Penny's on the Dollar!";
@@ -25,11 +23,13 @@ $scope.redirect = function(a){
 
 }).
 
-controller('MainController', function($scope) {
-
+controller('MainController', function($rootScope, $scope) {
+$rootScope.bgimg = "'/images/front.png'";
 }).
 
-controller('JoinController', function($scope, socket, $compile) {
+controller('JoinController', function($rootScope, $scope, socket, $compile) {
+
+    $rootScope.bgimg = "'/images/studio.png'";
 
     var messages = [];
     var chattime = [];
@@ -56,16 +56,17 @@ controller('JoinController', function($scope, socket, $compile) {
                     var canvas = //li.getElementsByTagName('canvas')[0] ||
                                  li.appendChild(document.createElement('canvas'));
                     canvas.width  =  1; // Erase the canvas, in case it existed
-                    canvas.width  = 500; // Set the width and height as desired
-                    canvas.height = 300;
+                    canvas.width  = 300; // Set the width and height as desired
+                    canvas.height = 200;
+                    canvas.className = "join_canvas";
                     var ctx = canvas.getContext('2d');
 
                     // Use your actual calculations for the SVG size/position here
-                    ctx.drawImage( img, 0, 0 );
+                    ctx.drawImage( img, 0, 0,300,200);
 
                     $(li).append('<h3>'+data.item_name+'</h3>');
 
-                    $(li).append('<h4>BasePrice: Rs.'+data.item_price+'</h4>');
+                    $(li).append("<div class='row'><div class='col-xs-4 col-md-4'><h4>BasePrice:</h4></div><div class='col-xs-2 col-md-2'><img class='rupee_small' alt='Rs.' src='images/rupee_micro.png'></div><div class='col-xs-2 col-md-2'><h4>"+data.item_price+"</h4><div></div>");
 
                      var html =  `<div class='row'><div class='col-xs-1 col-sm-4 col-md-6 col-lg-12'><button type='button' ng-click="redirect('auction/`+data.item_id+`')" class='btn btn-primary' data-item-id=`+data.item_id+`>Place Bid</button></div></div>`;
 
@@ -73,8 +74,6 @@ controller('JoinController', function($scope, socket, $compile) {
 
                     angular.element($( "li[data-item-id="+data.item_id+"]" )).append(temp);
 
-
-   //}
  };
      img.src = 'data:image/png;base64,' + data.item_image;
    }
@@ -94,11 +93,12 @@ controller('JoinController', function($scope, socket, $compile) {
 
                    var canvas = li.appendChild(document.createElement('canvas'));
                    canvas.width  =  1;
-                   canvas.width  = 500;
-                   canvas.height = 300;
+                   canvas.width  = 300;
+                   canvas.height = 200;
+                   canvas.className = "join_canvas";
                    var ctx = canvas.getContext('2d');
 
-                   ctx.drawImage( img, 0, 0 );
+                   ctx.drawImage( img, 0, 0,300,200 );
 
                    $(li).append('<h3>'+data.item_name+'</h3>');
 
@@ -141,11 +141,19 @@ controller('JoinController', function($scope, socket, $compile) {
 
 }).
 
-controller('AuctionController', function( $routeParams, $http, $scope,  socketa) {
+controller('AuctionController', function($rootScope, $routeParams, $http, $scope, $location, socketa) {
+
+
+  $rootScope.bgimg = "'/images/spotlight.png'";
+
 
   $http.get('/api/item/' + $routeParams.id)
   .then(function(success) {
       $scope.item = success.data;
+      if($scope.item.code)
+      {
+      $location.path('/join');
+      }
       if ($scope.item.image) {
        var img = new Image();
        img.onload = function(){
@@ -153,15 +161,26 @@ controller('AuctionController', function( $routeParams, $http, $scope,  socketa)
          ctx.drawImage( img, 0, 0 );
        };
     img.src = 'data:image/png;base64,' + $scope.item.item_image;
-
       $('#item_name').html($scope.item.item_name);
-      $('#item_price').html($scope.item.item_price);
+      $('#item_price').append($scope.item.item_price);
       $('#item_desc').html($scope.item.item_desc);
       $('#but_1').val($scope.item.curBidValue1);
       $('#but_2').val($scope.item.curBidValue2);
       $('#but_3').val($scope.item.curBidValue3);
+
+      $scope.date = $scope.item.item_enddate;
+      $scope.hour = $scope.item.item_endhour;
+      $scope.min = $scope.item.item_endmin;
+
+      $scope.endtime = "2017-02-"+$scope.date+" "+$scope.hour+":"+$scope.min;
+      var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
+
+      $('#clock').countdown(nextYear.toDate(), function(event) {
+      $(this).html(event.strftime('%D days %H:%M:%S'));
+      });
     }
     },function (error){
+
     });
 
 
@@ -173,7 +192,7 @@ socketa.emit('join:auction', {id : $routeParams.id});
 
 
  socketa.on('priceUpdate', function(data) {
-      $('#bids').html(data+ "");
+      $('#bids').html("<img alt='Rupee' src='/images/rupee_micro.png'>"+data);
  });
 
  $('.btn-bid').click(function(){
@@ -208,10 +227,15 @@ socketa.emit('join:auction', {id : $routeParams.id});
          }
        });
 
+
+
+
 }).
 
 
-controller('WheelController', function($scope) {
+controller('WheelController', function($scope,socketb) {
+
+  socketb.emit('begin:wof');
 
   // the game itself
   var game;
@@ -239,12 +263,21 @@ controller('WheelController', function($scope) {
             // preloading graphic assets
             game.load.image("wheel", "images/wheel.png");
   		      game.load.image("pin", "images/pin.png");
+            game.load.image("spin", "images/spin.jpg");
        },
        // funtion to be executed when the state is created
     	create: function(){
+
+        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        game.scale.setShowAll();
+        window.addEventListener('resize', function () {
+           game.scale.refresh();});
+           game.scale.refresh();
             // giving some color to background
     		game.stage.backgroundColor = "#104D61";
             // adding the wheel in the middle of the canvas
+            var spin = game.add.sprite(game.width / 2, game.width / 2, "spin");
+            spin.anchor.set(0.5);
     		wheel = game.add.sprite(game.width / 2, game.width / 2, "wheel");
             // setting wheel registration point in its center
             wheel.anchor.set(0.5);
@@ -252,6 +285,7 @@ controller('WheelController', function($scope) {
             var pin = game.add.sprite(game.width / 2, game.width / 2, "pin");
             // setting pin registration point in its center
             pin.anchor.set(0.5);
+
             // adding the text field
             prizeText = game.add.text(game.world.centerX, 480, "");
             // setting text field registration point in its center
@@ -267,14 +301,20 @@ controller('WheelController', function($scope) {
        spin(){
             // can we spin the wheel?
             if(canSpin){
+                socketb.emit('spin:wof');
                  // resetting text field
                  prizeText.text = "";
                  // the wheel will spin round from 2 to 4 times. This is just coreography
-                 var rounds = game.rnd.between(2, 4);
+                 //var rounds = game.rnd.between(2, 4);
                  // then will rotate by a random number from 0 to 360 degrees. This is the actual spin
-                 var degrees = game.rnd.between(0, 360);
+                 //var degrees = game.rnd.between(0, 360);
+                 socketb.on('result:wof',function(data){
+                   var rounds = data.rounds;
+                   var degrees = data.degrees;
+                   prize = data.prize;
+
                  // before the wheel ends spinning, we already know the prize according to "degrees" rotation and the number of slices
-                 prize = slices - 1 - Math.floor(degrees / (360 / slices));
+                 //prize = slices - 1 - Math.floor(degrees / (360 / slices));
                  // now the wheel cannot spin because it's already spinning
                  canSpin = false;
                  // animation tweeen for the spin: duration 3s, will rotate by (360 * rounds + degrees) degrees
@@ -283,7 +323,8 @@ controller('WheelController', function($scope) {
                       angle: 360 * rounds + degrees
                  }, 3000, Phaser.Easing.Quadratic.Out, true);
                  // once the tween is completed, call winPrize function
-                 spinTween.onComplete.add(this.winPrize, this);
+                 spinTween.onComplete.add(playGame.prototype.winPrize, this);
+                 });
             }
        },
        // function to assign the prize
@@ -295,11 +336,33 @@ controller('WheelController', function($scope) {
        }
   }
 
+
   // creation of a 458x488 game
- game = new Phaser.Game(458, 488, Phaser.CANVAS, "");
+ game = new Phaser.Game(580, 580, Phaser.CANVAS, "");
   // adding "PlayGame" state
   game.state.add("PlayGame",playGame);
+
   // launching "PlayGame" state
   game.state.start("PlayGame");
+
+}).
+
+
+controller('ProfileController', function($rootScope, $scope, $http) {
+$rootScope.bgimg = "'/images/back.png'";
+
+  $http.get('/api/profile/')
+    .then(function(success) {
+      $scope.user = success.data;
+      $scope.userid = $scope.user.userid;
+      $scope.username = $scope.user.username;
+      $scope.cashbalance = $scope.user.cashbal;
+      $scope.auc_points = $scope.user.auction_points;
+      $scope.itemswon = $scope.user.items_won;
+      $scope.quizlevel = $scope.user.quizlevel;
+    },function (error){
+      alert("could not recive")
+    });
+
 
 });

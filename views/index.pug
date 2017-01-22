@@ -4,20 +4,16 @@ html(lang='en')
     meta(charset='UTF-8')
     base(href='/')
     title= title
-    // CSS
-    link(rel='stylesheet', href='/bower_components//bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(href='/bower_components/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
-    // custom styles
-    // JS
-    script(type='text/javascript' src='/bower_components/angular/angular.js')
-    script(type='text/javascript' src='/bower_components/angular-route/angular-route.js')
-    // ANGULAR CUSTOM
+    script(type='text/javascript' src='/bower_components/angular/angular.min.js')
+    script(type='text/javascript' src='/bower_components/angular-route/angular-route.min.js')
     script(src='/javascripts/controllers.js')
     script(src='/javascripts/services.js')
     script(src='/javascripts/appRoutes.js')
     script(src='/javascripts/app.js')
-  body(ng-app='AuctionApp' ng-controller='IndexController')
+  body(ng-app='AuctionApp' ng-controller='IndexController' style="background-image: url({{ bgimg }})")
     .container
       i#btnFullscreen(style="color:#E6C35C;",class="fa fa-arrows-alt fa-3x",aria-hidden="true")
       .col-md-2.pull-right
@@ -31,9 +27,11 @@ html(lang='en')
     div(ng-view='')
 
   script(src="/socket.io/socket.io.js")
-  script(src='bower_components/angular-socket-io/socket.js')
+  script(src='/bower_components/angular-socket-io/socket.min.js')
   script(src='/bower_components/jquery/dist/jquery.min.js')
-
   script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
   script(src='/javascripts/script.js')
   script(src='/bower_components/phaser/build/phaser.min.js')
+  script(type="text/javascript" src="/bower_components/jquery.countdown/dist/jquery.countdown.min.js")
+  script(src="/bower_components/moment/min/moment.min.js")
+  script(src="/bower_components/moment-timezone/builds/moment-timezone-with-data.min.js")

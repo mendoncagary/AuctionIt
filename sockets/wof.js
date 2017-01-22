@@ -1,33 +1,41 @@
-var Item = require('../models/item');
+var cron = require('node-cron');
 var Chat = require('../models/chat');
-var room = require('../routes/index');
+var User = require('../models/user');
 var fs = require('fs');
 
 module.exports = function (io) {
-var currentPrice = 1000;
 
-  var auction = io.of('/auction');
+  var wof = io.of('/wheeloffortune');
 
-  auction.on('connection', function (socket) {
+  var slices = 8;
+  var prizes;
+  wof.on('connection', function (socket) {
 
-        socket.on('join:auction',function(data){
-          auction.room = data.id;
-          socket.join(auction.room);
-          console.log("Client Joined Room:",auction.room);
+    cron.schedule('*/30 * * * *', function(){
+      socket.emit("play:wof");
+      console.log("wheeloffortune : every 2 min");
+    });
+
+
+        socket.on('begin:wof',function(){
+          wof.room = 'wheeloffortune';
+          socket.join(wof.room);
+          console.log("Client Joined Room:",wof.room);
         });
 
 
-        //Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:auction.room} ,function(err,item){
-        //if(err) throw err;
-        //if(item.length>0)
-        //{
-        //  for(var i in item)
-        //{
+        socket.on('spin:wof',function(){
+          console.log(getUTC());
+          var curtime = new Date(getUTC());
+          var min = curtime.getUTCMinutes();
+          console.log(min);
+          var rounds = getRandomInt(2,4);
+          var degrees = getRandomInt(0,360);
+          prize = slices - 1 - Math.floor(degrees / (360 / slices));
+          console.log("Client spinned:",rounds,degrees,prize);
+          socket.emit('result:wof',{rounds: rounds,degrees: degrees,prize: prize});
+        });
 
-
-      //}
-      //}
-      //});
 
 
     Chat.find({},{} ,{ limit:10, sort:{ _id: -1}},function(err,chat){
@@ -40,36 +48,10 @@ var currentPrice = 1000;
     });
 
 
-    socket.to(auction.room).emit('priceUpdate',currentPrice);
-
-
-    socket.on('bid', function (data) {
-      if(data.value == 'but_1')
-      {
-        var bidvalue = 300;
-        currentPrice += 1000 ;
-      }
-      else if(data.value == 'but_2')
-      {
-        var bidvalue = 500;
-        currentPrice += 1500;
-      }
-      else if(data.value == 'but_3')
-      {
-        var bidvalue = 800;
-        currentPrice += 2000;
-      }
-
-      Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:auction.room}, { $set: { i_bidvalue: bidvalue} } , function(err,item){
-      if(err) throw err;
-         auction.in(auction.room).emit('priceUpdate',currentPrice);
-
-    });
-  });
 
 
 
-    	auction.on('send', function (data) {
+    	wof.on('send', function (data) {
             if(data.message!="" && data.message.length<100)
             {
               time = getUTC();
@@ -80,7 +62,7 @@ var currentPrice = 1000;
           Chat.findOne({}, {}, { sort: { _id : -1 } }, function(err, chat) {
           if(err) throw err;
             d=getUTC();
-            auction.emit('message',{message: chat.message,time:timeDifference(d,chat.time),name:chat.from_user});
+            wof.emit('message',{message: chat.message,time:timeDifference(d,chat.time),name:chat.from_user});
         });
     });
     }
@@ -92,11 +74,17 @@ var currentPrice = 1000;
 
 
     socket.on('disconnect',function(){
-      socket.leave(auction.room);
+      socket.leave(wof.room);
       console.log("User disconnected");
     });
 
 });
+
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 
 function getDateTime() {
 
@@ -145,15 +133,15 @@ function timeDifference(current, previous) {
     }
 
     else if (elapsed < msPerMonth) {
-        return 'about ' + Math.round(elapsed/msPerDay) + ' days ago';
+        return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
     }
 
     else if (elapsed < msPerYear) {
-        return 'about ' + Math.round(elapsed/msPerMonth) + ' months ago';
+        return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
     }
 
     else {
-        return 'about ' + Math.round(elapsed/msPerYear ) + ' years ago';
+        return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
     }
 }
 

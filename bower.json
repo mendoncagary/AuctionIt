@@ -30,6 +30,7 @@
     "angular-socket-io": "^0.7.0",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
-    "phaser": "^2.6.2"
+    "phaser": "^2.6.2",
+    "jquery.countdown": "^2.2.0"
   }
 }

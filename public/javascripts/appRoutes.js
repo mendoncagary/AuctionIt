@@ -14,6 +14,7 @@
         })
         .when('/profile', {
             templateUrl: 'partials/profile',
+            controller: 'ProfileController'
         })
         .when('/quiz', {
             templateUrl: 'partials/quiz',

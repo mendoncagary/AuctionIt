@@ -1,4 +1,5 @@
 var Item = require('../models/item');
+var User = require('../models/user');
 var fs = require('fs');
 
 exports.item = function (req, res) {
@@ -20,9 +21,9 @@ exports.item = function (req, res) {
       var curBidValue1 = item[i].i_baseprice;
       var curBidValue2 = item[i].i_baseprice + item[i].i_increment;
       var curBidValue3 = item[i].i_baseprice + (item[i].i_increment * 2);
-      console.log(item[i].i_increment);
 
-
+      var endtime = item[i].i_endtime;
+      var date =  new Date(endtime);
     res.json({
       item_name: item[i].i_name,
       item_price: item[i].i_baseprice,
@@ -32,13 +33,64 @@ exports.item = function (req, res) {
       item_bid: item[i].i_bidvalue,
       curBidValue1 : curBidValue1,
       curBidValue2 : curBidValue2,
-      curBidValue3 : curBidValue3
+      curBidValue3 : curBidValue3,
+      item_enddate : date.getUTCDate(),
+      item_endhour : date.getUTCHours(),
+      item_endmin : date.getUTCMinutes()
     });
     img = false;
     }
   }
+  else{
+    res.json({code : "redirect"});
+  }
 });
 }
+else {
+  res.json({code : "redirect"});
+}
+
+};
+
+
+exports.profile = function(req,res){
+
+User.count({tek_userid: req.session.passport.user} ,function(err,count){
+          if(err) throw err;
+          if(count>0)
+          {
+            User.findOne({tek_userid: req.session.passport.user},function(err,user){
+              if(err) throw err;
+                  res.json({
+                userid : user.tek_userid,
+                username :  user.tek_name,
+                cashbal :  user.u_cashbalance,
+                auction_points : user.u_itempoints,
+                items_won : user.u_itemswon,
+                quizlevel : user.u_quizlevel
+                });
+
+              
+            });
+          }
+          else {
+            var user = new User({tek_userid:req.session.passport.user, tek_name:'gary',u_firstvisit: false, u_cashbalance: 30000, u_itemswon: 0,u_itempoints: 0, u_quizlevel: 1, chat_status: true, quiz_attempt_status: true, wof_status: true});
+            user.save(function(err,rows){
+            if(err) throw err;
+
+                res.json({
+                userid : req.session.passport.user,
+                username : "gary",
+                cashbal : 30000,
+                auction_points : 0,
+                items_won : 0,
+                quizlevel : 1
+                });
+            });
+          }
+
+      });
+
 
 };
 

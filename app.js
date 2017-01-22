@@ -48,13 +48,13 @@ app.io           = io;
 var routes = require('./routes/index')(io);
 require('./sockets/base')(io);
 require('./sockets/auction')(io);
-
+require('./sockets/wof')(io);
 
 io.on('connection', function(socket) {
 
   });
 
-// view engine setup
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
@@ -82,9 +82,11 @@ app.get('/', isLoggedIn, routes.index);
 app.get('/login', function(req, res){
   res.render('login', {title: 'AuctionIt', message: req.flash('loginMessage') });
  });
+
 app.get('/partials/:name', isLoggedIn, routes.partials);
 
 app.get('/api/item/:id', isLoggedIn, api.item);
+app.get('/api/profile', isLoggedIn, api.profile);
 
 app.get('*',isLoggedIn,  routes.index);
 
@@ -94,9 +96,9 @@ app.get('/logout', function(req, res) {
 });
 
   app.post('/login', passport.authenticate('user-login', {
-              successRedirect : '/', // redirect to the secure profile section
-              failureRedirect : '/login', // redirect back to the signup page if there is an error
-              failureFlash : true // allow flash messages
+              successRedirect : '/',
+							failureRedirect : '/login',
+              failureFlash : true
   		}),
           function(req, res) {
               console.log("hello");
@@ -110,20 +112,18 @@ app.get('/logout', function(req, res) {
       });
 
 
-// catch 404 and forward to error handler
+
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// error handler
+
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });

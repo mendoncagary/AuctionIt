@@ -4,7 +4,7 @@ var Item = require('../models/item');
 var Chat = require('../models/chat');
 
 
-module.exports = function (io) { // io stuff here...
+module.exports = function (io) {
 
 var currentPrice = 99;
 var datetime;
@@ -217,15 +217,15 @@ function timeDifference(current, previous) {
     }
 
     else if (elapsed < msPerMonth) {
-        return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
+        return 'about ' + Math.round(elapsed/msPerDay) + ' days ago';
     }
 
     else if (elapsed < msPerYear) {
-        return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
+        return 'about ' + Math.round(elapsed/msPerMonth) + ' months ago';
     }
 
     else {
-        return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+        return 'about ' + Math.round(elapsed/msPerYear ) + ' years ago';
     }
 }
 

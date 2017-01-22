@@ -1,53 +1,53 @@
+.container
+	canvas(id="canvas" class="auction_canvas" width="500" height="300")
 
-div(class="container-fluid")
-	h2= item_name
+.container
+	.col-md-3.pull-right
+		div.panel-group
+			div(class="panel panel-info")
+				div.panel-heading Item Name
+				div.panel-body(id="item_name" class="panel-name")
 
+			div(class="panel panel-info")
+				div.panel-heading Base Price
+				div.panel-body(id="item_price" class="panel-price")
+					img(alt="Rupee" src="/images/rupee_micro.png")
 
-
-div(class='container')
-	canvas(id="canvas" width="500" height="300")
-
-	.row
-		.col-md-2
-			h3(style='color:white') Base Price:
-		.col-md-1
-			h3(id="item_price",style='color:white;')
-	.row
-		.col-md-4
-			h3(id="item_name",style='color:white;')
-	.row
-		.col-md-4
-			h3(id="item_desc",style='color:white;')
-
-	.row
-		.col-md-2
-			h3(style='color:white;') Current Price:
-		.col-md-2
-			h3(style="color:#fffff0;",id="bids")
-
-	.row
-		div(id="clock" class="col-md-4" style="color:white;")
-
-	.row
-		.col-md-4
-			span(style="color:white;font-size:20px") Place a bid
+			div(class="panel panel-info")
+				div.panel-heading Description
+				div.panel-body(id="item_desc" class="panel-desc")
 
 
-	.row
-		.col-md-4
-			input(type="button" value="1000" id="but_1" class="btn-bid btn btn-lg btn-default")
-	.row
-		.col-md-4
-			input(type="button" value="1500" id="but_2" class="btn-bid btn btn-lg btn-default")
-	.row
-		.col-md-4
-			input(type="button" value="2000" id="but_3" class="btn-bid btn btn-lg btn-default")
+	.col-md-3
+		div.panel-group
+			div(class="panel panel-info")
+				div.panel-heading Place a Bid
+				div.panel-body(class="panel-bid")
+					input(type="button" value="1000" id="but_1" class="btn-bid btn btn-lg btn-default")
+					input(type="button" value="1500" id="but_2" class="btn-bid btn btn-lg btn-default")
+					input(type="button" value="2000" id="but_3" class="btn-bid btn btn-lg btn-default")
+
+			div(class="panel panel-info")
+				div.panel-heading Last Bids
+				div.panel-body(class="panel-price")
+
+
+			div(class="panel panel-info")
+				div.panel-heading Current Price
+				div.panel-body(id="bids" class="panel-price")
+					img(alt="Rupee" src="/images/rupee_micro.png")
+
+
+.row
+	div(id="clock" class="col-md-4" style="color:white;")
+
+
 
 
 
 .container#chatbox
 		.row
-			.col-md-5.pull-right
+			.col-md-4.pull-right
 				.panel.panel-primary(style="margin-bottom:0px;")
 					#collapseOne.panel-collapse.collapse(style="border-top:5px solid #337ab7;")
 						.panel-body
@@ -115,19 +115,8 @@ div(class='container')
 								span.glyphicon.glyphicon-chevron-up
 
 
-script.
-
-	var nextYear = moment.tz("2017-02-02 22:30", "America/Sao_Paulo");
-
-	$('#clock').countdown(nextYear.toDate(), function(event) {
-	$(this).html(event.strftime('%D days %H:%M:%S'));
-	});
 
 
 
 
-
-
-script(src="/bower_components/moment/moment.js")
-script(src="/bower_components/moment-timezone/moment-timezone.js")
 script(src="/javascripts/room.js")

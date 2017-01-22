@@ -55,6 +55,30 @@ factory('socketa', function ($rootScope) {
   };
 }).
 
+factory('socketb', function ($rootScope) {
+  var socketb = io('/wheeloffortune');
+  return {
+    on: function (eventName, callback) {
+      socketb.on(eventName, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socketb, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socketb.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socketb, args);
+          }
+        });
+      })
+    }
+  };
+}).
+
 factory('Nerd', ['$http', function($http) {
 
     return {
