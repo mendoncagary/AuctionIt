@@ -37,6 +37,7 @@ exports.item = function (req, res) {
       item_enddate : date.getUTCDate(),
       item_endhour : date.getUTCHours(),
       item_endmin : date.getUTCMinutes()
+
     });
     img = false;
     }
@@ -70,7 +71,7 @@ User.count({tek_userid: req.session.passport.user} ,function(err,count){
                 quizlevel : user.u_quizlevel
                 });
 
-              
+
             });
           }
           else {
@@ -93,6 +94,33 @@ User.count({tek_userid: req.session.passport.user} ,function(err,count){
 
 
 };
+
+
+
+exports.itemswon = function(req,res){
+
+  var itemlist = {};
+
+  Item.find({i_is_won : true, 'bid.user_id': req.session.passport.user },'_id i_name i_desc i_imgpath',function(err,item){
+  if(err) throw err;
+  if(item.length>0)
+  {
+    for(var i in item)
+    {
+      itemlist[i] = item[i];
+    }
+
+  res.json({item: itemlist});
+  img = false;
+
+  }
+  });
+
+
+};
+
+
+
 
 
 function getDateTime() {

@@ -8,13 +8,13 @@ module.exports = function (io) {
   var wof = io.of('/wheeloffortune');
 
   var slices = 8;
-  var prizes;
+  var slicePrizes = [500, 50, 500, 0, 200, 100, 150, 0];
+
   wof.on('connection', function (socket) {
 
-    cron.schedule('*/30 * * * *', function(){
-      socket.emit("play:wof");
-      console.log("wheeloffortune : every 2 min");
-    });
+    if (socket.request.user && socket.request.user.logged_in) {
+         console.log("User info:",socket.request.user);
+       }
 
 
         socket.on('begin:wof',function(){
@@ -25,15 +25,27 @@ module.exports = function (io) {
 
 
         socket.on('spin:wof',function(){
-          console.log(getUTC());
           var curtime = new Date(getUTC());
           var min = curtime.getUTCMinutes();
-          console.log(min);
-          var rounds = getRandomInt(2,4);
-          var degrees = getRandomInt(0,360);
-          prize = slices - 1 - Math.floor(degrees / (360 / slices));
-          console.log("Client spinned:",rounds,degrees,prize);
-          socket.emit('result:wof',{rounds: rounds,degrees: degrees,prize: prize});
+          if(min>=0 && min<=30)
+          {
+            var rounds = getRandomInt(2,4);
+            var degrees = getRandomInt(0,360);
+            var prize = slices - 1 - Math.floor(degrees / (360 / slices));
+            console.log("Client won:", slicePrizes[prize]);
+            User.findOne({tek_userid: socket.request.user.username } , function(err,user){
+            if(err) throw err;
+              var cashbalance = user.u_cashbalance;
+              cashbalance += slicePrizes[prize];
+               User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance}}, function(err, rows){
+                  if(err) throw err;
+                    socket.emit('result:wof',{rounds: rounds,degrees: degrees,prize: prize});
+               });
+
+          });
+
+          }
+
         });
 
 

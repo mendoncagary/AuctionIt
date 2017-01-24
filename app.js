@@ -11,20 +11,28 @@ var api = require('./routes/api');
 var admin = require('./routes/admin');
 
 
-
 var app = express();
 
 var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
+var MongoStore = require('connect-mongo')(session);
+
+
+mongoose.connect(db.url);
 
 
 
 
 app.use(session({
+	key: 'express.sid',
 	secret: '4n4l29pdsmf93p96j4dlm323jdic',
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
+	cookie: { 
+		httpOnly: true
+						},
+	store: new MongoStore({ mongooseConnection: mongoose.connection })
  } ));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -41,6 +49,7 @@ function isLoggedIn(req, res, next) {
 
 
 var socket_io    = require( "socket.io");
+var passportSocketIo = require('passport.socketio');
 var io           = socket_io();
 app.io           = io;
 
@@ -49,6 +58,19 @@ var routes = require('./routes/index')(io);
 require('./sockets/base')(io);
 require('./sockets/auction')(io);
 require('./sockets/wof')(io);
+require('./sockets/profile')(io);
+
+io.use(passportSocketIo.authorize({
+  key: 'express.sid',
+  secret: '4n4l29pdsmf93p96j4dlm323jdic',
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+	ttl: 1 * 24 * 60 * 60,
+	autoRemove: 'interval',
+	autoRemoveInterval: 180,
+  passport: passport,
+  cookieParser: cookieParser
+}));
+
 
 io.on('connection', function(socket) {
 
@@ -73,10 +95,6 @@ app.use(require('node-sass-middleware')({
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-
-mongoose.connect(db.url);
-
-
 app.use('/admin',admin);
 app.get('/', isLoggedIn, routes.index);
 app.get('/login', function(req, res){
@@ -87,13 +105,17 @@ app.get('/partials/:name', isLoggedIn, routes.partials);
 
 app.get('/api/item/:id', isLoggedIn, api.item);
 app.get('/api/profile', isLoggedIn, api.profile);
+app.get('/api/itemswon', isLoggedIn, api.itemswon);
 
-app.get('*',isLoggedIn,  routes.index);
 
 app.get('/logout', function(req, res) {
   req.logout();
-  res.redirect('/');
+	req.session.destroy(function() {
+		res.send("Session Destroyed");
 });
+});
+
+app.get('*',isLoggedIn,  routes.index);
 
   app.post('/login', passport.authenticate('user-login', {
               successRedirect : '/',

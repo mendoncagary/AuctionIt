@@ -4,31 +4,37 @@ var room = require('../routes/index');
 var fs = require('fs');
 
 module.exports = function (io) {
-var currentPrice = 1000;
 
   var auction = io.of('/auction');
 
   auction.on('connection', function (socket) {
 
-        socket.on('join:auction',function(data){
+
+          socket.on('join:auction',function(data){
           auction.room = data.id;
           socket.join(auction.room);
-          console.log("Client Joined Room:",auction.room);
+
+          Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()},_id: auction.room} ,function(err,item){
+            if(err) throw err;
+            if(item)
+            {
+            current_item =  item.i_name;
+            baseprice = item.i_baseprice;
+            increment = item.i_increment;
+            currentPrice = item.i_currentprice;
+            if(item.bid)
+            {
+            username = item.bid[0].first_name;
+            }
+            else {
+              username = "No User has placed bid";
+            }
+            socket.emit('priceUpdate',{currentPrice: currentPrice,username: username});
+          }
+          });
+
+
         });
-
-
-        //Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:auction.room} ,function(err,item){
-        //if(err) throw err;
-        //if(item.length>0)
-        //{
-        //  for(var i in item)
-        //{
-
-
-      //}
-      //}
-      //});
-
 
     Chat.find({},{} ,{ limit:10, sort:{ _id: -1}},function(err,chat){
     if(err) throw err;
@@ -40,30 +46,31 @@ var currentPrice = 1000;
     });
 
 
-    socket.to(auction.room).emit('priceUpdate',currentPrice);
+
 
 
     socket.on('bid', function (data) {
+
       if(data.value == 'but_1')
       {
-        var bidvalue = 300;
-        currentPrice += 1000 ;
+        var bidvalue = baseprice;
+        currentPrice += bidvalue;
       }
       else if(data.value == 'but_2')
       {
-        var bidvalue = 500;
-        currentPrice += 1500;
+        var bidvalue = baseprice + increment;
+        currentPrice += bidvalue;
       }
       else if(data.value == 'but_3')
       {
-        var bidvalue = 800;
-        currentPrice += 2000;
+        var bidvalue = baseprice + (2*increment);
+        currentPrice += bidvalue;
       }
-
-      Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:auction.room}, { $set: { i_bidvalue: bidvalue} } , function(err,item){
+      var item = new Item();
+      var bid = item.bid.create({ value: currentPrice, user_id: socket.request.user.username,first_name: socket.request.user.first_name});
+      Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:data.id}, { $set: { i_bidvalue: bidvalue,i_currentprice: currentPrice,bid:bid }} ,{new: true}, function(err,item){
       if(err) throw err;
-         auction.in(auction.room).emit('priceUpdate',currentPrice);
-
+         auction.in(data.id).emit('priceUpdate',{currentPrice:currentPrice,username: item.bid[0].first_name});
     });
   });
 

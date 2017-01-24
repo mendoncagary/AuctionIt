@@ -418,3 +418,25 @@ body
 .panel-bid
 	height: 70px
 	overflow-y: hidden
+
+
+.carousel-inner
+  .active.left
+    left: -33%
+  .next
+    left: 33%
+  .prev
+    left: -33%
+
+.carousel-control
+  &.left, &.right
+    background-image: none
+
+.item
+  &:not(.prev)
+    visibility: visible
+  &.right:not(.prev)
+    visibility: hidden
+
+.rightest
+  visibility: visible

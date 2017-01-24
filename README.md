@@ -19,6 +19,9 @@ $ bower install
 ### Running
 ##### Terminal
 ```bash
+$ mongod.exe
+```
+```bash
 $ npm start
 ```
 

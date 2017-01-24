@@ -2,24 +2,21 @@ var cron = require('node-cron');
 var fs = require('fs');
 var Item = require('../models/item');
 var Chat = require('../models/chat');
-
+var User = require('../models/user');
 
 module.exports = function (io) {
 
-var currentPrice = 99;
 var datetime;
-var item = [];
-var post_item = 0;
 var buffer;
 var img = false;
 
 var nsp = io.of('/play');
 
-nsp.on('connection', function (socket,item) {
+nsp.on('connection', function (socket) {
 
 
 
-  cron.schedule('*/1 * * * *', function(){
+  cron.schedule('* * * * * *', function(){
     Item.find({i_starttime : getUTC()}, function(err,item){
     if(err) throw err;
    if(item.length>0)
@@ -37,10 +34,36 @@ nsp.on('connection', function (socket,item) {
 
       Item.find({i_endtime :getUTC()}, function(err,item){
       if(err) throw err;
-      if(item.length>0)
-      nsp.emit('end',true);
+        if(item.length>0)
+        {
+            Item.update({i_endtime: getUTC()},{$set:{i_is_won: true } }, function (err, item) {
+              if(err) throw err;
+
+              if(item.length>0)
+              {
+                for(var i in item)
+                {
+                  var deduction = item[i].bid[0].value;
+                    User.findOne({tek_userid: item.bid[0].user_id},function(err,user){
+                      if(err) throw err;
+                      if(user)
+                      {
+                        var cash = user.u_cashbalance - deduction;
+
+                        User.update({tek_userid: item.bid[0].user_id}, {$set:{u_cashbalance:cash},$inc:{u_itemswon: 1}},function(err,user){
+                          if(err) throw err;
+                        });
+                      }
+
+                    });
+                }
+              }
+
       });
-    console.log('running a task every one minute');
+      nsp.emit('end',true);
+      }
+      });
+
   });
 
 

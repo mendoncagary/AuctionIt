@@ -6,16 +6,17 @@
 		div.panel-group
 			div(class="panel panel-info")
 				div.panel-heading Item Name
-				div.panel-body(id="item_name" class="panel-name")
+				div.panel-body(id="item_name" class="panel-name" ng-bind="item_name")
 
 			div(class="panel panel-info")
 				div.panel-heading Base Price
 				div.panel-body(id="item_price" class="panel-price")
 					img(alt="Rupee" src="/images/rupee_micro.png")
+					span(ng-bind="item_price")
 
 			div(class="panel panel-info")
 				div.panel-heading Description
-				div.panel-body(id="item_desc" class="panel-desc")
+				div.panel-body(id="item_desc" class="panel-desc" ng-bind="item_desc")
 
 
 	.col-md-3
@@ -23,19 +24,22 @@
 			div(class="panel panel-info")
 				div.panel-heading Place a Bid
 				div.panel-body(class="panel-bid")
-					input(type="button" value="1000" id="but_1" class="btn-bid btn btn-lg btn-default")
-					input(type="button" value="1500" id="but_2" class="btn-bid btn btn-lg btn-default")
-					input(type="button" value="2000" id="but_3" class="btn-bid btn btn-lg btn-default")
+					button(type="button" ng-bind="but_1" id="but_1" class="btn-bid btn btn-lg btn-default")
+					button(type="button" ng-bind="but_2" id="but_2" class="btn-bid btn btn-lg btn-default")
+					button(type="button" ng-bind="but_3" id="but_3" class="btn-bid btn btn-lg btn-default")
 
 			div(class="panel panel-info")
 				div.panel-heading Last Bids
 				div.panel-body(class="panel-price")
+					span(ng-bind="bid_user")
+					span(ng-bind="current_price")
 
 
 			div(class="panel panel-info")
 				div.panel-heading Current Price
-				div.panel-body(id="bids" class="panel-price")
+				div.panel-body(id="current_price" class="panel-price")
 					img(alt="Rupee" src="/images/rupee_micro.png")
+					span(ng-bind="current_price")
 
 
 .row

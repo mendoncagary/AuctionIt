@@ -154,24 +154,27 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
       {
       $location.path('/join');
       }
-      if ($scope.item.image) {
+      if($scope.item.image) {
        var img = new Image();
        img.onload = function(){
          var ctx = canvas.getContext('2d');
          ctx.drawImage( img, 0, 0 );
        };
-    img.src = 'data:image/png;base64,' + $scope.item.item_image;
-      $('#item_name').html($scope.item.item_name);
-      $('#item_price').append($scope.item.item_price);
-      $('#item_desc').html($scope.item.item_desc);
-      $('#but_1').val($scope.item.curBidValue1);
-      $('#but_2').val($scope.item.curBidValue2);
-      $('#but_3').val($scope.item.curBidValue3);
+      img.src = 'data:image/png;base64,' + $scope.item.item_image;
+      $scope.item_name = $scope.item.item_name;
+      $scope.item_price = $scope.item.item_price;
+      $scope.item_desc = $scope.item.item_desc;
+      $scope.but_1 = $scope.item.curBidValue1;
+      $scope.but_2 = $scope.item.curBidValue2;
+      $scope.but_3 = $scope.item.curBidValue3;
 
       $scope.date = $scope.item.item_enddate;
       $scope.hour = $scope.item.item_endhour;
       $scope.min = $scope.item.item_endmin;
-
+      if($scope.min<10)
+      {
+        $scope.min = "0"+$scope.min;
+      }
       $scope.endtime = "2017-02-"+$scope.date+" "+$scope.hour+":"+$scope.min;
       var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
 
@@ -188,15 +191,16 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
   var chattime = [];
   var sendername = [];
 
-socketa.emit('join:auction', {id : $routeParams.id});
+  socketa.emit('join:auction', {id : $routeParams.id});
 
 
  socketa.on('priceUpdate', function(data) {
-      $('#bids').html("<img alt='Rupee' src='/images/rupee_micro.png'>"+data);
+      $scope.current_price = data.currentPrice;
+      $scope.bid_user = data.username;
  });
 
  $('.btn-bid').click(function(){
-      socketa.emit('bid', {value : this.id });
+      socketa.emit('bid', {value : this.id,id: $routeParams.id });
  });
 
    socketa.on('message', function (data) {
@@ -233,7 +237,9 @@ socketa.emit('join:auction', {id : $routeParams.id});
 }).
 
 
-controller('WheelController', function($scope,socketb) {
+controller('WheelController', function($rootScope,$scope,socketb) {
+
+  $rootScope.bgimg = "'/images/back.png'";
 
   socketb.emit('begin:wof');
 
@@ -246,7 +252,7 @@ controller('WheelController', function($scope,socketb) {
   // slices (prizes) placed in the wheel
   var slices = 8;
   // prize names, starting from 12 o'clock going clockwise
-  var slicePrizes = ["A KEY!!!", "50 STARS", "500 STARS", "BAD LUCK!!!", "200 STARS", "100 STARS", "150 STARS", "BAD LUCK!!!"];
+  var slicePrizes = ["A KEY!!!", "50 COINS", "500 COINS", "BAD LUCK!!!", "200 COINS", "100 COINS", "150 COINS", "BAD LUCK!!!"];
   // the prize you are about to win
   var prize;
   // text field where to show the prize
@@ -258,24 +264,21 @@ controller('WheelController', function($scope,socketb) {
   var playGame = function(game){};
 
   playGame.prototype = {
-       // function to be executed once the state preloads
+
        preload: function(){
-            // preloading graphic assets
             game.load.image("wheel", "images/wheel.png");
   		      game.load.image("pin", "images/pin.png");
             game.load.image("spin", "images/spin.jpg");
        },
-       // funtion to be executed when the state is created
-    	create: function(){
 
-        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        game.scale.setShowAll();
-        window.addEventListener('resize', function () {
-           game.scale.refresh();});
-           game.scale.refresh();
-            // giving some color to background
-    		game.stage.backgroundColor = "#104D61";
-            // adding the wheel in the middle of the canvas
+    	create: function(){
+            game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+            game.scale.setShowAll();
+            window.addEventListener('resize', function () {
+              game.scale.refresh();
+            });
+            game.scale.refresh();
+    		    game.stage.backgroundColor = "#104D61";
             var spin = game.add.sprite(game.width / 2, game.width / 2, "spin");
             spin.anchor.set(0.5);
     		wheel = game.add.sprite(game.width / 2, game.width / 2, "wheel");
@@ -336,20 +339,22 @@ controller('WheelController', function($scope,socketb) {
        }
   }
 
-
   // creation of a 458x488 game
  game = new Phaser.Game(580, 580, Phaser.CANVAS, "");
   // adding "PlayGame" state
   game.state.add("PlayGame",playGame);
-
   // launching "PlayGame" state
   game.state.start("PlayGame");
 
 }).
 
 
-controller('ProfileController', function($rootScope, $scope, $http) {
+controller('ProfileController', function($rootScope, $scope, $http, $compile,socketc) {
 $rootScope.bgimg = "'/images/back.png'";
+
+$scope.itemname = [];
+$scope.itemdesc = [];
+$scope.itemid = [];
 
   $http.get('/api/profile/')
     .then(function(success) {
@@ -361,8 +366,90 @@ $rootScope.bgimg = "'/images/back.png'";
       $scope.itemswon = $scope.user.items_won;
       $scope.quizlevel = $scope.user.quizlevel;
     },function (error){
-      alert("could not recive")
+      alert("Code 500 : Internal Server Error");
     });
+
+
+  $http.get('/api/itemswon')
+  .then(function(success){
+
+
+    for(var i in success.data.item)
+    {
+    $scope.itemname.push(success.data.item[i].i_name);
+    $scope.itemdesc.push(success.data.item[i].i_desc);
+    $scope.itemid.push(success.data.item[i]._id);
+  }
+  var html = '';
+  var modal = '';
+  for(i=0;i<$scope.itemname.length;i++)
+  {
+    html+="<div class='item'><div class='col-lg-4 col-xs-4 col-md-4 col-sm-4'><a href='' data-toggle='modal' data-target='#"+$scope.itemid[i]+"'><img src='http://lorempixel.com/400/200/' class='img-responsive'>"+$scope.itemname[i]+"</a></div></div>";
+    modal+=`<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='`+$scope.itemid[i]+`' aria-hidden='true' id='`+$scope.itemid[i]+`'><div class='modal-dialog'><div class='modal-content'><div class='modal-header'><button class='close' type='button' data-dismiss='modal'>×</button><h4 class='modal-title'>Auctions</h4></div><div class='modal-body'><p>Duration Period:</p><button class='btn btn-default dur_but' type='button' id='time_1'>20 min</button><button class='btn btn-default dur_but' type='button' id='time_2'>30 min</button><button class='btn btn-default dur_but' type='button' id='time_3'>40 min</button><p>Cost:</p><span ng-bind='auction_cost'></span><div></div></div><div class='modal-footer'><button id='`+$scope.itemid[i]+`' data-ng-click="SubmitAuction($event)" class='btn btn-default' type='button' data-dismiss='modal'>Open Auction</button><button class='btn btn-default' type='button' data-dismiss='modal'>Close</button></div></div></div></div>`;
+  }
+  var temp = $compile(html)($scope);
+  var tempm = $compile(modal)($scope);
+
+  angular.element($( "#items_won_carousel" )).append(temp);
+  angular.element($( "#modaltab" )).append(tempm);
+
+  $( "#items_won_carousel .item:first" ).addClass('active');
+
+
+  },function(error){
+    alert("Code 500 : Internal Server Error");
+  });
+
+  $(document).on('click','.dur_but', function(){
+    var id = $(this).attr('id');
+    if(id=='time_1')
+    {
+      $scope.auction_cost = 2000;
+      $scope.dur_id = id;
+      $scope.$apply();
+    }
+    else if(id=='time_2')
+    {
+      $scope.auction_cost= 4000;
+      $scope.dur_id = id;
+      $scope.$apply();
+    }
+    else if(id=='time_3')
+    {
+      $scope.auction_cost= 6000;
+      $scope.dur_id = id;
+      $scope.$apply();
+    }
+
+  });
+
+  $('#myCarousel').carousel({
+    interval: 40000
+  });
+
+  $('.carousel .item').each(function(){
+    var next = $(this).next();
+    if (!next.length) {
+      next = $(this).siblings(':first');
+    }
+    next.children(':first-child').clone().appendTo($(this));
+    if (next.next().length>0) {
+        next.next().children(':first-child').clone().appendTo($(this)).addClass('rightest');
+    }
+    else {
+        $(this).siblings(':first').children(':first-child').clone().appendTo($(this));
+    }
+  });
+
+
+
+  $scope.SubmitAuction = function (event) {
+              socketc.emit('sell:item',{id:event.target.id,duration: $scope.dur_id});
+              
+
+         };
+
+
 
 
 });

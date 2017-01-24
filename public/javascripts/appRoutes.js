@@ -28,6 +28,9 @@
             templateUrl: 'partials/wof',
             controller: 'WheelController'
         })
+        .when('/leaderboard', {
+            templateUrl: 'partials/leaderboard'
+        })
         .otherwise({
           redirectTo: '/'
         });

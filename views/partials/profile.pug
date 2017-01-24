@@ -27,13 +27,27 @@ p.text-info May 05,2014,03:00 pm
 								td Quiz Level
 								td(ng-bind="quizlevel")
 
-					a.btn.btn-primary(href='#') My Sales Performance
+					a.btn.btn-primary(href='#') Items won
 					a.btn.btn-primary(href='#') Team Sales Performance
 		.panel-footer
 			a.btn.btn-sm.btn-primary(data-original-title='Broadcast Message', data-toggle='tooltip', type='button')
 				i.glyphicon.glyphicon-envelope
 			span.pull-right
-				a.btn.btn-sm.btn-warning(href='edit.html', data-original-title='Edit this user', data-toggle='tooltip', type='button')
+				a.btn.btn-sm.btn-warning(data-original-title='Edit this user', data-toggle='tooltip', type='button')
 					i.glyphicon.glyphicon-edit
 				a.btn.btn-sm.btn-danger(data-original-title='Remove this user', data-toggle='tooltip', type='button')
 					i.glyphicon.glyphicon-remove
+
+
+.container
+	.col-md-12
+		#myCarousel.carousel.slide
+			.carousel-inner#items_won_carousel
+
+
+			a.left.carousel-control(href='' data-target='#myCarousel', data-slide='prev')
+				i.glyphicon.glyphicon-chevron-left
+			a.right.carousel-control(href='' data-target='#myCarousel', data-slide='next')
+				i.glyphicon.glyphicon-chevron-right
+
+#modaltab

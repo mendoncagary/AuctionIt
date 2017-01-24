@@ -79,6 +79,30 @@ factory('socketb', function ($rootScope) {
   };
 }).
 
+factory('socketc', function ($rootScope) {
+  var socketc = io('/profile');
+  return {
+    on: function (eventName, callback) {
+      socketc.on(eventName, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socketc, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socketc.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socketc, args);
+          }
+        });
+      })
+    }
+  };
+}).
+
 factory('Nerd', ['$http', function($http) {
 
     return {
