@@ -115,10 +115,4 @@ $(document).on('click','#btnFullscreen',function() {
 
 
 
-    $(document).on('click',".trigger",function() {
-    $(".menu").toggleClass("active");
-    });
-
-
-
 });

@@ -1,7 +1,28 @@
+var User = require('../models/user');
+
 module.exports = function(io) {
   var routes = {};
 
 routes.index = function(req, res){
+
+
+  User.count({tek_userid: req.session.passport.user} ,function(err,count){
+            if(err) throw err;
+            if(count>0)
+            {
+              User.update({tek_userid: req.session.passport.user},{$set:{u_firstvisit: false}}, function(err,user){
+                if(err) throw err;
+              });
+            }
+            else {
+              var user = new User({tek_userid:req.session.passport.user, tek_name:'gary',u_firstvisit: true, u_cashbalance: 30000, u_itemswon: 0,u_itempoints: 0, u_quizlevel: 1, chat_status: true, quiz_attempt_status: true, wof_status: true});
+              user.save(function(err,rows){
+              if(err) throw err;
+              });
+            }
+        });
+
+
   res.render('index', {title: 'AuctionIt'});
 };
 

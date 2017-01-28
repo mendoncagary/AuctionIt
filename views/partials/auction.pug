@@ -6,27 +6,32 @@
 		div.panel-group
 			div(class="panel panel-info")
 				div.panel-heading Item Name
-				div.panel-body(id="item_name" class="panel-name" ng-bind="item_name")
+				div.panel-body(id="item_name" class="panel-name" ng-bind="item.item_name")
 
 			div(class="panel panel-info")
 				div.panel-heading Base Price
 				div.panel-body(id="item_price" class="panel-price")
 					img(alt="Rupee" src="/images/rupee_micro.png")
-					span(ng-bind="item_price")
+					span(ng-bind="item.item_price")
 
 			div(class="panel panel-info")
 				div.panel-heading Description
-				div.panel-body(id="item_desc" class="panel-desc" ng-bind="item_desc")
+				div.panel-body(id="item_desc" class="panel-desc" ng-bind="item.item_desc")
 
 
 	.col-md-3
 		div.panel-group
 			div(class="panel panel-info")
+				div.panel-heading Seller info
+				div.panel-body(class="panel-seller")
+					span(ng-bind="item.seller_id")
+
+			div(class="panel panel-info")
 				div.panel-heading Place a Bid
 				div.panel-body(class="panel-bid")
-					button(type="button" ng-bind="but_1" id="but_1" class="btn-bid btn btn-lg btn-default")
-					button(type="button" ng-bind="but_2" id="but_2" class="btn-bid btn btn-lg btn-default")
-					button(type="button" ng-bind="but_3" id="but_3" class="btn-bid btn btn-lg btn-default")
+					button(type="button" ng-bind="item.curBidValue1" id="but_1" class="btn-bid btn btn-lg btn-default")
+					button(type="button" ng-bind="item.curBidValue2" id="but_2" class="btn-bid btn btn-lg btn-default")
+					button(type="button" ng-bind="item.curBidValue3" id="but_3" class="btn-bid btn btn-lg btn-default")
 
 			div(class="panel panel-info")
 				div.panel-heading Last Bids

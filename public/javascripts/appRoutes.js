@@ -1,9 +1,8 @@
-// public/js/appRoutes.js
+
     angular.module('appRoutes', []).config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 
     $routeProvider
 
-        // home page
         .when('/', {
             templateUrl: 'partials/home',
             controller: 'MainController'
@@ -29,7 +28,12 @@
             controller: 'WheelController'
         })
         .when('/leaderboard', {
-            templateUrl: 'partials/leaderboard'
+            templateUrl: 'partials/leaderboard',
+            controller: 'LeaderBoardController'
+        })
+        .when('/instructions', {
+            templateUrl: 'partials/instructions',
+            controller: 'InstructionsController'
         })
         .otherwise({
           redirectTo: '/'

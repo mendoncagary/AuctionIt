@@ -24,6 +24,9 @@ var userSchema = new Schema({
   u_itemswon:{
     type: Number
   },
+  u_itemssold:{
+    type: Number
+  },
   u_itempoints:{
     type: Number
   },

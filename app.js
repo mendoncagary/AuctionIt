@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var helmet = require('helmet');
 var mongoose = require('mongoose');
 var db = require('./config/db');
 var api = require('./routes/api');
@@ -12,6 +13,8 @@ var admin = require('./routes/admin');
 
 
 var app = express();
+app.use(helmet());
+
 
 var session = require('express-session');
 var passport = require('passport');
@@ -29,7 +32,7 @@ app.use(session({
 	secret: '4n4l29pdsmf93p96j4dlm323jdic',
 	resave: true,
 	saveUninitialized: true,
-	cookie: { 
+	cookie: {
 		httpOnly: true
 						},
 	store: new MongoStore({ mongooseConnection: mongoose.connection })
@@ -106,6 +109,7 @@ app.get('/partials/:name', isLoggedIn, routes.partials);
 app.get('/api/item/:id', isLoggedIn, api.item);
 app.get('/api/profile', isLoggedIn, api.profile);
 app.get('/api/itemswon', isLoggedIn, api.itemswon);
+app.get('/api/leaderboard', isLoggedIn, api.leaderboard);
 
 
 app.get('/logout', function(req, res) {

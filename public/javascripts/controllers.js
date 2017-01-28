@@ -23,8 +23,10 @@ $scope.redirect = function(a){
 
 }).
 
-controller('MainController', function($rootScope, $scope) {
+controller('MainController', function($rootScope) {
+
 $rootScope.bgimg = "'/images/front.png'";
+
 }).
 
 controller('JoinController', function($rootScope, $scope, socket, $compile) {
@@ -141,7 +143,7 @@ controller('JoinController', function($rootScope, $scope, socket, $compile) {
 
 }).
 
-controller('AuctionController', function($rootScope, $routeParams, $http, $scope, $location, socketa) {
+controller('AuctionController', function($rootScope, $routeParams, $http, $scope, socketa) {
 
 
   $rootScope.bgimg = "'/images/spotlight.png'";
@@ -152,7 +154,7 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
       $scope.item = success.data;
       if($scope.item.code)
       {
-      $location.path('/join');
+      $scope.redirect('join');
       }
       if($scope.item.image) {
        var img = new Image();
@@ -161,21 +163,9 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
          ctx.drawImage( img, 0, 0 );
        };
       img.src = 'data:image/png;base64,' + $scope.item.item_image;
-      $scope.item_name = $scope.item.item_name;
-      $scope.item_price = $scope.item.item_price;
-      $scope.item_desc = $scope.item.item_desc;
-      $scope.but_1 = $scope.item.curBidValue1;
-      $scope.but_2 = $scope.item.curBidValue2;
-      $scope.but_3 = $scope.item.curBidValue3;
 
-      $scope.date = $scope.item.item_enddate;
-      $scope.hour = $scope.item.item_endhour;
-      $scope.min = $scope.item.item_endmin;
-      if($scope.min<10)
-      {
-        $scope.min = "0"+$scope.min;
-      }
-      $scope.endtime = "2017-02-"+$scope.date+" "+$scope.hour+":"+$scope.min;
+      $scope.endtime = "2017-"+$scope.item.item_endmonth+"-"+$scope.item.item_enddate+" "+$scope.item.item_endhour+":"+$scope.item.item_endmin+":28";
+      console.log($scope.endtime);
       var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
 
       $('#clock').countdown(nextYear.toDate(), function(event) {
@@ -183,7 +173,7 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
       });
     }
     },function (error){
-
+      console.log(error);
     });
 
 
@@ -349,107 +339,122 @@ controller('WheelController', function($rootScope,$scope,socketb) {
 }).
 
 
-controller('ProfileController', function($rootScope, $scope, $http, $compile,socketc) {
+controller('ProfileController', function($rootScope, $scope,$timeout,$route, $http,socketc) {
 $rootScope.bgimg = "'/images/back.png'";
-
-$scope.itemname = [];
-$scope.itemdesc = [];
-$scope.itemid = [];
 
   $http.get('/api/profile/')
     .then(function(success) {
       $scope.user = success.data;
-      $scope.userid = $scope.user.userid;
-      $scope.username = $scope.user.username;
-      $scope.cashbalance = $scope.user.cashbal;
-      $scope.auc_points = $scope.user.auction_points;
-      $scope.itemswon = $scope.user.items_won;
-      $scope.quizlevel = $scope.user.quizlevel;
     },function (error){
-      alert("Code 500 : Internal Server Error");
+      console.log(error);
     });
 
-
   $http.get('/api/itemswon')
-  .then(function(success){
-
-
-    for(var i in success.data.item)
+  .then(function(response){
+    $scope.items_won = [];
+    for(var i in response.data.item)
     {
-    $scope.itemname.push(success.data.item[i].i_name);
-    $scope.itemdesc.push(success.data.item[i].i_desc);
-    $scope.itemid.push(success.data.item[i]._id);
-  }
-  var html = '';
-  var modal = '';
-  for(i=0;i<$scope.itemname.length;i++)
-  {
-    html+="<div class='item'><div class='col-lg-4 col-xs-4 col-md-4 col-sm-4'><a href='' data-toggle='modal' data-target='#"+$scope.itemid[i]+"'><img src='http://lorempixel.com/400/200/' class='img-responsive'>"+$scope.itemname[i]+"</a></div></div>";
-    modal+=`<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='`+$scope.itemid[i]+`' aria-hidden='true' id='`+$scope.itemid[i]+`'><div class='modal-dialog'><div class='modal-content'><div class='modal-header'><button class='close' type='button' data-dismiss='modal'>×</button><h4 class='modal-title'>Auctions</h4></div><div class='modal-body'><p>Duration Period:</p><button class='btn btn-default dur_but' type='button' id='time_1'>20 min</button><button class='btn btn-default dur_but' type='button' id='time_2'>30 min</button><button class='btn btn-default dur_but' type='button' id='time_3'>40 min</button><p>Cost:</p><span ng-bind='auction_cost'></span><div></div></div><div class='modal-footer'><button id='`+$scope.itemid[i]+`' data-ng-click="SubmitAuction($event)" class='btn btn-default' type='button' data-dismiss='modal'>Open Auction</button><button class='btn btn-default' type='button' data-dismiss='modal'>Close</button></div></div></div></div>`;
-  }
-  var temp = $compile(html)($scope);
-  var tempm = $compile(modal)($scope);
-
-  angular.element($( "#items_won_carousel" )).append(temp);
-  angular.element($( "#modaltab" )).append(tempm);
-
-  $( "#items_won_carousel .item:first" ).addClass('active');
-
-
+      var m = i.toString();
+      $scope.items_won[i] = response.data.item[m];
+    }
+    $scope.auction_cost_1 = 1;
   },function(error){
-    alert("Code 500 : Internal Server Error");
+    console.log(error);
   });
+
+
 
   $(document).on('click','.dur_but', function(){
     var id = $(this).attr('id');
     if(id=='time_1')
     {
-      $scope.auction_cost = 2000;
+      $scope.auction_cost_1 = 1;
+      $scope.auction_cost_2 = 0;
+      $scope.auction_cost_3 = 0;
       $scope.dur_id = id;
       $scope.$apply();
     }
     else if(id=='time_2')
     {
-      $scope.auction_cost= 4000;
+      $scope.auction_cost_1 = 0;
+      $scope.auction_cost_2 = 1;
+      $scope.auction_cost_3 = 0;
       $scope.dur_id = id;
       $scope.$apply();
     }
     else if(id=='time_3')
     {
-      $scope.auction_cost= 6000;
+      $scope.auction_cost_1 = 0;
+      $scope.auction_cost_2 = 0;
+      $scope.auction_cost_3 = 1;
       $scope.dur_id = id;
       $scope.$apply();
     }
 
   });
 
-  $('#myCarousel').carousel({
-    interval: 40000
-  });
-
-  $('.carousel .item').each(function(){
-    var next = $(this).next();
-    if (!next.length) {
-      next = $(this).siblings(':first');
-    }
-    next.children(':first-child').clone().appendTo($(this));
-    if (next.next().length>0) {
-        next.next().children(':first-child').clone().appendTo($(this)).addClass('rightest');
-    }
-    else {
-        $(this).siblings(':first').children(':first-child').clone().appendTo($(this));
-    }
-  });
-
-
-
   $scope.SubmitAuction = function (event) {
+              if($scope.dur_id)
+              {
               socketc.emit('sell:item',{id:event.target.id,duration: $scope.dur_id});
-              
-
+                //$('#itemModal_'+event.target.id).modal('hide');
+              }
+              else {
+                $scope.flash = "Please select a duration";
+              }
          };
 
+         socketc.on('profile:response',function(response){
+           $scope.flash = response.message;
+           $timeout(function(){
+             $route.reload();
+           },2000);
+         });
+
+         jQuery(document).ready(function($) {
+
+             $('#itemCarousel').carousel({
+                     interval: 5000
+             });
+
+             //$('#carousel-text').html($('#slide-content-0').html());
+             //Handles the carousel thumbnails
+            $(document).on('click','[id^=carousel-selector-]', function(){
+                 var id = this.id.substr(this.id.lastIndexOf("-") + 1);
+                 var id = parseInt(id);
+                 $('#itemCarousel').carousel(id);
+             });
 
 
+             // When the carousel slides, auto update the text
+             $('#itemCarousel').on('slid.bs.carousel', function (e) {
+                      var id = $('.item.active').data('slide-number');
+                     $('#carousel-text').html($('#slide-content-'+id).html());
+             });
+     });
 
+
+}).
+
+controller('LeaderBoardController', function($rootScope, $scope, $http) {
+
+
+    $http.get('/api/leaderboard')
+      .then(function(response) {
+        $scope.users = [];
+      for(var i in response.data.users)
+        {
+          var m = i.toString();
+          $scope.users[i] = response.data.users[m];
+        }
+      },function (error){
+        console.log(error);
+      });
+
+
+}).
+
+
+controller('InstructionsController', function($rootScope) {
+$rootScope.bgimg = "'/images/back.png'";
 });

@@ -1,4 +1,5 @@
-var cron = require('node-cron');
+//var cron = require('node-cron');
+var CronJob = require('cron').CronJob;
 var fs = require('fs');
 var Item = require('../models/item');
 var Chat = require('../models/chat');
@@ -15,56 +16,93 @@ var nsp = io.of('/play');
 nsp.on('connection', function (socket) {
 
 
+    var job = new CronJob({
+      cronTime: '* * * * * *',
+      onTick: function() {
 
-  cron.schedule('* * * * * *', function(){
-    Item.find({i_starttime : getUTC()}, function(err,item){
-    if(err) throw err;
-   if(item.length>0)
-    {
-      for(var i in item)
-      {
-          var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
-          buffer = buf;
-          img = true;
-      nsp.emit('item',{item_id: item[i].i_id, item_name: item[i].i_name, item_desc: item[i].i_desc, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64')});
-        img=false;
-        }
-        }
-      });
-
-      Item.find({i_endtime :getUTC()}, function(err,item){
-      if(err) throw err;
-        if(item.length>0)
+        Item.find({i_starttime : getUTC(),i_flag: 0}, function(err,item){
+        if(err) throw err;
+       if(item.length>0)
         {
-            Item.update({i_endtime: getUTC()},{$set:{i_is_won: true } }, function (err, item) {
-              if(err) throw err;
+          Item.update({i_starttime : getUTC(),i_flag: 0},{$set: {i_flag: 1}},{new:true}, function(err,item){
+            if(err) throw err;
+          });
+          for(var i in item)
+          {
+              var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
+              buffer = buf;
+              img = true;
+          nsp.emit('item',{item_id: item[i].i_id, item_name: item[i].i_name, item_desc: item[i].i_desc, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64')});
+            img=false;
+            }
+            }
+          });
 
-              if(item.length>0)
+          Item.find({i_endtime :getUTC(),i_is_won:false}, function(err,item){
+          if(err) throw err;
+            if(item.length>0)
+            {
+              for(var i in item)
               {
-                for(var i in item)
-                {
-                  var deduction = item[i].bid[0].value;
-                    User.findOne({tek_userid: item.bid[0].user_id},function(err,user){
-                      if(err) throw err;
-                      if(user)
-                      {
-                        var cash = user.u_cashbalance - deduction;
+                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won: true,i_flag:0,i_owner: item[i].bid[0].user_id} }, {new:true},function (err, item) {
+                  if(err) throw err;
+                  });
 
-                        User.update({tek_userid: item.bid[0].user_id}, {$set:{u_cashbalance:cash},$inc:{u_itemswon: 1}},function(err,user){
-                          if(err) throw err;
-                        });
-                      }
+                    if(item[i].bid!=null)
+                    {
+                      var basprice = item[i].i_baseprice;
+                      var deduction = item[i].bid[0].value;
+                      User.findOne({tek_userid: item[i].bid[0].user_id},function(err,user){
+                        if(err) throw err;
+                        if(user)
+                        {
+                          var cur_itempoints = 0;
 
-                    });
+                          if (deduction <= (baseprice/2)) {
+                                cur_itempoints = 10;
+                            }else if(deduction <= (baseprice*3/5)) {
+                                cur_itempoints = 9;
+                            }else if(deduction <= (baseprice*7/10)) {
+                                cur_itempoints = 8;
+                            }else if(deduction <= (baseprice*4/5)) {
+                                cur_itempoints = 7;
+                            }else if(deduction <= (baseprice*11/10)) {
+                                cur_itempoints = 7;
+                            }else if(deduction <= (baseprice*6/5)) {
+                                cur_itempoints = 6;
+                            }else if(deduction <= (baseprice*13/10)) {
+                                cur_itempoints = 6;
+                            }else if(deduction <= (baseprice*7/5)) {
+                                cur_itempoints = 5;
+                            }else {
+                                cur_itempoints = 5;
+                            }
+
+                            u_itempoints = cur_itempoints + user.u_itempoints;
+
+                          var cash = user.u_cashbalance - deduction;
+                          User.update({tek_userid: item[i].bid[0].user_id}, {$set:{u_cashbalance:cash, u_itempoints:u_itempoints},$inc:{u_itemswon: 1}},function(err,user){
+                            if(err) throw err;
+                          });
+                        }
+                      });
+                    }
+                  }
+
+                  nsp.emit('end',true);
                 }
-              }
+          });
 
-      });
-      nsp.emit('end',true);
-      }
-      });
 
-  });
+      },
+      start: false,
+      timeZone: 'Asia/Kolkata'
+    });
+    job.start();
+
+  //cron.schedule('* * * * * *', function(){
+
+  //});
 
 
 

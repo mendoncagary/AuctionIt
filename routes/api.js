@@ -2,13 +2,13 @@ var Item = require('../models/item');
 var User = require('../models/user');
 var fs = require('fs');
 
+
 exports.item = function (req, res) {
   var id = req.params.id;
 
-
   if(id.match(/^[0-9a-fA-F]{24}$/))
   {
-    Item.find({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:id},function(err,item){
+    Item.find({ _id:id, i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}},function(err,item){
     if(err) throw err;
     if(item.length>0)
     {
@@ -24,6 +24,16 @@ exports.item = function (req, res) {
 
       var endtime = item[i].i_endtime;
       var date =  new Date(endtime);
+
+      var item_endhour = date.getUTCHours();
+      if(item_endhour<10) item_endhour = "0"+item_endhour;
+
+      var item_endmin = date.getUTCMinutes();
+      if(item_endmin<10) item_endmin = "0"+item_endmin;
+
+      var item_endmonth = date.getUTCMonth()+1;
+      if(item_endmonth<10) item_endmonth = "0"+item_endmonth;
+
     res.json({
       item_name: item[i].i_name,
       item_price: item[i].i_baseprice,
@@ -34,9 +44,11 @@ exports.item = function (req, res) {
       curBidValue1 : curBidValue1,
       curBidValue2 : curBidValue2,
       curBidValue3 : curBidValue3,
+      item_endmonth : item_endmonth,
       item_enddate : date.getUTCDate(),
-      item_endhour : date.getUTCHours(),
-      item_endmin : date.getUTCMinutes()
+      item_endhour : item_endhour,
+      item_endmin : item_endmin,
+      item_endsec : item_endsec
 
     });
     img = false;
@@ -56,41 +68,24 @@ else {
 
 exports.profile = function(req,res){
 
-User.count({tek_userid: req.session.passport.user} ,function(err,count){
-          if(err) throw err;
-          if(count>0)
-          {
+
             User.findOne({tek_userid: req.session.passport.user},function(err,user){
               if(err) throw err;
+
+              if(user)
+              {
                   res.json({
                 userid : user.tek_userid,
                 username :  user.tek_name,
                 cashbal :  user.u_cashbalance,
                 auction_points : user.u_itempoints,
                 items_won : user.u_itemswon,
+                items_sold: user.u_itemssold,
                 quizlevel : user.u_quizlevel
                 });
-
-
+              }
             });
-          }
-          else {
-            var user = new User({tek_userid:req.session.passport.user, tek_name:'gary',u_firstvisit: false, u_cashbalance: 30000, u_itemswon: 0,u_itempoints: 0, u_quizlevel: 1, chat_status: true, quiz_attempt_status: true, wof_status: true});
-            user.save(function(err,rows){
-            if(err) throw err;
 
-                res.json({
-                userid : req.session.passport.user,
-                username : "gary",
-                cashbal : 30000,
-                auction_points : 0,
-                items_won : 0,
-                quizlevel : 1
-                });
-            });
-          }
-
-      });
 
 
 };
@@ -100,14 +95,36 @@ User.count({tek_userid: req.session.passport.user} ,function(err,count){
 exports.itemswon = function(req,res){
 
   var itemlist = {};
+  var itemid = {};
+  var itemname = {};
+  var itemdesc = {};
+  var itemprice = {};
+  var itempath = {};
+  var costprice_1 = {};
+  var costprice_2 = {};
+  var costprice_3 = {};
 
-  Item.find({i_is_won : true, 'bid.user_id': req.session.passport.user },'_id i_name i_desc i_imgpath',function(err,item){
+  Item.find({i_is_won : true, 'bid.user_id': req.session.passport.user },'_id i_name i_baseprice i_desc i_imgpath',function(err,item){
   if(err) throw err;
   if(item.length>0)
   {
     for(var i in item)
     {
-      itemlist[i] = item[i];
+      itemid[i] = item[i]._id;
+      itemname[i] = item[i].i_name;
+      itemprice[i] = item[i].i_baseprice;
+      costprice_1[i] = 10*item[i].i_baseprice/100;
+      costprice_2[i] = 20*item[i].i_baseprice/100;
+      costprice_3[i] = 30*item[i].i_baseprice/100;
+      itemdesc[i] = item[i].i_desc;
+      var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
+        buffer = buf;
+        img = true;
+        itempath[i] = buffer.toString('base64');
+    }
+    for(var i in item)
+    {
+      itemlist[i] = { id:itemid[i], name:itemname[i], price:itemprice[i], desc:itemdesc[i], image:img, path:itempath[i],cost_1:costprice_1[i],cost_2:costprice_2[i],cost_3:costprice_3[i]};
     }
 
   res.json({item: itemlist});
@@ -116,6 +133,44 @@ exports.itemswon = function(req,res){
   }
   });
 
+
+};
+
+
+exports.leaderboard = function(req,res){
+var userlist = {};
+var userid = {};
+var itemswon = {};
+var aucpoints = {};
+
+  User.find({},
+  {'_id':0, 'tek_userid':1, 'u_itemswon':1, 'u_itempoints':1},
+  {
+      skip:0,
+      limit:10,
+      sort:{
+        u_itempoints  : -1
+      }
+  },
+  function(err,users){
+        if(err) throw err;
+        if(users.length>0)
+        {
+          for(var i in users)
+          {
+            userid[i] = users[i].tek_userid;
+            itemswon[i] = users[i].u_itemswon;
+            aucpoints[i] = users[i].u_itempoints;
+          }
+          for(var i in users)
+          {
+            userlist[i] = {id:userid[i],itemswon: itemswon[i],aucpoints:aucpoints[i]};
+          }
+          res.json({
+            users: userlist
+          });
+        }
+  })
 
 };
 

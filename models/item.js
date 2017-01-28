@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-
 var bidSchema = new Schema({
   value: {
     type: Number
@@ -48,6 +47,12 @@ var itemSchema = new Schema({
   bid: [bidSchema],
   i_is_won:{
     type: Boolean
+  },
+  i_flag:{
+    type:Number
+  },
+  i_owner:{
+    type:String
   }
 
 });

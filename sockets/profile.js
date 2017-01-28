@@ -1,6 +1,7 @@
 var cron = require('node-cron');
 var Chat = require('../models/chat');
 var Item = require('../models/item');
+var User = require('../models/user');
 var fs = require('fs');
 
 module.exports = function (io) {
@@ -16,7 +17,6 @@ module.exports = function (io) {
 
 
       socket.on('sell:item',function(item){
-
       if(item.duration =='time_1')
       {
         duration = 20;
@@ -33,7 +33,9 @@ module.exports = function (io) {
         valid =true;
       }
 
+
       var id=item.id;
+
 
       if(valid)
       {
@@ -62,17 +64,30 @@ module.exports = function (io) {
       if(err) throw err;
       if(item)
       {
-        
-
+          if(duration==20) cost = 10*item.i_baseprice/100;
+          else if(duration==30) cost = 20*item.i_baseprice/100;
+          else if(duration==40){
+            cost = 30*item.i_baseprice/100;
+          }
+      User.findOne({tek_userid:socket.request.user.username},function(err,user){
+        if(err) throw err;
+        if(user)
+        {
+        var cashbalance = user.u_cashbalance;
+        var cashbalance = cashbalance - cost;
+        User.update({tek_userid:socket.request.user.username},{$set:{u_cashbalance:cashbalance},$inc:{u_itemssold:1}},{new: true}, function(err,user){
+          if(err) throw err;
+        });
+        }
+      });
       }
       });
-
+      socket.emit('profile:response',{message: "Auction successfully placed. Your auction will start in 15 minutes."});
     }
     }
-
-
-
-
+    else{
+      socket.emit('profile:response',{message: "There was an error placing your auction. Please try again."});
+    }
 
     });
 

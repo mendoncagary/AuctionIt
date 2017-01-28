@@ -11,8 +11,11 @@ module.exports = function (io) {
 
 
           socket.on('join:auction',function(data){
-          auction.room = data.id;
-          socket.join(auction.room);
+            var id = data.id;
+            if(id.match(/^[0-9a-fA-F]{24}$/))
+            {
+              auction.room = id;
+              socket.join(auction.room);
 
           Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()},_id: auction.room} ,function(err,item){
             if(err) throw err;
@@ -33,7 +36,7 @@ module.exports = function (io) {
           }
           });
 
-
+        }
         });
 
     Chat.find({},{} ,{ limit:10, sort:{ _id: -1}},function(err,chat){
@@ -68,7 +71,7 @@ module.exports = function (io) {
       }
       var item = new Item();
       var bid = item.bid.create({ value: currentPrice, user_id: socket.request.user.username,first_name: socket.request.user.first_name});
-      Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, _id:data.id}, { $set: { i_bidvalue: bidvalue,i_currentprice: currentPrice,bid:bid }} ,{new: true}, function(err,item){
+      Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id}, { $set: { i_bidvalue: bidvalue,i_currentprice: currentPrice,bid:bid }} ,{new: true}, function(err,item){
       if(err) throw err;
          auction.in(data.id).emit('priceUpdate',{currentPrice:currentPrice,username: item.bid[0].first_name});
     });
