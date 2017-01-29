@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"auctionit201702.users"},{"v":1,"unique":true,"key":{"tek_userid":1},"name":"tek_userid_1","ns":"auctionit201702.users","background":true}]}

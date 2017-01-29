@@ -44,13 +44,15 @@ nsp.on('connection', function (socket) {
             {
               for(var i in item)
               {
+                if(item[i].bid) var owner = item[i].bid[0].user_id;
+                else {owner = "System Admin";}
                 Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won: true,i_flag:0,i_owner: item[i].bid[0].user_id} }, {new:true},function (err, item) {
                   if(err) throw err;
                   });
 
                     if(item[i].bid!=null)
                     {
-                      var basprice = item[i].i_baseprice;
+                      var baseprice = item[i].i_baseprice;
                       var deduction = item[i].bid[0].value;
                       User.findOne({tek_userid: item[i].bid[0].user_id},function(err,user){
                         if(err) throw err;
@@ -133,17 +135,12 @@ if(item.length>0)
 {
   for(var i in item)
 {
-  //var current = getDateTime().toString().split(/[- :]/);
-  //var date =  new Date(current[0], current[1]-1, current[2],current[3], current[4], current[5]);
-//console.log('selected',rows[i].i_name);
-//  var td = timeDifference(date,item[i].time);
-//console.log('Upcoming item:', item[i].i_baseprice);
+var start_time = item[i].i_starttime.toISOString();
+var start_time = start_time.split(/[T|.|Z]/);
 var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
-
   buffer = buf;
   img = true;
-
-socket.emit('upcomingItem',{item_name: item[i].i_name, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64') });
+socket.emit('upcomingItem',{item_name: item[i].i_name, item_price: item[i].i_baseprice,item_starttime:start_time, image: img, item_image: buffer.toString('base64') });
 img=false;
 }
 }

@@ -1,9 +1,22 @@
-var cron = require('node-cron');
+var CronJob = require('cron').CronJob;
 var Chat = require('../models/chat');
 var User = require('../models/user');
 var fs = require('fs');
 
 module.exports = function (io) {
+
+
+        var job = new CronJob('20,50 * * * *', function() {
+            User.update({}, { $set:{ wof_flag: false }},{multi: true}, function(err,user){
+              if(err) throw err;
+            });
+          }, function () {
+            /* This function is executed when the job stops */
+          },
+          true,
+          'Asia/Kolkata'
+        );
+
 
   var wof = io.of('/wheeloffortune');
 
@@ -13,34 +26,69 @@ module.exports = function (io) {
   wof.on('connection', function (socket) {
 
     if (socket.request.user && socket.request.user.logged_in) {
-         console.log("User info:",socket.request.user);
        }
 
 
         socket.on('begin:wof',function(){
           wof.room = 'wheeloffortune';
           socket.join(wof.room);
-          console.log("Client Joined Room:",wof.room);
-        });
 
+          User.findOne({tek_userid: socket.request.user.username, wof_flag:true} , function(err,user){
+            if(err) throw err;
+            if(user){
+              var curtime = new Date(getUTC());
+              var min = curtime.getUTCMinutes();
+              if(min>=0 && min<=29)
+              {
+                socket.emit('countdown:wof',{day:curtime.getUTCDate(),hour:curtime.getUTCHours(),min:30});
+              }
+              else if(min>=30 && min<=49)
+              {
+                  socket.emit('countdown:wof',{day:curtime.getUTCDate(),hour:curtime.getUTCHours(),min:59});
+              }
+            }
+          });
+
+          User.findOne({tek_userid: socket.request.user.username, wof_flag:false} , function(err,user){
+            if(err) throw err;
+            if(user){
+              var curtime = new Date(getUTC());
+              var min = curtime.getUTCMinutes();
+
+              if(min>=20 && min<=29)
+              {
+                socket.emit('countdown:wof',{day:curtime.getUTCDate(),hour:curtime.getUTCHours(),min:30});
+              }
+              else if(min>=50 && min<=59)
+              {
+                  socket.emit('countdown:wof',{day:curtime.getUTCDate(),hour:curtime.getUTCHours(),min:59});
+              }
+            }
+        });
+      });
 
         socket.on('spin:wof',function(){
           var curtime = new Date(getUTC());
           var min = curtime.getUTCMinutes();
-          if(min>=0 && min<=30)
+          if(min>=0 && min<=19 || min>=30 && min<=49)
           {
-            var rounds = getRandomInt(2,4);
-            var degrees = getRandomInt(0,360);
-            var prize = slices - 1 - Math.floor(degrees / (360 / slices));
-            console.log("Client won:", slicePrizes[prize]);
-            User.findOne({tek_userid: socket.request.user.username } , function(err,user){
-            if(err) throw err;
-              var cashbalance = user.u_cashbalance;
+            console.log("you canp play");
+              User.findOne({tek_userid: socket.request.user.username, wof_flag:false} , function(err,user){
+                if(err) throw err;
+              if(user)
+              {
+                var rounds = getRandomInt(4,6);
+                var degrees = getRandomInt(0,360);
+                var prize = slices - 1 - Math.floor(degrees / (360 / slices));
+                console.log("Client won:", slicePrizes[prize]);
+
+                var cashbalance = user.u_cashbalance;
               cashbalance += slicePrizes[prize];
-               User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance}}, function(err, rows){
+               User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance,wof_flag: true}}, function(err, rows){
                   if(err) throw err;
                     socket.emit('result:wof',{rounds: rounds,degrees: degrees,prize: prize});
                });
+             }
 
           });
 

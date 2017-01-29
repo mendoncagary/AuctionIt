@@ -41,6 +41,9 @@ var userSchema = new Schema({
   },
   wof_status:{
     type: Boolean
+  },
+  wof_flag:{
+    type: Boolean
   }
 });
 

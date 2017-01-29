@@ -26,7 +26,6 @@ $scope.redirect = function(a){
 controller('MainController', function($rootScope) {
 
 $rootScope.bgimg = "'/images/front.png'";
-
 }).
 
 controller('JoinController', function($rootScope, $scope, socket, $compile) {
@@ -41,29 +40,22 @@ controller('JoinController', function($rootScope, $scope, socket, $compile) {
     $scope.tagline = 'Buy and Sell!';
 
     socket.on('item', function(data){
-    //var numCarouselItems = 2;
     var mytab = document.getElementById('myTab');
-    //var items = mytab.childNodes;
     if (data.image) {
      var img = new Image();
      img.onload = function(){
 
-                   // for (var i=0;i<numCarouselItems;i++){
-                    // Find the nth li, or create it
-                    var li = //items[i] ||
-                     mytab.appendChild(document.createElement('li'));
+                    var li = mytab.appendChild(document.createElement('li'));
                      $(li).attr('data-item-id',data.item_id);
                      $(li).css({'margin-left':'20px','margin-right':'20px'});
-                    // Find the nth canvas, or create it
-                    var canvas = //li.getElementsByTagName('canvas')[0] ||
-                                 li.appendChild(document.createElement('canvas'));
-                    canvas.width  =  1; // Erase the canvas, in case it existed
-                    canvas.width  = 300; // Set the width and height as desired
+
+                    var canvas = li.appendChild(document.createElement('canvas'));
+                    canvas.width  =  1;
+                    canvas.width  = 300;
                     canvas.height = 200;
                     canvas.className = "join_canvas";
                     var ctx = canvas.getContext('2d');
 
-                    // Use your actual calculations for the SVG size/position here
                     ctx.drawImage( img, 0, 0,300,200);
 
                     $(li).append('<h3>'+data.item_name+'</h3>');
@@ -99,12 +91,15 @@ controller('JoinController', function($rootScope, $scope, socket, $compile) {
                    canvas.height = 200;
                    canvas.className = "join_canvas";
                    var ctx = canvas.getContext('2d');
-
                    ctx.drawImage( img, 0, 0,300,200 );
-
                    $(li).append('<h3>'+data.item_name+'</h3>');
 
-                   $(li).append('<h4>BasePrice: Rs.'+data.item_price+'</h4>');
+                   var html = "<h4>BasePrice: Rs."+data.item_price+"</h4><div class='row'><div class='col-md-7.col-md-offset-2'><div countdown-directive data-countdown='"+data.item_starttime[0]+" "+data.item_starttime[1]+"' class='smallclock' style='color:white;'></div></div></div>";
+
+                   var temp = $compile(html)($scope);
+
+                  angular.element($(li)).append(temp);
+
  };
     img.src = 'data:image/png;base64,' + data.item_image;
   }
@@ -164,12 +159,13 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
        };
       img.src = 'data:image/png;base64,' + $scope.item.item_image;
 
-      $scope.endtime = "2017-"+$scope.item.item_endmonth+"-"+$scope.item.item_enddate+" "+$scope.item.item_endhour+":"+$scope.item.item_endmin+":28";
-      console.log($scope.endtime);
+      $scope.endtime = "2017-"+$scope.item.item_endmonth+"-"+$scope.item.item_enddate+" "+$scope.item.item_endhour+":"+$scope.item.item_endmin+":"+$scope.item.item_endsec;
       var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
 
-      $('#clock').countdown(nextYear.toDate(), function(event) {
-      $(this).html(event.strftime('%D days %H:%M:%S'));
+      $('#clockdiv').countdown(nextYear.toDate(), function(event) {
+      $(this).html(event.strftime(
+        "<div><span class='days'>%-d</span><div class='smalltext'>Day%!d</div></div><div><span class='hours'>%H</span><div class='smalltext'>Hour%!H</div></div><div><span class='minutes'>%M</span><div class='smalltext'>Minute%!M</div></div><div><span class='seconds'>%S</span><div class='smalltext'>Seconds</div></div>"
+  ));
       });
     }
     },function (error){
@@ -222,8 +218,6 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
        });
 
 
-
-
 }).
 
 
@@ -232,7 +226,16 @@ controller('WheelController', function($rootScope,$scope,socketb) {
   $rootScope.bgimg = "'/images/back.png'";
 
   socketb.emit('begin:wof');
+  socketb.on('countdown:wof',function(data){
+    $scope.endtime = "2017-01-"+data.day+" "+data.hour+":"+data.min+":59";
+    var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
+    $('#clockdiv').countdown(nextYear.toDate(), function(event) {
+    $(this).html(event.strftime(
+      "<div><span class='days'>%-d</span><div class='smalltext'>Day%!d</div></div><div><span class='hours'>%H</span><div class='smalltext'>Hour%!H</div></div><div><span class='minutes'>%M</span><div class='smalltext'>Minute%!M</div></div><div><span class='seconds'>%S</span><div class='smalltext'>Seconds</div></div>"
+));
+    });
 
+  });
   // the game itself
   var game;
   // the spinning wheel
@@ -271,7 +274,7 @@ controller('WheelController', function($rootScope,$scope,socketb) {
     		    game.stage.backgroundColor = "#104D61";
             var spin = game.add.sprite(game.width / 2, game.width / 2, "spin");
             spin.anchor.set(0.5);
-    		wheel = game.add.sprite(game.width / 2, game.width / 2, "wheel");
+    		    wheel = game.add.sprite(game.width / 2, game.width / 2, "wheel");
             // setting wheel registration point in its center
             wheel.anchor.set(0.5);
             // adding the pin in the middle of the canvas
@@ -280,7 +283,7 @@ controller('WheelController', function($rootScope,$scope,socketb) {
             pin.anchor.set(0.5);
 
             // adding the text field
-            prizeText = game.add.text(game.world.centerX, 480, "");
+            prizeText = game.add.text(game.world.centerX, 400, "");
             // setting text field registration point in its center
             prizeText.anchor.set(0.5);
             // aligning the text to center
@@ -326,11 +329,12 @@ controller('WheelController', function($rootScope,$scope,socketb) {
             canSpin = true;
             // writing the prize you just won
             prizeText.text = slicePrizes[prize];
+
        }
   }
 
   // creation of a 458x488 game
- game = new Phaser.Game(580, 580, Phaser.CANVAS, "");
+ game = new Phaser.Game(450, 450, Phaser.CANVAS, "gameArea");
   // adding "PlayGame" state
   game.state.add("PlayGame",playGame);
   // launching "PlayGame" state

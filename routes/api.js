@@ -31,8 +31,14 @@ exports.item = function (req, res) {
       var item_endmin = date.getUTCMinutes();
       if(item_endmin<10) item_endmin = "0"+item_endmin;
 
+      var item_endsec = date.getUTCSeconds();
+      if(item_endsec<10) item_endsec = "0"+item_endsec;
+
       var item_endmonth = date.getUTCMonth()+1;
       if(item_endmonth<10) item_endmonth = "0"+item_endmonth;
+
+      var item_endday = date.getUTCDate();
+      if(item_endday<10) item_endday = "0"+item_endday;
 
     res.json({
       item_name: item[i].i_name,
@@ -45,10 +51,11 @@ exports.item = function (req, res) {
       curBidValue2 : curBidValue2,
       curBidValue3 : curBidValue3,
       item_endmonth : item_endmonth,
-      item_enddate : date.getUTCDate(),
+      item_enddate : item_endday,
       item_endhour : item_endhour,
       item_endmin : item_endmin,
-      item_endsec : item_endsec
+      item_endsec : item_endsec,
+      item_owner : item[i].i_owner
 
     });
     img = false;
