@@ -2,24 +2,8 @@
 
 .container
 	.row
-		.col-md-3.pull-right
-			div.panel-group
-				div(class="panel panel-info")
-					div.panel-heading Item Name
-					div.panel-body(id="item_name" class="panel-name" ng-bind="item.item_name")
 
-				div(class="panel panel-info")
-					div.panel-heading Base Price
-					div.panel-body(id="item_price" class="panel-price")
-						img(alt="Rupee" src="/images/rupee_micro.png")
-						span(ng-bind="item.item_price")
-
-				div(class="panel panel-info")
-					div.panel-heading Description
-					div.panel-body(id="item_desc" class="panel-desc" ng-bind="item.item_desc")
-
-
-		.col-md-3.pull-left
+		.col-md-2.pull-left
 			div.panel-group
 				div(class="panel panel-info")
 					div.panel-heading Seller info
@@ -46,88 +30,30 @@
 						img(alt="Rupee" src="/images/rupee_micro.png")
 						span(ng-bind="current_price")
 
+		.col-md-5
+			canvas(id="canvas" class="auction_canvas" width="400" height="300")
+
+
+
+		.col-md-3
+			div.panel-group
+				div(class="panel panel-info")
+					div.panel-heading Item Name
+					div.panel-body(id="item_name" class="panel-name" ng-bind="item.item_name")
+
+				div(class="panel panel-info")
+					div.panel-heading Base Price
+					div.panel-body(id="item_price" class="panel-price")
+						img(alt="Rupee" src="/images/rupee_micro.png")
+						span(ng-bind="item.item_price")
+
+				div(class="panel panel-info")
+					div.panel-heading Description
+					div.panel-body(id="item_desc" class="panel-desc" ng-bind="item.item_desc")
+
+
+
 
 
 		.col-md-3.col-md-offset-2
 			div(id="clockdiv" class="clockdiv" style="color:white;")
-		.col-md-6
-			canvas(id="canvas" class="auction_canvas" width="500" height="300")
-
-
-
-
-.container#chatbox
-		.row
-			.col-md-4.pull-right
-				.panel.panel-primary(style="margin-bottom:0px;")
-					#collapseOne.panel-collapse.collapse(style="border-top:5px solid #337ab7;")
-						.panel-body
-							ul.chat#res-chat
-								li.left.clearfix
-									span.chat-img.pull-left
-										img.img-circle(src='http://placehold.it/50/55C1E7/fff&text=U', alt='User Avatar')
-									.chat-body.clearfix
-										.header
-											strong.primary-font Jack Sparrow
-											small.pull-right.text-muted
-												span.glyphicon.glyphicon-time
-												| 12 mins ago
-										p
-											| Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-											| dolor, quis ullamcorper ligula sodales.
-								li.right.clearfix
-									span.chat-img.pull-right
-										img.img-circle(src='http://placehold.it/50/FA6F57/fff&text=ME', alt='User Avatar')
-									.chat-body.clearfix
-										.header
-											small.text-muted
-												span.glyphicon.glyphicon-time
-												| 13 mins ago
-											strong.pull-right.primary-font Bhaumik Patel
-										p
-											| Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-											| dolor, quis ullamcorper ligula sodales.
-								li.left.clearfix
-									span.chat-img.pull-left
-										img.img-circle(src='http://placehold.it/50/55C1E7/fff&text=U', alt='User Avatar')
-									.chat-body.clearfix
-										.header
-											strong.primary-font Jack Sparrow
-											small.pull-right.text-muted
-												span.glyphicon.glyphicon-time
-												| 14 mins ago
-										p
-											| Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-											| dolor, quis ullamcorper ligula sodales.
-								li.right.clearfix
-									span.chat-img.pull-right
-										img.img-circle(src='http://placehold.it/50/FA6F57/fff&text=ME', alt='User Avatar')
-									.chat-body.clearfix
-										.header
-											small.text-muted
-												span.glyphicon.glyphicon-time
-												| 15 mins ago
-											strong.pull-right.primary-font Bhaumik Patel
-										p
-											| Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-											| dolor, quis ullamcorper ligula sodales.
-						.panel-footer
-							.input-group
-								input#btn-input.form-control.input-sm(type='text', placeholder='Type your message here...')
-								span.input-group-btn
-									button#btn-chat.btn.btn-warning.btn-sm
-										| Send
-
-					#accordion.panel-heading
-						span.glyphicon.glyphicon-comment
-						|  Chat
-						.btn-group.pull-right
-							a.btn.btn-default.btn-xs(type='button', data-toggle='collapse', data-parent='#accordion', data-target='#collapseOne')
-								span.glyphicon.glyphicon-chevron-up
-
-
-
-
-
-
-script(src="/javascripts/room.js")

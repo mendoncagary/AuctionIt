@@ -1,4 +1,3 @@
-//var cron = require('node-cron');
 var CronJob = require('cron').CronJob;
 var fs = require('fs');
 var Item = require('../models/item');
@@ -11,7 +10,7 @@ var datetime;
 var buffer;
 var img = false;
 
-var nsp = io.of('/play');
+var nsp = io.of('/join');
 
 nsp.on('connection', function (socket) {
 
@@ -19,7 +18,6 @@ nsp.on('connection', function (socket) {
     var job = new CronJob({
       cronTime: '* * * * * *',
       onTick: function() {
-
         Item.find({i_starttime : getUTC(),i_flag: 0}, function(err,item){
         if(err) throw err;
        if(item.length>0)
@@ -46,42 +44,38 @@ nsp.on('connection', function (socket) {
               {
                 if(item[i].bid) var owner = item[i].bid[0].user_id;
                 else {owner = "System Admin";}
-                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won: true,i_flag:0,i_owner: item[i].bid[0].user_id} }, {new:true},function (err, item) {
+                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice} }, {new:true},function (err, item) {
                   if(err) throw err;
                   });
-
                     if(item[i].bid!=null)
                     {
-                      var baseprice = item[i].i_baseprice;
+                      var actualprice = item[i].i_actualprice;
                       var deduction = item[i].bid[0].value;
                       User.findOne({tek_userid: item[i].bid[0].user_id},function(err,user){
                         if(err) throw err;
                         if(user)
                         {
                           var cur_itempoints = 0;
-
-                          if (deduction <= (baseprice/2)) {
+                          if (deduction <= (actualprice/2)) {
                                 cur_itempoints = 10;
-                            }else if(deduction <= (baseprice*3/5)) {
+                            }else if(deduction <= (actualprice*3/5)) {
                                 cur_itempoints = 9;
-                            }else if(deduction <= (baseprice*7/10)) {
+                            }else if(deduction <= (actualprice*7/10)) {
                                 cur_itempoints = 8;
-                            }else if(deduction <= (baseprice*4/5)) {
+                            }else if(deduction <= (actualprice*4/5)) {
                                 cur_itempoints = 7;
-                            }else if(deduction <= (baseprice*11/10)) {
+                            }else if(deduction <= (actualprice*11/10)) {
                                 cur_itempoints = 7;
-                            }else if(deduction <= (baseprice*6/5)) {
+                            }else if(deduction <= (actualprice*6/5)) {
                                 cur_itempoints = 6;
-                            }else if(deduction <= (baseprice*13/10)) {
+                            }else if(deduction <= (actualprice*13/10)) {
                                 cur_itempoints = 6;
-                            }else if(deduction <= (baseprice*7/5)) {
+                            }else if(deduction <= (actualprice*7/5)) {
                                 cur_itempoints = 5;
                             }else {
                                 cur_itempoints = 5;
                             }
-
                             u_itempoints = cur_itempoints + user.u_itempoints;
-
                           var cash = user.u_cashbalance - deduction;
                           User.update({tek_userid: item[i].bid[0].user_id}, {$set:{u_cashbalance:cash, u_itempoints:u_itempoints},$inc:{u_itemswon: 1}},function(err,user){
                             if(err) throw err;
@@ -90,137 +84,124 @@ nsp.on('connection', function (socket) {
                       });
                     }
                   }
-
                   nsp.emit('end',true);
                 }
           });
-
-
       },
       start: false,
       timeZone: 'Asia/Kolkata'
     });
     job.start();
 
-  //cron.schedule('* * * * * *', function(){
-
-  //});
 
 
 
+  socket.on('join:area',function(){
 
+    console.log("join user connected");
 
-  Item.find({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}},function(err,item){
-  if(err) throw err;
-  if(item.length>0)
-  {
+    Item.find({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}},function(err,item){
+    if(err) throw err;
+    if(item.length>0)
+    {
+      for(var i in item)
+    {
+    var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
+
+      buffer = buf;
+      img = true;
+    socket.emit('item',{item_id: item[i]._id, item_name: item[i].i_name, item_desc: item[i].i_desc, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64') });
+    img=false;
+    }
+    }
+    });
+
+    //Upcoming Auctions
+    Item.find({ i_starttime :{$gt: getUTC()}},function(err,item){
+    if(err) throw err;
+    if(item.length>0)
+    {
     for(var i in item)
-  {
-  var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
-
+    {
+    var start_time = item[i].i_starttime.toISOString();
+    var start_time = start_time.split(/[T|.|Z]/);
+    var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
     buffer = buf;
     img = true;
-socket.emit('item',{item_id: item[i]._id, item_name: item[i].i_name, item_desc: item[i].i_desc, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64') });
-img=false;
-  }
-  }
-  });
-
-
-//Upcoming Auctions
-  Item.find({ i_starttime :{$gt: getUTC()}},function(err,item){
-if(err) throw err;
-
-if(item.length>0)
-{
-  for(var i in item)
-{
-var start_time = item[i].i_starttime.toISOString();
-var start_time = start_time.split(/[T|.|Z]/);
-var buf = fs.readFileSync('uploads/'+item[i].i_imgpath);
-  buffer = buf;
-  img = true;
-socket.emit('upcomingItem',{item_name: item[i].i_name, item_price: item[i].i_baseprice,item_starttime:start_time, image: img, item_image: buffer.toString('base64') });
-img=false;
-}
-}
-});
-
-
-
-
-
-	//console.log("A user connected");
-
-	socket.emit('login');
-
-	socket.on('username', function(username){
-      socket.username = username;
- });
-
-    //socket.emit('message', { message: 'welcome to the chat' });
-
-    Chat.find({},{} ,{ limit:10, sort:{ _id: -1}},function(err,chat){
-    if(err) throw err;
-
-    //console.log('Selected:', rows);
-    for(var i in chat)
-    {
-      d=getUTC();
-      //console.log(d,rows[i].time);
-      //console.log(timeDifference(d,rows[i].time));
-
-    socket.emit('message',{message: chat[i].message,time:timeDifference(d,chat[i].time),name:chat[i].from_user});
-  }
-  //console.log('Messagesent');
+    socket.emit('upcomingItem',{item_name: item[i].i_name, item_price: item[i].i_baseprice,item_starttime:start_time, image: img, item_image: buffer.toString('base64') });
+    img=false;
+    }
+    }
     });
 
 
+      socket.on('disconnect', function(){
+        console.log('join disconnected');
+      });
 
-	socket.on('send', function (data) {
-
-        if(data.message!="" && data.message.length<100)
-        {
-          time = getUTC();
-
-        var chat_message = new Chat({message:data.message,from_user:'gary',time:time});
-
-        chat_message.save(function(err,rows){
-        if(err) throw err;
-        console.log('Chat inserted - ID:',rows);
+    });
 
 
+    //socket.emit('login');
 
-      Chat.findOne({}, {}, { sort: { _id : -1 } }, function(err, chat) {
+  	//socket.on('username', function(username){
+      //  socket.username = username;
+   //});
+
+
+
+socket.on('join:game',function(){
+  Chat.find({},{} ,{ limit:10, sort:{ _id: -1}},function(err,chat){
+  if(err) throw err;
+    var chatnew = {};
+  for(var i in chat)
+  {
+    d=getUTC();
+    chatnew[10-i] = {message:chat[i].message,time:chat[i].time,from_user:chat[i].from_user};
+  }
+  for(var i in chatnew)
+  {
+  socket.emit('message',{message: chatnew[i].message,time:timeDifference(d,chatnew[i].time),name:chatnew[i].from_user});
+}
+  });
+
+
+socket.on('send', function (data) {
+      if(data.message!="" && data.message.length<100)
+      {
+        time = getUTC();
+      var chat_message = new Chat({message:data.message,from_user:'gary',time:time});
+      chat_message.save(function(err,rows){
       if(err) throw err;
 
-      console.log('Selected:', chat);
 
-        d=getUTC();
-
-    nsp.emit('message',{message: chat.message,time:timeDifference(d,chat.time),name:chat.from_user});
-
-    });
+    Chat.findOne({}, {}, { sort: { _id : -1 } }, function(err, chat) {
+    if(err) throw err;
+    console.log('Selected:', chat);
+      d=getUTC();
+  nsp.emit('message',{message: chat.message,time:timeDifference(d,chat.time),name:chat.from_user});
+  });
 });
-
 }
-
 else
-
 {
 socket.emit('message',{message: data.message,time:'Maximum message size is 100 characters.Message could not be sent',name:'gary'});
-
 }
+});
+});
 
-	});
 
 
-
-	socket.on('disconnect', function(){
-    console.log('user disconnected');
   });
 
-});
+
+
+
+
+
+
+
+
 
 function getDateTime() {
 

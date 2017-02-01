@@ -1,14 +1,9 @@
 'use strict';
 
-/* Services */
-
-
-// Demonstrate how to register services
-// In this case it is a simple value service.
 angular.module('AuctionIt.services', []).
 
 factory('socket', function ($rootScope) {
-  var socket = io('/play');
+  var socket = io('/join');
   return {
     on: function (eventName, callback) {
       socket.on(eventName, function () {
@@ -103,24 +98,45 @@ factory('socketc', function ($rootScope) {
   };
 }).
 
-factory('Nerd', ['$http', function($http) {
+
+factory('socketd', function ($rootScope) {
+  var socketd = io('/quiz');
+  return {
+    on: function (eventName, callback) {
+      socketd.on(eventName, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socketd, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socketd.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socketd, args);
+          }
+        });
+      })
+    }
+  };
+}).
+
+
+factory('Quiz', ['$http', function($http) {
 
     return {
-        // call to get all nerds
         get : function() {
-            return $http.get('/api/nerds');
+            return $http.get('/api/quiz');
         },
 
-
-                // these will work when more API routes are defined on the Node side of things
-        // call to POST and create a new nerd
         create : function(nerdData) {
-            return $http.post('/api/nerds', nerdData);
+            return $http.post('/api/quiz', quizData);
         },
 
-        // call to DELETE a nerd
         delete : function(id) {
-            return $http.delete('/api/nerds/' + id);
+            return $http.delete('/api/quiz/' + id);
         }
     }
 

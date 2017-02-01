@@ -1,3 +1,41 @@
-
-div(class="container")
-	h1(style="color:#ffffff") Quiz
+.container-fluid.bg-info
+  .row
+    .col-md-4.col-md-offset-4
+      #flash_div
+        h2 Next quiz starts in
+        #clockdiv.clockdiv
+  .modal-dialog#quiz_modal
+    .modal-content
+      .modal-header
+        h3
+          span#qid.label.label-warning
+      .modal-body
+        .col-xs-3.col-xs-offset-5
+          #loadbar(style='display: none;')
+            #rotateG_01.blockG
+            #rotateG_02.blockG
+            #rotateG_03.blockG
+            #rotateG_04.blockG
+            #rotateG_05.blockG
+            #rotateG_06.blockG
+            #rotateG_07.blockG
+            #rotateG_08.blockG
+        #quiz.quiz(data-toggle='buttons')
+          label.element-animation1.btn.btn-lg.btn-primary.btn-block(id="opt_1")
+            span.btn-label
+              i.glyphicon.glyphicon-chevron-right
+            input(type='radio', name='q_answer', value='1')
+          label.element-animation2.btn.btn-lg.btn-primary.btn-block(id="opt_2")
+            span.btn-label
+              i.glyphicon.glyphicon-chevron-right
+            input(type='radio', name='q_answer', value='2')
+          label.element-animation3.btn.btn-lg.btn-primary.btn-block(id="opt_3")
+            span.btn-label
+              i.glyphicon.glyphicon-chevron-right
+            input(type='radio', name='q_answer', value='3')
+          label.element-animation4.btn.btn-lg.btn-primary.btn-block(id="opt_4")
+            span.btn-label
+              i.glyphicon.glyphicon-chevron-right
+            input(type='radio', name='q_answer', value='4')
+      .modal-footer.text-muted
+        span#answer

@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
 
-var socket = io('/play');
+var socket = io('/join');
 
 
 
@@ -16,25 +16,16 @@ socket.on('login', function(){
  });
 
 
-//speaker
-
-//var getaudio = $('#player')[0];
-/* Get the audio from the player (using the player's ID), the [0] is necessary */
 var mouseovertimer;
-/* Global variable for a timer. When the mouse is hovered over the speaker it will start playing after hovering for 1 second, if less than 1 second it won't play (incase you accidentally hover over the speaker) */
 var audiostatus = 'off';
-/* Global variable for the audio's status (off or on). It's a bit crude but it works for determining the status. */
 
 $(document).on('mouseenter', '.speaker', function() {
-  /* Bonus feature, if the mouse hovers over the speaker image for more than 1 second the audio will start playing */
   if (!mouseovertimer) {
     mouseovertimer = window.setTimeout(function() {
       mouseovertimer = null;
       if (!$('.speaker').hasClass("speakerplay")) {
         $('#player')[0].load();
-        /* Loads the audio */
         $('#player')[0].play();
-        /* Play the audio (starting at the beginning of the track) */
         $('.speaker').addClass('speakerplay');
         return false;
       }
@@ -43,7 +34,6 @@ $(document).on('mouseenter', '.speaker', function() {
 });
 
 $(document).on('mouseleave', '.speaker', function() {
-  /* If the mouse stops hovering on the image (leaves the image) clear the timer, reset back to 0 */
   if (mouseovertimer) {
     window.clearTimeout(mouseovertimer);
     mouseovertimer = null;
@@ -51,7 +41,6 @@ $(document).on('mouseleave', '.speaker', function() {
 });
 
 $(document).on('click touchend', '.speaker', function() {
-  /* Touchend is necessary for mobile devices, click alone won't work */
   if (!$('.speaker').hasClass("speakerplay")) {
     if (audiostatus == 'off') {
       $('.speaker').addClass('speakerplay');
@@ -74,13 +63,9 @@ $(document).on('click touchend', '.speaker', function() {
 
 $('#player').on('ended', function() {
   $('.speaker').removeClass('speakerplay');
-  /*When the audio has finished playing, remove the class speakerplay*/
   audiostatus = 'off';
-  /*Set the status back to off*/
 });
 
-
-//Fullscreen API
 
 function toggleFullscreen(elem) {
   elem = elem || document.documentElement;

@@ -1,5 +1,3 @@
-var cron = require('node-cron');
-var Chat = require('../models/chat');
 var Item = require('../models/item');
 var User = require('../models/user');
 var fs = require('fs');

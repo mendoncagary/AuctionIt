@@ -28,4 +28,16 @@ directive("countdownDirective", function($timeout) {
         },0);
             }
         };
+}).
+
+
+directive("quizDirective", function($timeout) {
+    return {
+        restrict: "A",
+        link: function(scope, elem, attrs) {
+        $timeout(function(){
+          console.log("sdad");
+        },1000);
+            }
+        };
 });

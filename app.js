@@ -22,7 +22,11 @@ var flash = require('connect-flash');
 var MongoStore = require('connect-mongo')(session);
 
 
-mongoose.connect(db.url);
+var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
+replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
+
+mongoose.connect(db.url,options);
+mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 
@@ -62,6 +66,7 @@ require('./sockets/base')(io);
 require('./sockets/auction')(io);
 require('./sockets/wof')(io);
 require('./sockets/profile')(io);
+require('./sockets/quiz')(io);
 
 io.use(passportSocketIo.authorize({
   key: 'express.sid',

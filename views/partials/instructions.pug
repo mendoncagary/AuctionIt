@@ -1,25 +1,24 @@
+div
 
-.container(style='background-color:white;padding:50px')
-	h1 Instructions for AuctionIt
-	h3 Please read them carefully
-	#instructions
+	.about
+		div(class="content" class="box-info")
+			h1(class="box-title") Instructions for AuctionIt
+			#instructions
 
-		ul.list-group
-			li.list-group-item
-				h3 Starting Money
-				| Each player starts with 30000 coins and bids on items
-			li.list-group-item
-				h3 Bid on Asset
-				h5 Click on Join Auction to view the list of current auctions as well as upcoming auctions.
-				h5 Click on "Place bid" button of the item you want to bid on. Read the description of the item paying attention to the time remaining in the existing auction.
-				h5 Submit Bids with different available bid price, Highest Bid Price will be updated periodically on UI. Clicking on BuyItNow will close the Auction immediately and no more auctions can be submitted. Once Auction is closed updated details can be seen on Asset Details view.
-			li.list-group-item
-				h3 Opening an auction
-				h5 Select an item in your inventory. Click on "Actions". You should see the "PLACE AUCTION" window that will allow you to click on "Open Auction".
-				h5  Enter a duration period in minutes and click on the "OPEN AUCTION" button at the bottom.
-				h5 The Asset now is available for auction.
-			li.list-group-item
-				h5 If you understood the instructions correctly press the "DONE" button to proceed to the game.
-		.row
-			.col-md-3.col-md-offset-5
-				button.btn.btn-primary.pull-left(ng-click="redirect('/')" type='button') Done
+				ul.list-group
+					li.list-group-item
+						h4 Please read them carefully
+					li.list-group-item
+						h3 Starting Money
+						| Each player starts with 30000 coins and bids on items
+					li.list-group-item
+						h3 Bid on Asset
+						h5 Click on Join Auction to view the list of current auctions as well as upcoming auctions.
+						h5 Click on "Place bid" button of the item you want to bid on. Read the description of the item paying attention to the time remaining in the existing auction.
+						h5 Submit Bids with different available bid price, Highest Bid Price will be updated periodically on UI. Clicking on BuyItNow will close the Auction immediately and no more auctions can be submitted. Once Auction is closed updated details can be seen on Asset Details view.
+					li.list-group-item
+						h3 Opening an auction
+						h5 Select an item in your inventory. Click on "Actions". You should see the "PLACE AUCTION" window that will allow you to click on "Open Auction".
+						h5  Enter a duration period in minutes and click on the "OPEN AUCTION" button at the bottom.
+						h5 The Asset now is available for auction.
+					

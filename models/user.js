@@ -44,6 +44,9 @@ var userSchema = new Schema({
   },
   wof_flag:{
     type: Boolean
+  },
+  quiz_flag:{
+    type: Boolean
   }
 });
 

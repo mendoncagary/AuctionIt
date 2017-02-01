@@ -17,7 +17,7 @@
         })
         .when('/quiz', {
             templateUrl: 'partials/quiz',
-            controller: 'JoinController'
+            controller: 'QuizController'
         })
         .when('/auction/:id', {
             templateUrl: 'partials/auction',

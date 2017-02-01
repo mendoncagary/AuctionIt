@@ -1,114 +1,117 @@
-p.text-info May 05,2014,03:00 pm
-.col-xs-12.col-sm-12.col-md-6.col-lg-6.col-xs-offset-0.col-sm-offset-0.col-md-offset-3.col-lg-offset-3.toppad
-	.panel.panel-info
-		.panel-heading
-			h3.panel-title#profile-title
-		.panel-body#profile_body
-			.row
-				.col-md-3.col-lg-3(align='center')
-					img.img-circle.img-responsive(alt='User Pic', src='http://placehold.it/100/FA6F57/fff&text=ME')
-				.col-md-9.col-lg-9
-					table.table.table-user-information
-						tbody
-							tr
-								td Teknack User ID:
-								td(ng-bind="user.userid")
-							tr
-								td Teknack User Name:
-								td(ng-bind="user.username")
-							tr
-								td Cashbalance:
-								td(ng-bind="user.cashbal")
-							tr
-							tr
-								td Items won
-								td(ng-bind="user.items_won")
-							tr
-								td Items sold
-								td(ng-bind="user.items_sold")
-							tr
-								td Auction Points
-								td(ng-bind="user.auction_points")
-							tr
-								td Quiz Level
-								td(ng-bind="user.quizlevel")
+div(class="body-div")
+	div(class="about")
+		div(class="box-info")
+
+			.col-xs-12.col-sm-12.col-md-6.col-lg-6.col-xs-offset-0.col-sm-offset-0.col-md-offset-3.col-lg-offset-3.toppad(id="panel-profile")
+				.panel.panel-info
+					.panel-heading#profile_heading
+						h3.panel-title User Information
+					.panel-body#profile_body
+						.row
+							.col-md-3.col-lg-3(align='center')
+								img.img-circle.img-responsive(alt='User Pic', src='http://placehold.it/100/FA6F57/fff&text=ME')
+							.col-md-9.col-lg-9
+								table.table.table-user-information
+									tbody
+										tr
+											td Teknack User ID:
+											td(ng-bind="user.userid")
+										tr
+											td Teknack User Name:
+											td(ng-bind="user.username")
+										tr
+											td Cashbalance:
+											td(ng-bind="user.cashbal")
+										tr
+										tr
+											td Items won
+											td(ng-bind="user.items_won")
+										tr
+											td Items sold
+											td(ng-bind="user.items_sold")
+										tr
+											td Auction Points
+											td(ng-bind="user.auction_points")
+										tr
+											td Quiz Level
+											td(ng-bind="user.quizlevel")
 
 
-		.panel-footer
+					.panel-footer(id="profile_footer")
 
 
 
 
-.container
-	#main_area
-		// Slider
-		.row
-			#slider.col-xs-12
-				// Top part of the slider
-				.row
-					.col-md-4
-						h3 Items Inventory
-				.row
-					#carousel-bounding-box.col-sm-8
-						#itemCarousel.carousel.slide
-							// Carousel items
-							.carousel-inner
-								.item(ng-repeat="item in items_won" ng-class="{'active': item == items_won[0]}" data-slide-number="{{$index}}")
+			.container
+				#main_area
+					// Slider
+					.row
+						#slider.col-md-8.col-md-offset-1
+							// Top part of the slider
+							.row
+								.col-md-4
+									h3 Items Inventory
+							.row
+								#carousel-bounding-box.col-sm-8
+									#itemCarousel.carousel.slide
+										// Carousel items
+										.carousel-inner
+											.item(ng-repeat="item in items_won" ng-class="{'active': item == items_won[0]}" data-slide-number="{{$index}}")
+												img(data-ng-src="data:image/png;base64,{{item.path}}")
+										// Carousel nav
+										a.left.carousel-control(data-target='#itemCarousel', role='button', data-slide='prev')
+											span.glyphicon.glyphicon-chevron-left
+										a.right.carousel-control(data-target='#itemCarousel', role='button', data-slide='next')
+											span.glyphicon.glyphicon-chevron-right
+								#carousel-text.col-sm-4(my-profile-directive)
+								#slide-content(style='display: none;')
+									div(ng-repeat="item in items_won" id="slide-content-{{$index}}")
+										h2 {{item.name}}
+										h4 Base Price: {{item.price}}
+										p {{item.desc}}
+										p.sub-text
+											a(href="#" data-toggle="modal" data-target="#itemModal_{{item.id}}") Actions
+					// /Slider
+					#slider-thumbs.row.hidden-xs
+						// Bottom switcher of slider
+						ul.hide-bullets.col-md-offset-1
+							li.col-sm-2(ng-repeat="item in items_won")
+								a.thumbnail(id="carousel-selector-{{$index}}")
 									img(data-ng-src="data:image/png;base64,{{item.path}}")
-							// Carousel nav
-							a.left.carousel-control(data-target='#itemCarousel', role='button', data-slide='prev')
-								span.glyphicon.glyphicon-chevron-left
-							a.right.carousel-control(data-target='#itemCarousel', role='button', data-slide='next')
-								span.glyphicon.glyphicon-chevron-right
-					#carousel-text.col-sm-4(my-profile-directive)
-					#slide-content(style='display: none;')
-						div(ng-repeat="item in items_won" id="slide-content-{{$index}}")
-							h2 {{item.name}}
-							h4 Base Price: {{item.price}}
-							p {{item.desc}}
-							p.sub-text
-								a(href="#" data-toggle="modal" data-target="#itemModal_{{item.id}}") Actions
-		// /Slider
-		#slider-thumbs.row.hidden-xs
-			// Bottom switcher of slider
-			ul.hide-bullets
-				li.col-sm-2(ng-repeat="item in items_won")
-					a.thumbnail(id="carousel-selector-{{$index}}")
-						img(data-ng-src="data:image/png;base64,{{item.path}}")
 
 
 
-// Modal
-.modal.fade(id="itemModal_{{item.id}}" ng-repeat="item in items_won" role='dialog')
-	.modal-dialog
-		.modal-content
-			.modal-header
-				button.close(type='button', data-dismiss='modal') ×
-				h4(class="modal-title") Place Auction
-			.modal-body
-				.row
-					.col-md-6
-						h5 Duration
-					.col-md-4
-						h5 Cost
-				.row
-					.col-md-6
-						.btn-group
-							button(type="button" id="time_1" class="btn btn-default dur_but") 20 min
-							button(type="button" id="time_2" class="btn btn-default dur_but") 30 min
-							button(type="button" id="time_3" class="btn btn-default dur_but") 40 min
-					.col-md-4
-						h5(ng-show="auction_cost_1") {{item.cost_1}}
-						h5(ng-show="auction_cost_2") {{item.cost_2}}
-						h5(ng-show="auction_cost_3") {{item.cost_3}}
+			// Modal
+			.modal.fade(id="itemModal_{{item.id}}" ng-repeat="item in items_won" role='dialog')
+				.modal-dialog
+					.modal-content
+						.modal-header
+							button.close(type='button', data-dismiss='modal') ×
+							h4(class="modal-title") Place Auction
+						.modal-body
+							.row
+								.col-md-6
+									h5 Duration
+								.col-md-4
+									h5 Cost
+							.row
+								.col-md-6
+									.btn-group
+										button(type="button" id="time_1" class="btn btn-default dur_but") 20 min
+										button(type="button" id="time_2" class="btn btn-default dur_but") 30 min
+										button(type="button" id="time_3" class="btn btn-default dur_but") 40 min
+								.col-md-4
+									h5(ng-show="auction_cost_1") {{item.cost_1}}
+									h5(ng-show="auction_cost_2") {{item.cost_2}}
+									h5(ng-show="auction_cost_3") {{item.cost_3}}
 
-				.row
-					.col-md-6
-						span(ng-bind="flash")
+							.row
+								.col-md-6
+									span(ng-bind="flash")
 
-			.modal-footer
-				button.btn.btn-danger.btn-default.pull-left(type='submit', data-dismiss='modal')
-					span.glyphicon.glyphicon-remove
-					|  Close
-				button.btn.btn-success.btn-default.pull-right(ng-click="SubmitAuction($event)" type='submit' id="{{item.id}}")
-					|  Open Auction
+						.modal-footer
+							button.btn.btn-danger.btn-default.pull-left(type='submit', data-dismiss='modal')
+								span.glyphicon.glyphicon-remove
+								|  Close
+							button.btn.btn-success.btn-default.pull-right(ng-click="SubmitAuction($event)" type='submit' id="{{item.id}}")
+								|  Open Auction

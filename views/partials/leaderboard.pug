@@ -1,19 +1,26 @@
 .container
   .row
-    .col-md-6.col-md-offset-3
+    div(class="about col-md-10")
+      div(class="content" class="box-info")
 
-      .table-responsive
+      .row
+        .col-md-6.col-md-offset-3
+          h3(class="box-title") LeaderBoard
+      .row
+        .col-md-6.col-md-offset-3
 
-        table.table.table-bordered
-          thead.thead-inverse
-            tr
-              th Rank
-              th Username
-              th Items Won
-              th Auction Points
-          tbody
-            tr(ng-repeat="user in users")
-              th(scope='row') {{ $index + 1 }}
-              td {{user.id}}
-              td {{user.itemswon}}
-              td {{user.aucpoints}}
+          .table-responsive(class="box-body")
+
+            table.table.table-bordered
+              thead.thead-inverse
+                tr
+                  th Rank
+                  th Username
+                  th Items Won
+                  th Auction Points
+              tbody
+                tr(ng-repeat="user in users")
+                  th(scope='row') {{ $index + 1 }}
+                  td {{user.id}}
+                  td {{user.itemswon}}
+                  td {{user.aucpoints}}

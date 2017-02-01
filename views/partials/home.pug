@@ -1,13 +1,29 @@
-ul.nav.nav-tabs.nav-justified
-	li
-		a(href='' ng-click="redirect('quiz')") Quiz
-	li
-		a(href='' ng-click="redirect('leaderboard')") LeaderBoard
-	li
-		a(href='' ng-click="redirect('join')") Join Auction
-	li
-		a(href='' ng-click="redirect('instructions')") Instructions
-	li
-		a(href='' ng-click="redirect('profile')") Profile
-	li
-		a(href='' ng-click="redirect('wheeloffortune')") Spin the wheel
+
+div
+	div
+		div(class="featured")
+			img(src="images/back.jpg" alt="")
+
+		div(class="section")
+
+			div
+				h3(class="box-title") welcome to auctionit
+				div(class="box-body")
+					p Penny's on the dollar! AuctionIt is actually an auction game in which you can bid on items
+						a(href="" ng-click="redirect('join')" class="more") view auctions
+
+			div
+				h3(class="box-title") quiz
+				div(class="box-body")
+					a(href="" ng-click="redirect('quiz')" class="figure")
+						img(src="images/quiz.png" alt="")
+					span
+						a(href="" ng-click="redirect('quiz')") Play Quiz
+
+			div
+				h3(class="box-title") wheel of fortune
+				div(class="box-body")
+					a(href="" ng-click="redirect('wheeloffortune')" class="figure")
+						img(src="images/" alt="")
+					span
+						a(href="" ng-click="redirect('wheeloffortune')") Spin the wheel

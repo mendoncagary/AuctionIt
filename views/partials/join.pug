@@ -1,92 +1,66 @@
+div(class="body-div")
+	div(class="about")
+		div(class="content" class="box-info")
 
+			div(class="container")
+				.row
+					.col-md-4
+						h1(class="box-title") Current Auctions
 
-div(class="container")
-	h1(style="color:#ffffff") Current Auctions
+			.container
+				.row
+					.col-md-9
+						.well.well-sm
+							strong Current Auctions
+							.btn-group
+								a#clist.btn.btn-default.btn-sm(href='#')
+									span.glyphicon.glyphicon-th-list
+									| List
+								a#cgrid.btn.btn-default.btn-sm(href='#')
+									span.glyphicon.glyphicon-th
+									| Grid
+				#cproducts.row.list-group.item_display
+					.item.col-xs-4.col-lg-4(ng-repeat="item in currentItem")
+						.thumbnail
+							img.group.list-group-image(src='data:image/png;base64,{{item.image}}', alt='')
+							.caption
+								h4.group.inner.list-group-item-heading
+									| {{item.name}}
+								.row
+									.col-xs-12.col-md-6
+										img(class='rupee_small' alt='Rs.' src='images/rupee_micro.png')
+										p.lead
+											| {{item.price}}
+									.col-xs-12.col-md-6
+										a(class="btn btn-success" href="" ng-href="/auction/{{item.id}}") Bid on Asset
 
-.container
-	.scroller.scroller-left
-		i.glyphicon.glyphicon-chevron-left
-	.scroller.scroller-right
-		i.glyphicon.glyphicon-chevron-right
-	.wrapper(style='height:500px;margin-top:20px;')
-		ul#myTab.nav.nav-tabs.list(style='padding-bottom:20px;')
+			.container
+				.row
+					.col-md-4
+						h1(class="box-title") Upcoming Auctions
 
-.container
-	h1(style="color:#ffffff") Upcoming Auctions
-
-.container
-	.scroller.scroller-left
-		i.glyphicon.glyphicon-chevron-left
-	.scroller.scroller-right
-		i.glyphicon.glyphicon-chevron-right
-	.wrapper(style='height:450px;margin-top:20px;')
-		ul#uptab.nav.nav-tabs.list(style='padding-bottom:20px;')
-
-.container#chatbox
-		.row
-			.col-md-4.pull-right
-				.panel.panel-primary(style="margin-bottom:0px;")
-					#collapseOne.panel-collapse.collapse(style="border-top:5px solid #337ab7;")
-						.panel-body
-							ul.chat#res-chat
-								li.left.clearfix
-									span.chat-img.pull-left
-										img.img-circle(src='http://placehold.it/50/55C1E7/fff&text=U', alt='User Avatar')
-									.chat-body.clearfix
-										.header
-											strong.primary-font Jack Sparrow
-											small.pull-right.text-muted
-												span.glyphicon.glyphicon-time
-												| 12 mins ago
-										p
-											| Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-											| dolor, quis ullamcorper ligula sodales.
-								li.right.clearfix
-									span.chat-img.pull-right
-										img.img-circle(src='http://placehold.it/50/FA6F57/fff&text=ME', alt='User Avatar')
-									.chat-body.clearfix
-										.header
-											small.text-muted
-												span.glyphicon.glyphicon-time
-												| 13 mins ago
-											strong.pull-right.primary-font Bhaumik Patel
-										p
-											| Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-											| dolor, quis ullamcorper ligula sodales.
-								li.left.clearfix
-									span.chat-img.pull-left
-										img.img-circle(src='http://placehold.it/50/55C1E7/fff&text=U', alt='User Avatar')
-									.chat-body.clearfix
-										.header
-											strong.primary-font Jack Sparrow
-											small.pull-right.text-muted
-												span.glyphicon.glyphicon-time
-												| 14 mins ago
-										p
-											| Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-											| dolor, quis ullamcorper ligula sodales.
-								li.right.clearfix
-									span.chat-img.pull-right
-										img.img-circle(src='http://placehold.it/50/FA6F57/fff&text=ME', alt='User Avatar')
-									.chat-body.clearfix
-										.header
-											small.text-muted
-												span.glyphicon.glyphicon-time
-												| 15 mins ago
-											strong.pull-right.primary-font Bhaumik Patel
-										p
-											| Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-											| dolor, quis ullamcorper ligula sodales.
-						.panel-footer
-							.input-group
-								input#btn-input.form-control.input-sm(type='text', placeholder='Type your message here...')
-								span.input-group-btn
-									button#btn-chat.btn.btn-warning.btn-sm
-										| Send
-
-					#accordion.panel-heading
-						span.glyphicon.glyphicon-comment
-						|  Chat
-						.btn-group.pull-right
-							a.btn.btn-default.btn-xs(type='button', data-toggle='collapse', data-parent='#accordion', data-target='#collapseOne')
-								span.glyphicon.glyphicon-chevron-up
+			.container
+				.row
+					.col-md-9
+						.well.well-sm
+							strong Category Title
+							.btn-group
+								a#list.btn.btn-default.btn-sm(href='#')
+									span.glyphicon.glyphicon-th-list
+									| List
+								a#grid.btn.btn-default.btn-sm(href='#')
+									span.glyphicon.glyphicon-th
+									| Grid
+				#products.row.list-group.item_display
+					.item.col-xs-4.col-lg-4(ng-repeat="item in upcomingItem")
+						.thumbnail
+							img.group.list-group-image(src='data:image/png;base64,{{item.image}}', alt='')
+							.caption
+								h4.group.inner.list-group-item-heading
+									| {{item.name}}
+								.row
+									.col-xs-8.col-md-4
+										p.lead
+											| {{item.price}}
+									.col-xs-16.col-md-8
+										div(countdown-directive data-countdown="{{item.time_1}} {{item.time_2}}" class='smallclock' style='color:white;')

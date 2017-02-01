@@ -1,6 +1,4 @@
 var Item = require('../models/item');
-var Chat = require('../models/chat');
-var room = require('../routes/index');
 var fs = require('fs');
 
 module.exports = function (io) {
@@ -8,7 +6,6 @@ module.exports = function (io) {
   var auction = io.of('/auction');
 
   auction.on('connection', function (socket) {
-
 
           socket.on('join:auction',function(data){
             var id = data.id;
@@ -35,25 +32,17 @@ module.exports = function (io) {
             socket.emit('priceUpdate',{currentPrice: currentPrice,username: username});
           }
           });
-
         }
+
         });
 
-    Chat.find({},{} ,{ limit:10, sort:{ _id: -1}},function(err,chat){
-    if(err) throw err;
-    for(var i in chat)
-    {
-      d=getUTC();
-    socket.emit('message',{message: chat[i].message,time:timeDifference(d,chat[i].time),name:chat[i].from_user});
-    }
-    });
 
 
 
 
 
     socket.on('bid', function (data) {
-
+      c_user = socket.request.user.username;
       if(data.value == 'but_1')
       {
         var bidvalue = baseprice;
@@ -69,41 +58,29 @@ module.exports = function (io) {
         var bidvalue = baseprice + (2*increment);
         currentPrice += bidvalue;
       }
-      var item = new Item();
-      var bid = item.bid.create({ value: currentPrice, user_id: socket.request.user.username,first_name: socket.request.user.first_name});
-      Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id}, { $set: { i_bidvalue: bidvalue,i_currentprice: currentPrice,bid:bid }} ,{new: true}, function(err,item){
-      if(err) throw err;
-         auction.in(data.id).emit('priceUpdate',{currentPrice:currentPrice,username: item.bid[0].first_name});
-    });
-  });
-
-
-
-    	auction.on('send', function (data) {
-            if(data.message!="" && data.message.length<100)
-            {
-              time = getUTC();
-            var chat_message = new Chat({message:data.message,from_user:'gary',time:time});
-            chat_message.save(function(err,rows){
-            if(err) throw err;
-
-          Chat.findOne({}, {}, { sort: { _id : -1 } }, function(err, chat) {
+      Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id},function(err,row){
+        if(err) throw err;
+        if(row)
+        {
+          if(row.i_owner !== c_user)
+          {
+          var item = new Item();
+          var bid = item.bid.create({ value: currentPrice, user_id: socket.request.user.username,first_name: socket.request.user.first_name});
+          Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id}, { $set: { i_bidvalue: bidvalue,i_currentprice: currentPrice,bid:bid }} ,{new: true}, function(err,item){
           if(err) throw err;
-            d=getUTC();
-            auction.emit('message',{message: chat.message,time:timeDifference(d,chat.time),name:chat.from_user});
+             auction.in(data.id).emit('priceUpdate',{currentPrice:currentPrice,username: item.bid[0].first_name});
         });
-    });
-    }
-    else
-    {
-    socket.emit('message',{message: data.message,time:'Maximum message size is 100 characters.Message could not be sent',name:'gary'});
-    }
-    	});
+      }
+
+        }
+      });
+
+  });
 
 
     socket.on('disconnect',function(){
       socket.leave(auction.room);
-      console.log("User disconnected");
+      console.log("auction disconnected");
     });
 
 });

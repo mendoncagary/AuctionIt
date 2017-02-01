@@ -5,7 +5,8 @@ html(lang='en')
     base(href='/')
     title= title
     link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/style3.css')
+    link(rel='stylesheet',type="text/css", href='/stylesheets/style.css')
     link(href='/bower_components/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
     script(type='text/javascript' src='/bower_components/angular/angular.min.js')
     script(type='text/javascript' src='/bower_components/angular-route/angular-route.min.js')
@@ -14,9 +15,31 @@ html(lang='en')
     script(src='/javascripts/directives.js')
     script(src='/javascripts/appRoutes.js')
     script(src='/javascripts/app.js')
-  body(ng-app='AuctionApp' ng-controller='IndexController' style="background-image: url({{ bgimg }})")
-    .container
-      i#btnFullscreen(style="color:#E6C35C;",class="fa fa-arrows-alt fa-3x",aria-hidden="true")
+  body(ng-app='AuctionApp' ng-controller='IndexController')
+    div(id="background")
+     div(id="header")
+       div
+         div
+           a(href="" ng-click="redirect('/')" class="logo")
+             img(src="images/logo.png" alt="")
+           ul
+             li(class="selected")
+               a(href="" ng-click="redirect('/')" id="menu1") home
+
+             li
+               a(href="" ng-click="redirect('profile')" id="menu2") profile
+
+             li
+               a(href="" ng-click="redirect('join')" id="menu3") auctions
+
+             li
+               a(href="" ng-click="redirect('instructions')" id="menu4") instructions
+
+             li
+               a(href="" ng-click="redirect('leaderboard')" id="menu5") leaderboard
+     .container
+      .col-md-2.pull-left
+        i#btnFullscreen(style="color:#E6C35C;",class="fa fa-arrows-alt fa-3x",aria-hidden="true")
       .col-md-2.pull-right
         .speaker.pull-right
         audio#player
@@ -25,7 +48,56 @@ html(lang='en')
 
 
 
-    div(ng-view='')
+     div(ng-view='' id="body")
+
+
+     .container#chatbox
+        .row
+          .col-md-4.pull-right
+            .panel.panel-primary(id="chat_panel" style="margin-bottom:0px;")
+              #collapseOne.panel-collapse.collapse
+                .panel-body
+                  ul.chat#res-chat
+                    li.left.clearfix(ng-repeat="message in messages")
+                      span.chat-img.pull-left
+                        img.img-circle(src='http://placehold.it/50/55C1E7/fff&text=U', alt='User Avatar')
+                      .chat-body.clearfix
+                        .header
+                          strong.primary-font {{message.name}}
+                          small.pull-right.text-muted
+                            span.glyphicon.glyphicon-time
+                            | {{message.time}}
+                        p {{message.message}}
+
+
+                .panel-footer
+                  .input-group
+                    input#btn-input.form-control.input-sm(type='text', placeholder='Type your message here...')
+                    span.input-group-btn
+                      button#btn-chat.btn.btn-warning.btn-sm
+                        | Send
+
+              #accordion.panel-heading
+                span.glyphicon.glyphicon-comment
+                |  Chat
+                .btn-group.pull-right
+                  a.btn.btn-default.btn-xs(type='button', data-toggle='collapse', data-parent='#accordion', data-target='#collapseOne')
+                    span.glyphicon.glyphicon-chevron-up
+
+
+     div(id="footer")
+      div
+        ul
+          li(id="facebook")
+            a(href="http://facebook.com/teknack/") facebook
+
+          li(id="twitter")
+            a(href="http://twitter.com/") twitter
+
+          li(id="googleplus")
+            a(href="http://google.com/") googleplus
+
+        p @ copyright 2017. all rights reserved.
 
   script(src="/socket.io/socket.io.js")
   script(src='/bower_components/angular-socket-io/socket.min.js')

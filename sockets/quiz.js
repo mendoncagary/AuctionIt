@@ -1,12 +1,13 @@
 var CronJob = require('cron').CronJob;
 var User = require('../models/user');
+var Quiz = require('../models/quiz');
 var fs = require('fs');
 
 module.exports = function (io) {
 
 
         var job = new CronJob('20,50 * * * *', function() {
-            User.update({}, { $set:{ wof_flag: false }},{multi: true}, function(err,user){
+            User.update({}, { $set:{ quiz_flag: false }},{multi: true}, function(err,user){
               if(err) throw err;
             });
           }, function () {
@@ -17,22 +18,19 @@ module.exports = function (io) {
         );
 
 
-  var wof = io.of('/wheeloffortune');
+  var quiz  = io.of('/quiz');
 
-  var slices = 8;
-  var slicePrizes = [500, 50, 500, 0, 200, 100, 150, 0];
-
-  wof.on('connection', function (socket) {
+  quiz.on('connection', function (socket) {
 
     if (socket.request.user && socket.request.user.logged_in) {
        }
 
 
-        socket.on('begin:wof',function(){
-          wof.room = 'wheeloffortune';
-          socket.join(wof.room);
+        socket.on('join:quiz',function(){
+          quiz.room = 'quiz';
+          socket.join(quiz.room);
 
-          User.findOne({tek_userid: socket.request.user.username, wof_flag:true} , function(err,user){
+          User.findOne({tek_userid: socket.request.user.username, quiz_flag:true} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -41,76 +39,91 @@ module.exports = function (io) {
               day = curtime.getUTCDate();
               if(day<10){ day = "0"+day;}
 
-
-              if(min>=0 && min<=29)
+              if(min>=0 && min<=19)
               {
-                socket.emit('countdown:wof',{day: day,hour:curtime.getUTCHours(),min:30});
+                socket.emit('countdown:quiz',{day:day,hour:curtime.getUTCHours(),min:30,message:"Next quiz starts in"});
               }
               else if(min>=30 && min<=49)
               {
-                  socket.emit('countdown:wof',{day:day,hour:curtime.getUTCHours()+1,min:"00"});
+                  socket.emit('countdown:quiz',{day:day,hour:curtime.getUTCHours()+1,min:"00",message:"Next quiz starts in"});
               }
             }
           });
 
-          User.findOne({tek_userid: socket.request.user.username, wof_flag:false} , function(err,user){
+          User.findOne({tek_userid: socket.request.user.username, quiz_flag:false} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
               var min = curtime.getUTCMinutes();
-
               day = curtime.getUTCDate();
               if(day<10){ day = "0"+day;}
 
-
               if(min>=20 && min<=29)
               {
-                socket.emit('countdown:wof',{day:day,hour:curtime.getUTCHours(),min:30});
+                socket.emit('countdown:quiz',{day:day,hour:curtime.getUTCHours(),min:30,message:"Next quiz starts in"});
               }
               else if(min>=50 && min<=59)
               {
-                  socket.emit('countdown:wof',{day:day,hour:curtime.getUTCHours()+1,min:"00"});
+                  socket.emit('countdown:quiz',{day:day,hour:curtime.getUTCHours()+1,min:"00",message:"Next quiz starts in"});
+              }
+              else if(min>=0 && min<=19 || min>=30 && min<=49)
+              {
+                Quiz.findOne({q_starttime:{ $lte: getUTC()},q_endtime:{$gt:getUTC()}} ,{'_id':0, 'q_question':1, 'q_op1':1, 'q_op2':1, 'q_op3':1, 'q_op4':1}, function(err,quiz){
+                  if(quiz)
+                  {
+                    console.log(quiz);
+                    socket.emit('current:quiz',quiz);
+                  }
+                  else{
+                    socket.emit('no:quiz',{message:"Sorry, come back later for a quiz"});
+                  }
+                });
               }
             }
         });
+
+
+
+
+                socket.on('submit:quiz',function(){
+                  var curtime = new Date(getUTC());
+                  var min = curtime.getUTCMinutes();
+                  if(min>=0 && min<=19 || min>=30 && min<=49)
+                  {
+                    console.log("You cannot play now");
+                      User.findOne({tek_userid: socket.request.user.username, quiz_flag:false} , function(err,user){
+                        if(err) throw err;
+                      if(user)
+                      {
+
+                      var cashbalance = user.u_cashbalance;
+                      cashbalance += slicePrizes[prize];
+                       User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance,wof_flag: true}}, function(err, rows){
+                          if(err) throw err;
+                            socket.emit('result:quiz',{rounds: rounds,degrees: degrees,prize: prize});
+                       });
+                     }
+
+                  });
+
+                  }
+
+                });
+
+
+
+
       });
 
-        socket.on('spin:wof',function(){
-          var curtime = new Date(getUTC());
-          var min = curtime.getUTCMinutes();
-          if(min>=0 && min<=19 || min>=30 && min<=49)
-          {
-            console.log("You cannot play now");
-              User.findOne({tek_userid: socket.request.user.username, wof_flag:false} , function(err,user){
-                if(err) throw err;
-              if(user)
-              {
-                var rounds = getRandomInt(4,6);
-                var degrees = getRandomInt(0,360);
-                var prize = slices - 1 - Math.floor(degrees / (360 / slices));
-                console.log("Client won:", slicePrizes[prize]);
 
-                var cashbalance = user.u_cashbalance;
-              cashbalance += slicePrizes[prize];
-               User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance,wof_flag: true}}, function(err, rows){
-                  if(err) throw err;
-                    socket.emit('result:wof',{rounds: rounds,degrees: degrees,prize: prize});
-               });
-             }
-
-          });
-
-          }
-
-        });
 
 
 
 
 
     socket.on('disconnect',function(){
-      socket.leave(wof.room);
-      console.log("User disconnected");
+      socket.leave(quiz.room);
+      console.log("User left quiz");
     });
 
 });

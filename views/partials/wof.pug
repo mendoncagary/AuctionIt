@@ -4,10 +4,13 @@ style(type='text/css').
   margin: auto;
   }
 
+
 .container
   .row
-    .col-md-6.col-md-offset-3
-      div(id="gameArea")
+    .col-md-9(style="background:white;")
+      .col-md-6
+        div(id="gameArea")
 
-    .col-md-3.col-md-offset-2
-    div(id="clockdiv" class="clockdiv" style="color:white;")
+      .col-md-4
+        h2 Next spin starts in
+        div(id="clockdiv" class="clockdiv" style="color:white;")

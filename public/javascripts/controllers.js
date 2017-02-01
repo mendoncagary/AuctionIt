@@ -2,7 +2,7 @@
 
 angular.module('AuctionIt.controllers', []).
 
-controller('IndexController', function($scope,$location) {
+controller('IndexController', function($scope,$location, socket) {
 
   $scope.tagline = "Penny's on the Dollar!";
   console.log(`%c
@@ -10,7 +10,7 @@ controller('IndexController', function($scope,$location) {
    /   | __  _______/ /_(_)___  ____  /  _/ /_
   / /| |/ / / / ___/ __/ / __ \\/ __ \\ / // __/
  / ___ / /_/ / /__/ /_/ / /_/ / / / // // /_
-/_/  |_\\__,_/\\___/\\__/_/\\____/_/ /_/___/\\__/
+/_/  |_\\__,_/\\___/\\__/_/\\____/_/ /_/___/\\__*/
 
 `+
 `%c Hi there, welcome to AuctionIt.
@@ -21,108 +21,19 @@ $scope.redirect = function(a){
   $location.path('/'+a);
 }
 
-}).
 
-controller('MainController', function($rootScope) {
+  $scope.messages = [];
 
-$rootScope.bgimg = "'/images/front.png'";
-}).
-
-controller('JoinController', function($rootScope, $scope, socket, $compile) {
-
-    $rootScope.bgimg = "'/images/studio.png'";
-
-    var messages = [];
-    var chattime = [];
-    var sendername = [];
-
-
-    $scope.tagline = 'Buy and Sell!';
-
-    socket.on('item', function(data){
-    var mytab = document.getElementById('myTab');
-    if (data.image) {
-     var img = new Image();
-     img.onload = function(){
-
-                    var li = mytab.appendChild(document.createElement('li'));
-                     $(li).attr('data-item-id',data.item_id);
-                     $(li).css({'margin-left':'20px','margin-right':'20px'});
-
-                    var canvas = li.appendChild(document.createElement('canvas'));
-                    canvas.width  =  1;
-                    canvas.width  = 300;
-                    canvas.height = 200;
-                    canvas.className = "join_canvas";
-                    var ctx = canvas.getContext('2d');
-
-                    ctx.drawImage( img, 0, 0,300,200);
-
-                    $(li).append('<h3>'+data.item_name+'</h3>');
-
-                    $(li).append("<div class='row'><div class='col-xs-4 col-md-4'><h4>BasePrice:</h4></div><div class='col-xs-2 col-md-2'><img class='rupee_small' alt='Rs.' src='images/rupee_micro.png'></div><div class='col-xs-2 col-md-2'><h4>"+data.item_price+"</h4><div></div>");
-
-                     var html =  `<div class='row'><div class='col-xs-1 col-sm-4 col-md-6 col-lg-12'><button type='button' ng-click="redirect('auction/`+data.item_id+`')" class='btn btn-primary' data-item-id=`+data.item_id+`>Place Bid</button></div></div>`;
-
-                     var temp = $compile(html)($scope);
-
-                    angular.element($( "li[data-item-id="+data.item_id+"]" )).append(temp);
-
- };
-     img.src = 'data:image/png;base64,' + data.item_image;
-   }
-
-   });
-
-
-
-   socket.on('upcomingItem', function(data){
-   var uptab = document.getElementById('uptab');
-   if (data.image) {
-    var img = new Image();
-    img.onload = function(){
-                   var li = uptab.appendChild(document.createElement('li'));
-
-                    $(li).css({'margin-left':'20px','margin-right':'20px'});
-
-                   var canvas = li.appendChild(document.createElement('canvas'));
-                   canvas.width  =  1;
-                   canvas.width  = 300;
-                   canvas.height = 200;
-                   canvas.className = "join_canvas";
-                   var ctx = canvas.getContext('2d');
-                   ctx.drawImage( img, 0, 0,300,200 );
-                   $(li).append('<h3>'+data.item_name+'</h3>');
-
-                   var html = "<h4>BasePrice: Rs."+data.item_price+"</h4><div class='row'><div class='col-md-7.col-md-offset-2'><div countdown-directive data-countdown='"+data.item_starttime[0]+" "+data.item_starttime[1]+"' class='smallclock' style='color:white;'></div></div></div>";
-
-                   var temp = $compile(html)($scope);
-
-                  angular.element($(li)).append(temp);
-
- };
-    img.src = 'data:image/png;base64,' + data.item_image;
-  }
-
-  });
-
+  socket.emit('join:game');
 
   socket.on('message', function (data) {
-          if(data.message) {
-  						if(messages.length>=10)
+    $scope.chat = data;
+          if($scope.chat.message) {
+  						if($scope.messages.length>=10)
   						{
-  							messages.shift();
-                chattime.shift();
-                sendername.shift();
+  							$scope.messages.shift();
   						}
-              messages.push(data.message);
-              chattime.push(data.time);
-              sendername.push(data.name);
-              var html = '';
-              for(var i=0; i<messages.length; i++) {
-                  html += "<li class='left clearfix'><span class='chat-img pull-left'><img src='http://placehold.it/50/55C1E7/fff&text=U' alt='User Avatar' class='img-circle' /></span><div class='chat-body clearfix'><div class='header'><strong class='primary-font'>"+sendername[i]+"</strong><small class='pull-right text-muted'><span class='glyphicon glyphicon-time'></span>"+chattime[i]+"</small></div><p>" +messages[i]+"</p></div></li>";
-              }
-            $('#res-chat').html(html);
+              $scope.messages.push({ name: $scope.chat.name, message: $scope.chat.message, time: $scope.chat.time });
           }
       });
 
@@ -135,6 +46,43 @@ controller('JoinController', function($rootScope, $scope, socket, $compile) {
         }
       });
 
+
+
+}).
+
+controller('MainController', function($rootScope) {
+$rootScope.bgimg = "'/images/front.png'";
+}).
+
+controller('JoinController', function($rootScope, $scope, socket,$route,$interval) {
+    $rootScope.bgimg = "'/images/studio.png'";
+
+    $scope.tagline = 'Buy and Sell!';
+
+    socket.emit('join:area');
+
+    $scope.currentItem = [];
+    socket.on('item', function(data){
+        $scope.currentItem.push({ id:data.item_id, name:data.item_name, price: data.item_price, image: data.item_image});
+   });
+
+/*
+   $interval(function(){
+     $route.reload;
+     console.log("rel");
+   },10000);
+*/
+  $scope.upcomingItem = [];
+   socket.on('upcomingItem', function(data){
+     $scope.upcomingItem.push({name:data.item_name, price: data.item_price, image: data.item_image,time_1:data.item_starttime[0],time_2:data.item_starttime[1]});
+  });
+
+  $(document).ready(function() {
+      $('#list').click(function(event){event.preventDefault();$('#products .item').addClass('list-group-item');});
+      $('#grid').click(function(event){event.preventDefault();$('#products .item').removeClass('list-group-item');$('#products .item').addClass('grid-group-item');});
+      $('#clist').click(function(event){event.preventDefault();$('#cproducts .item').addClass('list-group-item');});
+      $('#cgrid').click(function(event){event.preventDefault();$('#cproducts .item').removeClass('list-group-item');$('#cproducts .item').addClass('grid-group-item');});
+  });
 
 }).
 
@@ -155,7 +103,7 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
        var img = new Image();
        img.onload = function(){
          var ctx = canvas.getContext('2d');
-         ctx.drawImage( img, 0, 0 );
+         ctx.drawImage( img, 0, 0 ,400,300);
        };
       img.src = 'data:image/png;base64,' + $scope.item.item_image;
 
@@ -173,9 +121,6 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
     });
 
 
-  var messages = [];
-  var chattime = [];
-  var sendername = [];
 
   socketa.emit('join:auction', {id : $routeParams.id});
 
@@ -189,35 +134,6 @@ controller('AuctionController', function($rootScope, $routeParams, $http, $scope
       socketa.emit('bid', {value : this.id,id: $routeParams.id });
  });
 
-   socketa.on('message', function (data) {
-           if(data.message) {
-   						if(messages.length>=10)
-   						{
-   							messages.shift();
-                 chattime.shift();
-                 sendername.shift();
-   						}
-               messages.push(data.message);
-               chattime.push(data.time);
-               sendername.push(data.name);
-               var html = '';
-               for(var i=0; i<messages.length; i++) {
-                   html += "<li class='left clearfix'><span class='chat-img pull-left'><img src='http://placehold.it/50/55C1E7/fff&text=U' alt='User Avatar' class='img-circle' /></span><div class='chat-body clearfix'><div class='header'><strong class='primary-font'>"+sendername[i]+"</strong><small class='pull-right text-muted'><span class='glyphicon glyphicon-time'></span>"+chattime[i]+"</small></div><p>" +messages[i]+"</p></div></li>";
-               }
-             $('#res-chat').html(html);
-           }
-       });
-
-       $(document).on('click','#btn-chat',function() {
-         if($('#btn-input').val())
-         {
-           var text = $('#btn-input').val();
-           socketa.emit('send', { message: text });
-           $("#btn-input").val('');
-         }
-       });
-
-
 }).
 
 
@@ -227,32 +143,25 @@ controller('WheelController', function($rootScope,$scope,socketb) {
 
   socketb.emit('begin:wof');
   socketb.on('countdown:wof',function(data){
-    $scope.endtime = "2017-01-"+data.day+" "+data.hour+":"+data.min+":59";
+
+    $scope.endtime = "2017-02-"+data.day+" "+data.hour+":"+data.min;
     var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
     $('#clockdiv').countdown(nextYear.toDate(), function(event) {
     $(this).html(event.strftime(
       "<div><span class='days'>%-d</span><div class='smalltext'>Day%!d</div></div><div><span class='hours'>%H</span><div class='smalltext'>Hour%!H</div></div><div><span class='minutes'>%M</span><div class='smalltext'>Minute%!M</div></div><div><span class='seconds'>%S</span><div class='smalltext'>Seconds</div></div>"
-));
+    ));
+    });
     });
 
-  });
-  // the game itself
+
   var game;
-  // the spinning wheel
   var wheel;
-  // can the wheel spin?
   var canSpin;
-  // slices (prizes) placed in the wheel
   var slices = 8;
-  // prize names, starting from 12 o'clock going clockwise
   var slicePrizes = ["A KEY!!!", "50 COINS", "500 COINS", "BAD LUCK!!!", "200 COINS", "100 COINS", "150 COINS", "BAD LUCK!!!"];
-  // the prize you are about to win
   var prize;
-  // text field where to show the prize
   var prizeText;
 
-
-  // PLAYGAME STATE
 
   var playGame = function(game){};
 
@@ -275,69 +184,41 @@ controller('WheelController', function($rootScope,$scope,socketb) {
             var spin = game.add.sprite(game.width / 2, game.width / 2, "spin");
             spin.anchor.set(0.5);
     		    wheel = game.add.sprite(game.width / 2, game.width / 2, "wheel");
-            // setting wheel registration point in its center
             wheel.anchor.set(0.5);
-            // adding the pin in the middle of the canvas
             var pin = game.add.sprite(game.width / 2, game.width / 2, "pin");
-            // setting pin registration point in its center
             pin.anchor.set(0.5);
 
-            // adding the text field
             prizeText = game.add.text(game.world.centerX, 400, "");
-            // setting text field registration point in its center
             prizeText.anchor.set(0.5);
-            // aligning the text to center
             prizeText.align = "center";
-            // the game has just started = we can spin the wheel
             canSpin = true;
-            // waiting for your input, then calling "spin" function
             game.input.onDown.add(this.spin, this);
   	},
-       // function to spin the wheel
        spin(){
-            // can we spin the wheel?
             if(canSpin){
                 socketb.emit('spin:wof');
-                 // resetting text field
                  prizeText.text = "";
-                 // the wheel will spin round from 2 to 4 times. This is just coreography
-                 //var rounds = game.rnd.between(2, 4);
-                 // then will rotate by a random number from 0 to 360 degrees. This is the actual spin
-                 //var degrees = game.rnd.between(0, 360);
                  socketb.on('result:wof',function(data){
                    var rounds = data.rounds;
                    var degrees = data.degrees;
                    prize = data.prize;
 
-                 // before the wheel ends spinning, we already know the prize according to "degrees" rotation and the number of slices
-                 //prize = slices - 1 - Math.floor(degrees / (360 / slices));
-                 // now the wheel cannot spin because it's already spinning
                  canSpin = false;
-                 // animation tweeen for the spin: duration 3s, will rotate by (360 * rounds + degrees) degrees
-                 // the quadratic easing will simulate friction
                  var spinTween = game.add.tween(wheel).to({
                       angle: 360 * rounds + degrees
                  }, 3000, Phaser.Easing.Quadratic.Out, true);
-                 // once the tween is completed, call winPrize function
                  spinTween.onComplete.add(playGame.prototype.winPrize, this);
                  });
             }
        },
-       // function to assign the prize
        winPrize(){
-            // now we can spin the wheel again
             canSpin = true;
-            // writing the prize you just won
             prizeText.text = slicePrizes[prize];
-
        }
   }
 
-  // creation of a 458x488 game
- game = new Phaser.Game(450, 450, Phaser.CANVAS, "gameArea");
-  // adding "PlayGame" state
+  game = new Phaser.Game(450, 450, Phaser.CANVAS, "gameArea");
   game.state.add("PlayGame",playGame);
-  // launching "PlayGame" state
   game.state.start("PlayGame");
 
 }).
@@ -401,7 +282,6 @@ $rootScope.bgimg = "'/images/back.png'";
               if($scope.dur_id)
               {
               socketc.emit('sell:item',{id:event.target.id,duration: $scope.dur_id});
-                //$('#itemModal_'+event.target.id).modal('hide');
               }
               else {
                 $scope.flash = "Please select a duration";
@@ -411,8 +291,9 @@ $rootScope.bgimg = "'/images/back.png'";
          socketc.on('profile:response',function(response){
            $scope.flash = response.message;
            $timeout(function(){
+             $('#itemModal_'+event.target.id).modal('hide');
              $route.reload();
-           },2000);
+           },3000);
          });
 
          jQuery(document).ready(function($) {
@@ -459,6 +340,77 @@ controller('LeaderBoardController', function($rootScope, $scope, $http) {
 }).
 
 
-controller('InstructionsController', function($rootScope) {
+controller('InstructionsController', function($rootScope,socketd) {
 $rootScope.bgimg = "'/images/back.png'";
+}).
+
+controller('QuizController', function($scope,Quiz,socketd,$timeout) {
+
+
+  socketd.emit('join:quiz');
+
+  socketd.on('current:quiz',function(quiz){
+    $('#quiz_modal').show();
+    $('#flash_div').hide();
+    $scope.quiz = quiz;
+    angular.element($('#qid')).html($scope.quiz.q_question);
+    angular.element($('#opt_1')).append($scope.quiz.q_op1);
+    angular.element($('#opt_2')).append($scope.quiz.q_op2);
+    angular.element($('#opt_3')).append($scope.quiz.q_op3);
+    //$scope.quiz.question=quiz.q_question;
+    //$scope.$apply();
+
+  });
+
+  socketd.on('countdown:quiz',function(data){
+    $('#quiz_modal').hide();
+    $('#flash_div').show();
+    $scope.endtime = "2017-02-"+data.day+" "+data.hour+":"+data.min;
+    var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
+    $('#clockdiv').countdown(nextYear.toDate(), function(event) {
+    $(this).html(event.strftime(
+      "<div><span class='days'>%-d</span><div class='smalltext'>Day%!d</div></div><div><span class='hours'>%H</span><div class='smalltext'>Hour%!H</div></div><div><span class='minutes'>%M</span><div class='smalltext'>Minute%!M</div></div><div><span class='seconds'>%S</span><div class='smalltext'>Seconds</div></div>"
+    ));
+    });
+    });
+
+
+
+    socketd.on('no:quiz',function(message){
+      $('#quiz_modal').hide();
+      $scope.quiz_flash = message;
+    });
+
+    $(function(){
+        var loading = $('#loadbar').hide();
+        $(document)
+        .ajaxStart(function () {
+            loading.show();
+        }).ajaxStop(function () {
+        	loading.hide();
+        });
+
+        $("label.btn").on('click',function () {
+        	var choice = $(this).find('input:radio').val();
+        	$('#loadbar').show();
+        	$('#quiz').fadeOut();
+        	setTimeout(function(){
+               $( "#answer" ).html(  $(this).checking(choice) );
+                $('#quiz').show();
+                $('#loadbar').fadeOut();
+               /* something else */
+        	}, 1500);
+        });
+
+        $ans = 3;
+
+        $.fn.checking = function(ck) {
+            if (ck != $ans)
+                return 'INCORRECT';
+            else
+                return 'CORRECT';
+        };
+    });
+
+
 });
