@@ -9,7 +9,7 @@
       .row
         .col-md-6.col-md-offset-3
 
-          .table-responsive(class="box-body")
+          .table-responsive(class="box-body lead_box")
 
             table.table.table-bordered
               thead.thead-inverse
@@ -24,3 +24,8 @@
                   td {{user.id}}
                   td {{user.itemswon}}
                   td {{user.aucpoints}}
+
+      .row
+        .col-md-6.col-md-offset-3.rating-form
+          label(for="input-1" class="control-label") Did you like this game. Leave us a rating
+          input(id="input-1" name="input-1",class="rating-loading")

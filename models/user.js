@@ -47,6 +47,9 @@ var userSchema = new Schema({
   },
   quiz_flag:{
     type: Boolean
+  },
+  rating:{
+    type: Number
   }
 });
 

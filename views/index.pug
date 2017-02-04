@@ -2,17 +2,20 @@ doctype html
 html(lang='en')
   head
     meta(charset='UTF-8')
+    meta(name="viewport" content="width=device-width, initial-scale=1")
     base(href='/')
     title= title
     link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/style3.css')
     link(rel='stylesheet',type="text/css", href='/stylesheets/style.css')
-    link(href='/bower_components/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    link(rel='stylesheet', type='text/css', media='all', href='/bower_components/bootstrap-star-rating/css/star-rating.min.css')
+    link( rel='stylesheet', type='text/css', href='/bower_components/font-awesome/css/font-awesome.min.css')
     script(type='text/javascript' src='/bower_components/angular/angular.min.js')
     script(type='text/javascript' src='/bower_components/angular-route/angular-route.min.js')
     script(src='/javascripts/controllers.js')
     script(src='/javascripts/services.js')
     script(src='/javascripts/directives.js')
+    script(src='/javascripts/filters.js')
     script(src='/javascripts/appRoutes.js')
     script(src='/javascripts/app.js')
   body(ng-app='AuctionApp' ng-controller='IndexController')
@@ -21,7 +24,7 @@ html(lang='en')
        div
          div
            a(href="" ng-click="redirect('/')" class="logo")
-             img(src="images/logo.png" alt="")
+             img(src="images/auction-icon-2.png" alt="")
            ul
              li(class="selected")
                a(href="" ng-click="redirect('/')" id="menu1") home
@@ -82,7 +85,7 @@ html(lang='en')
                 |  Chat
                 .btn-group.pull-right
                   a.btn.btn-default.btn-xs(type='button', data-toggle='collapse', data-parent='#accordion', data-target='#collapseOne')
-                    span.glyphicon.glyphicon-chevron-up
+                    span.glyphicon.glyphicon-chevron-up.chat_btn_up
 
 
      div(id="footer")
@@ -108,3 +111,4 @@ html(lang='en')
   script(type="text/javascript" src="/bower_components/jquery.countdown/dist/jquery.countdown.min.js")
   script(src="/bower_components/moment/min/moment.min.js")
   script(src="/bower_components/moment-timezone/builds/moment-timezone-with-data.min.js")
+  script(src="/bower_components/bootstrap-star-rating/js/star-rating.min.js")

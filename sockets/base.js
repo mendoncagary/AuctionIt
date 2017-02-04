@@ -32,6 +32,7 @@ nsp.on('connection', function (socket) {
               img = true;
           nsp.emit('item',{item_id: item[i].i_id, item_name: item[i].i_name, item_desc: item[i].i_desc, item_price: item[i].i_baseprice, image: img, item_image: buffer.toString('base64')});
             img=false;
+            nsp.emit('new:item');
             }
             }
           });
@@ -42,16 +43,20 @@ nsp.on('connection', function (socket) {
             {
               for(var i in item)
               {
-                if(item[i].bid) var owner = item[i].bid[0].user_id;
+                if(item[i].bid.length>0){
+                  var size = item[i].bid.length;
+                  var owner = item[i].bid[size-1].user_id;
+                }
                 else {owner = "System Admin";}
-                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice} }, {new:true},function (err, item) {
+                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice,i_actualprice:2*item[i].i_currentprice} }, {new:true},function (err, item) {
                   if(err) throw err;
                   });
-                    if(item[i].bid!=null)
+                    if(item[i].bid.length>0)
                     {
+                      var size = item[i].bid.length;
                       var actualprice = item[i].i_actualprice;
-                      var deduction = item[i].bid[0].value;
-                      User.findOne({tek_userid: item[i].bid[0].user_id},function(err,user){
+                      var deduction = item[i].bid[size-1].value;
+                      User.findOne({tek_userid: item[i].bid[size-1].user_id},function(err,user){
                         if(err) throw err;
                         if(user)
                         {
@@ -77,7 +82,7 @@ nsp.on('connection', function (socket) {
                             }
                             u_itempoints = cur_itempoints + user.u_itempoints;
                           var cash = user.u_cashbalance - deduction;
-                          User.update({tek_userid: item[i].bid[0].user_id}, {$set:{u_cashbalance:cash, u_itempoints:u_itempoints},$inc:{u_itemswon: 1}},function(err,user){
+                          User.update({tek_userid: item[i].bid[size-1].user_id}, {$set:{u_cashbalance:cash, u_itempoints:u_itempoints},$inc:{u_itemswon: 1}},function(err,user){
                             if(err) throw err;
                           });
                         }
@@ -98,8 +103,6 @@ nsp.on('connection', function (socket) {
 
   socket.on('join:area',function(){
 
-    console.log("join user connected");
-
     Item.find({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}},function(err,item){
     if(err) throw err;
     if(item.length>0)
@@ -117,7 +120,7 @@ nsp.on('connection', function (socket) {
     });
 
     //Upcoming Auctions
-    Item.find({ i_starttime :{$gt: getUTC()}},function(err,item){
+    Item.find({ i_starttime :{$gt: getUTC()}},{},{limit: 6, sort:{i_starttime:1} }, function(err,item){
     if(err) throw err;
     if(item.length>0)
     {

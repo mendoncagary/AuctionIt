@@ -1,3 +1,4 @@
+var User = require('../models/user');
 var Item = require('../models/item');
 var fs = require('fs');
 
@@ -7,85 +8,105 @@ module.exports = function (io) {
 
   auction.on('connection', function (socket) {
 
-          socket.on('join:auction',function(data){
-            var id = data.id;
-            if(id.match(/^[0-9a-fA-F]{24}$/))
-            {
-              auction.room = id;
-              socket.join(auction.room);
+    socket.on('join:auction',function(data){
+      var id = data.id;
+      if(id.match(/^[0-9a-fA-F]{24}$/))
+      {
+        auction.room = id;
+        socket.join(auction.room);
 
-          Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()},_id: auction.room} ,function(err,item){
-            if(err) throw err;
-            if(item)
-            {
+        Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()},_id: auction.room} ,function(err,item){
+          if(err) throw err;
+          if(item)
+          {
             current_item =  item.i_name;
             baseprice = item.i_baseprice;
             increment = item.i_increment;
             currentPrice = item.i_currentprice;
-            if(item.bid)
+            socket.emit('currentPrice',currentPrice);
+            if(item.bid.length>0)
             {
-            username = item.bid[0].first_name;
+              for(var i in item.bid)
+              {
+                username = item.bid[i].first_name;
+                bid_value = item.bid[i].value;
+                socket.emit('priceUpdate',{bid_value: bid_value,username: username});
+              }
             }
             else {
               username = "No User has placed bid";
+              socket.emit('priceUpdate',{bid_value: 0, username: username});
             }
-            socket.emit('priceUpdate',{currentPrice: currentPrice,username: username});
+
           }
-          });
-        }
-
         });
-
-
-
-
-
-
-    socket.on('bid', function (data) {
-      c_user = socket.request.user.username;
-      if(data.value == 'but_1')
-      {
-        var bidvalue = baseprice;
-        currentPrice += bidvalue;
       }
-      else if(data.value == 'but_2')
-      {
-        var bidvalue = baseprice + increment;
-        currentPrice += bidvalue;
-      }
-      else if(data.value == 'but_3')
-      {
-        var bidvalue = baseprice + (2*increment);
-        currentPrice += bidvalue;
-      }
-      Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id},function(err,row){
-        if(err) throw err;
-        if(row)
-        {
-          if(row.i_owner !== c_user)
-          {
-          var item = new Item();
-          var bid = item.bid.create({ value: currentPrice, user_id: socket.request.user.username,first_name: socket.request.user.first_name});
-          Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id}, { $set: { i_bidvalue: bidvalue,i_currentprice: currentPrice,bid:bid }} ,{new: true}, function(err,item){
+
+
+
+      socket.on('bid', function (data) {
+
+        User.findOne({tek_userid: socket.request.user.username},function(err,user){
           if(err) throw err;
-             auction.in(data.id).emit('priceUpdate',{currentPrice:currentPrice,username: item.bid[0].first_name});
-        });
-      }
+          if(user)
+          {
+            user_cashbal = user.u_cashbalance;
 
-        }
+            c_user = socket.request.user.username;
+            if(data.value == 'but_1')
+            {
+              var bidvalue = baseprice;
+              currentPrice += bidvalue;
+            }
+            else if(data.value == 'but_2')
+            {
+              var bidvalue = baseprice + increment;
+              currentPrice += bidvalue;
+            }
+            else if(data.value == 'but_3')
+            {
+              var bidvalue = baseprice + (2*increment);
+              currentPrice += bidvalue;
+            }
+            Item.findOne({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id},function(err,row){
+              if(err) throw err;
+              if(row)
+              {
+                if(row.i_owner !== c_user && user_cashbal >=currentPrice)
+                {
+                  var bid = { value: currentPrice, user_id: socket.request.user.username,first_name: socket.request.user.first_name};
+
+                  Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id}, { $set: { i_bidvalue: bidvalue,i_currentprice: currentPrice}, $push:{bid : bid}} ,{new: true}, function(err,item){
+                    if(err) throw err;
+                    auction.in(data.id).emit('priceUpdate',{bid_value:currentPrice,username: item.bid[0].first_name});
+                    auction.in(data.id).emit('currentPrice',currentPrice);
+                  });
+                }
+                else if(user_cashbal < currentPrice){
+                  socket.emit('flash:auction',{message:"You don't have enough cash to place a bid."});
+                }
+                else if(row.i_owner == c_user){
+                  socket.emit('flash:auction',{message:"You cannot bid on your own assets"});
+                }
+
+              }
+            });
+          }
+        });
       });
+
+
+      socket.on('disconnect',function(){
+        socket.leave(auction.room);
+        console.log("auction disconnected");
+      });
+
+    });
+
 
   });
 
-
-    socket.on('disconnect',function(){
-      socket.leave(auction.room);
-      console.log("auction disconnected");
-    });
-
-});
-
-function getDateTime() {
+  function getDateTime() {
 
     var date = new Date();
 
@@ -108,9 +129,9 @@ function getDateTime() {
 
     return year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
 
-}
+  }
 
-function timeDifference(current, previous) {
+  function timeDifference(current, previous) {
 
     var msPerMinute = 60 * 1000;
     var msPerHour = msPerMinute * 60;
@@ -120,36 +141,36 @@ function timeDifference(current, previous) {
 
     var elapsed = current - previous;
     if (elapsed < msPerMinute) {
-         return Math.round(elapsed/1000) + ' seconds ago';
+      return Math.round(elapsed/1000) + ' seconds ago';
     }
 
     else if (elapsed < msPerHour) {
-         return Math.round(elapsed/msPerMinute) + ' minutes ago';
+      return Math.round(elapsed/msPerMinute) + ' minutes ago';
     }
 
     else if (elapsed < msPerDay ) {
-         return Math.round(elapsed/msPerHour ) + ' hours ago';
+      return Math.round(elapsed/msPerHour ) + ' hours ago';
     }
 
     else if (elapsed < msPerMonth) {
-        return 'about ' + Math.round(elapsed/msPerDay) + ' days ago';
+      return 'about ' + Math.round(elapsed/msPerDay) + ' days ago';
     }
 
     else if (elapsed < msPerYear) {
-        return 'about ' + Math.round(elapsed/msPerMonth) + ' months ago';
+      return 'about ' + Math.round(elapsed/msPerMonth) + ' months ago';
     }
 
     else {
-        return 'about ' + Math.round(elapsed/msPerYear ) + ' years ago';
+      return 'about ' + Math.round(elapsed/msPerYear ) + ' years ago';
     }
-}
+  }
 
-function getUTC()
-{
-  var current = getDateTime().toString().split(/[- :]/);
-  var date =  new Date(Date.UTC(current[0], current[1]-1, current[2],current[3], current[4], current[5]));
-return date;
-}
+  function getUTC()
+  {
+    var current = getDateTime().toString().split(/[- :]/);
+    var date =  new Date(Date.UTC(current[0], current[1]-1, current[2],current[3], current[4], current[5]));
+    return date;
+  }
 
 
 }

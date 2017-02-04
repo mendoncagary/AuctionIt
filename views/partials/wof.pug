@@ -11,6 +11,9 @@ style(type='text/css').
       .col-md-6
         div(id="gameArea")
 
-      .col-md-4
+      .col-md-4.col-md-offset-1(ng-show="flash")
         h2 Next spin starts in
         div(id="clockdiv" class="clockdiv" style="color:white;")
+
+      .col-md-4.col-md-offset-1(ng-hide="flash")
+        h2 Spin the wheel

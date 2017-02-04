@@ -1,9 +1,11 @@
 .container-fluid.bg-info
   .row
-    .col-md-4.col-md-offset-4
+    .col-md-5.col-md-offset-4
       #flash_div
         h2 Next quiz starts in
         #clockdiv.clockdiv
+      #flash_message
+        h2 Sorry, come back later
   .modal-dialog#quiz_modal
     .modal-content
       .modal-header
@@ -21,21 +23,25 @@
             #rotateG_07.blockG
             #rotateG_08.blockG
         #quiz.quiz(data-toggle='buttons')
-          label.element-animation1.btn.btn-lg.btn-primary.btn-block(id="opt_1")
+          label.element-animation1.btn.btn-lg.btn-primary.btn-block
             span.btn-label
               i.glyphicon.glyphicon-chevron-right
+            span(id="opt_1")
             input(type='radio', name='q_answer', value='1')
-          label.element-animation2.btn.btn-lg.btn-primary.btn-block(id="opt_2")
+          label.element-animation2.btn.btn-lg.btn-primary.btn-block
             span.btn-label
               i.glyphicon.glyphicon-chevron-right
             input(type='radio', name='q_answer', value='2')
-          label.element-animation3.btn.btn-lg.btn-primary.btn-block(id="opt_3")
+            span(id="opt_2")
+          label.element-animation3.btn.btn-lg.btn-primary.btn-block
             span.btn-label
               i.glyphicon.glyphicon-chevron-right
             input(type='radio', name='q_answer', value='3')
-          label.element-animation4.btn.btn-lg.btn-primary.btn-block(id="opt_4")
+            span(id="opt_3")
+          label.element-animation4.btn.btn-lg.btn-primary.btn-block
             span.btn-label
               i.glyphicon.glyphicon-chevron-right
             input(type='radio', name='q_answer', value='4')
+            span(id="opt_4")
       .modal-footer.text-muted
         span#answer

@@ -39,45 +39,92 @@ div(class="body-div")
 
 					.panel-footer(id="profile_footer")
 
+		.row
+			.col-sm-12.badge_panel
+				// Section Title
+				.divider-section-title
+					h1 All Badges
+						| &#x9;&#x9;
+						.divider
+							| &#x9;&#x9;
+						div(class="col-md-4")
+							img(src="images/beginner.png")
+							p
+								| Beginner Badge
+							h5
+								| Earn it by winning your first auction, spinning the wheel of fortune once and answering a quiz once
+							h5
+								| Bonus Cash: $7000
+						div(class="col-md-4")
+							img(src="images/intermediate.png")
+							p
+								| Intermediate Badge
+							h5
+								| Win 5 auctions
+							h5
+								| Spin the wheel of fortune 5 times
+							h5
+								| Play the quiz 5 times
+							h5
+								| Bonus Cash: $15000
+						div(class="col-md-4")
+							img(src="images/advanced.png")
+							p
+								| Advanced Badge
+								h5
+									| Win 10 auctions
+								h5
+									| Spin the wheel of fortune 5 times
+								h5
+									| Play the quiz 5 times
+								h5
+									| Bonus Cash: $15000
+
+		.divider-section-title.item_divider
+			h1 Items Inventory
+				| &#x9;&#x9;
+				.divider
+					| &#x9;&#x9;
 
 
-
-			.container
-				#main_area
-					// Slider
-					.row
-						#slider.col-md-8.col-md-offset-1
-							// Top part of the slider
-							.row
-								.col-md-4
-									h3 Items Inventory
-							.row
-								#carousel-bounding-box.col-sm-8
-									#itemCarousel.carousel.slide
-										// Carousel items
-										.carousel-inner
-											.item(ng-repeat="item in items_won" ng-class="{'active': item == items_won[0]}" data-slide-number="{{$index}}")
-												img(data-ng-src="data:image/png;base64,{{item.path}}")
-										// Carousel nav
-										a.left.carousel-control(data-target='#itemCarousel', role='button', data-slide='prev')
-											span.glyphicon.glyphicon-chevron-left
-										a.right.carousel-control(data-target='#itemCarousel', role='button', data-slide='next')
-											span.glyphicon.glyphicon-chevron-right
-								#carousel-text.col-sm-4(my-profile-directive)
-								#slide-content(style='display: none;')
-									div(ng-repeat="item in items_won" id="slide-content-{{$index}}")
-										h2 {{item.name}}
-										h4 Base Price: {{item.price}}
-										p {{item.desc}}
-										p.sub-text
-											a(href="#" data-toggle="modal" data-target="#itemModal_{{item.id}}") Actions
-					// /Slider
-					#slider-thumbs.row.hidden-xs
-						// Bottom switcher of slider
-						ul.hide-bullets.col-md-offset-1
-							li.col-sm-2(ng-repeat="item in items_won")
-								a.thumbnail(id="carousel-selector-{{$index}}")
-									img(data-ng-src="data:image/png;base64,{{item.path}}")
+		.container
+			#main_area
+				// Slider
+				.row
+					#slider.col-md-8.col-md-offset-1
+						// Top part of the slider
+						.row
+							.col-md-4
+								h3 Items Inventory
+						.row
+							.col-md-5
+								h4(ng-bind="inv_message")
+							#carousel-bounding-box.col-sm-8
+								#itemCarousel.carousel.slide
+									// Carousel items
+									.carousel-inner
+										.item(ng-repeat="item in items_won" ng-class="{'active': item == items_won[0]}" data-slide-number="{{$index}}")
+											img(data-ng-src="data:image/png;base64,{{item.path}}")
+									// Carousel nav
+									a.left.carousel-control(data-target='#itemCarousel', role='button', data-slide='prev')
+										span.glyphicon.glyphicon-chevron-left
+									a.right.carousel-control(data-target='#itemCarousel', role='button', data-slide='next')
+										span.glyphicon.glyphicon-chevron-right
+							#carousel-text.col-sm-4(my-profile-directive)
+							#slide-content(style='display: none;')
+								div(ng-repeat="item in items_won" id="slide-content-{{$index}}")
+									h2 {{item.name}}
+									h4 Base Price: {{item.price}}
+									p {{item.desc}}
+									p.sub-text
+										a(href="#" data-toggle="modal" data-target="#itemModal_{{item.id}}") Actions
+				// /Slider
+				#slider-thumbs.row.hidden-xs
+					// Bottom switcher of slider
+					ul.hide-bullets.col-md-offset-1
+						li.col-sm-2(ng-repeat="item in items_won")
+							a.thumbnail(id="carousel-selector-{{$index}}")
+								img(data-ng-src="data:image/png;base64,{{item.path}}")
 
 
 

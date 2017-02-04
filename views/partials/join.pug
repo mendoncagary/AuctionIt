@@ -12,7 +12,7 @@ div(class="body-div")
 					.col-md-9
 						.well.well-sm
 							strong Current Auctions
-							.btn-group
+							.btn-group.btn-group-join
 								a#clist.btn.btn-default.btn-sm(href='#')
 									span.glyphicon.glyphicon-th-list
 									| List
@@ -24,14 +24,15 @@ div(class="body-div")
 						.thumbnail
 							img.group.list-group-image(src='data:image/png;base64,{{item.image}}', alt='')
 							.caption
-								h4.group.inner.list-group-item-heading
+								h4.group.inner.list-group-item-heading.caption_heading(title="{{item.name}}")
 									| {{item.name}}
 								.row
-									.col-xs-12.col-md-6
+									.col-xs-4.col-md-2
 										img(class='rupee_small' alt='Rs.' src='images/rupee_micro.png')
+									.col-xs-6.col-md-3
 										p.lead
 											| {{item.price}}
-									.col-xs-12.col-md-6
+									.col-xs-12.col-md-6.pull-right
 										a(class="btn btn-success" href="" ng-href="/auction/{{item.id}}") Bid on Asset
 
 			.container
@@ -43,8 +44,8 @@ div(class="body-div")
 				.row
 					.col-md-9
 						.well.well-sm
-							strong Category Title
-							.btn-group
+							strong Upcoming Auctions
+							.btn-group.btn-group-join
 								a#list.btn.btn-default.btn-sm(href='#')
 									span.glyphicon.glyphicon-th-list
 									| List
@@ -56,11 +57,11 @@ div(class="body-div")
 						.thumbnail
 							img.group.list-group-image(src='data:image/png;base64,{{item.image}}', alt='')
 							.caption
-								h4.group.inner.list-group-item-heading
+								h4.group.inner.list-group-item-heading.caption_heading(title="{{item.name}}")
 									| {{item.name}}
 								.row
 									.col-xs-8.col-md-4
 										p.lead
-											| {{item.price}}
-									.col-xs-16.col-md-8
-										div(countdown-directive data-countdown="{{item.time_1}} {{item.time_2}}" class='smallclock' style='color:white;')
+											| ${{item.price}}
+									.col-xs-16.col-md-8.pull-right
+										div(countdown-directive data-countdown="{{item.time_1}} {{item.time_2}}" class='smallclock pull-right' style='color:white;')

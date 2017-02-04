@@ -17,12 +17,27 @@ module.exports = function (io) {
         );
 
 
+
+
   var wof = io.of('/wheeloffortune');
 
   var slices = 8;
-  var slicePrizes = [500, 50, 500, 0, 200, 100, 150, 0];
+  var slicePrizes = [2500, 500, 5000, 0, 2000, 1000, 1500, 0];
 
   wof.on('connection', function (socket) {
+
+
+
+            var job = new CronJob('0,30 * * * *', function() {
+                wof.emit('reload:wof');
+              }, function () {
+                /* This function is executed when the job stops */
+              },
+              true,
+              'Asia/Kolkata'
+            );
+
+
 
     if (socket.request.user && socket.request.user.logged_in) {
        }
@@ -80,16 +95,13 @@ module.exports = function (io) {
           var min = curtime.getUTCMinutes();
           if(min>=0 && min<=19 || min>=30 && min<=49)
           {
-            console.log("You cannot play now");
               User.findOne({tek_userid: socket.request.user.username, wof_flag:false} , function(err,user){
                 if(err) throw err;
               if(user)
               {
-                var rounds = getRandomInt(4,6);
+                var rounds = getRandomInt(6,10);
                 var degrees = getRandomInt(0,360);
                 var prize = slices - 1 - Math.floor(degrees / (360 / slices));
-                console.log("Client won:", slicePrizes[prize]);
-
                 var cashbalance = user.u_cashbalance;
               cashbalance += slicePrizes[prize];
                User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance,wof_flag: true}}, function(err, rows){

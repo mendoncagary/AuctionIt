@@ -22,12 +22,19 @@ var flash = require('connect-flash');
 var MongoStore = require('connect-mongo')(session);
 
 
-var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
+var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } , auto_reconnect: true,reconnectTries: Number.MAX_VALUE,reconnectInterval: 1000 },
 replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
 
 mongoose.connect(db.url,options);
-mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+mongoose.connection.on('error', function(error){
+	console.error.bind(console, 'MongoDB connection error:');
+	mongoose.disconnect();
+});
 
+mongoose.connection.on('disconnected', function() {
+    console.log('MongoDB disconnected!');
+    mongoose.connect(db.url,options);
+  });
 
 
 
@@ -115,6 +122,8 @@ app.get('/api/item/:id', isLoggedIn, api.item);
 app.get('/api/profile', isLoggedIn, api.profile);
 app.get('/api/itemswon', isLoggedIn, api.itemswon);
 app.get('/api/leaderboard', isLoggedIn, api.leaderboard);
+app.put('/api/rating', isLoggedIn, api.rating);
+app.get('/api/rating', isLoggedIn, api.rating_get);
 
 
 app.get('/logout', function(req, res) {

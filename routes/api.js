@@ -99,6 +99,40 @@ exports.profile = function(req,res){
 
 
 
+exports.rating = function(req,res){
+  if(req.body.value >=0 && req.body.value<=5)
+  {
+            User.findOneAndUpdate({tek_userid: req.session.passport.user},{$set:{rating:req.body.value }},{new: true},function(err,user){
+              if(err) throw err;
+
+              if(user)
+              {
+                console.log(user);
+                  res.json({
+                    rating: user.rating
+                });
+              }
+            });
+}
+
+};
+
+
+exports.rating_get = function(req,res){
+            User.findOne({tek_userid: req.session.passport.user},{'_id':0, 'rating':1},function(err,user){
+              if(err) throw err;
+
+              if(user)
+              {
+                console.log(user);
+                  res.json({
+                    rating: user.rating
+                });
+              }
+            });
+
+};
+
 exports.itemswon = function(req,res){
 
   var itemlist = {};
@@ -110,13 +144,13 @@ exports.itemswon = function(req,res){
   var costprice_1 = {};
   var costprice_2 = {};
   var costprice_3 = {};
-
-  Item.find({i_is_won : true, 'bid.user_id': req.session.passport.user },'_id i_name i_baseprice i_desc i_imgpath',function(err,item){
+  Item.find({i_is_won : true, 'bid.user_id': req.session.passport.user,i_owner: req.session.passport.user },'_id i_name i_baseprice i_desc i_imgpath',function(err,item){
   if(err) throw err;
   if(item.length>0)
   {
     for(var i in item)
     {
+      console.log(item);
       itemid[i] = item[i]._id;
       itemname[i] = item[i].i_name;
       itemprice[i] = item[i].i_baseprice;

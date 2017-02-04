@@ -257,9 +257,6 @@ body {
 #chat_panel {
   border: #0a0a0a; }
 
-#collapseOne {
-  border-top: 5px #B00E1E; }
-
 #qid {
   padding: 10px 15px;
   -moz-border-radius: 50px;
@@ -612,5 +609,94 @@ label .glyphicon {
 
 .spin_back {
   background: #0a0a0a url(../images/gradient4.png) repeat-x bottom center; }
+
+.caption_heading {
+  white-space: nowrap;
+  width: 250px;
+  height: 40px;
+  text-overflow: ellipsis; }
+
+.btn-group-join {
+  margin-left: 10px; }
+
+#flashModal .modal-body {
+  min-height: 100px !important; }
+
+.caption_heading {
+  overflow: hidden; }
+
+.chat_btn_up {
+  margin-right: 0px; }
+
+#chat_panel .panel-body {
+  border-top: 5px solid #B00E1E; }
+
+.lead_box {
+  background: #fff; }
+
+#quiz_modal .modal-header h3 {
+  background-color: #f0ad4e;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  border-radius: 20px; }
+
+#quiz_modal .modal-header h3 #qid {
+  white-space: initial;
+  background: none; }
+
+.divider-section-title {
+  max-width: 800px;
+  margin: 80px auto;
+  padding: 15px;
+  text-align: center;
+  color: #fff; }
+  .divider-section-title h1 {
+    font-size: 24px;
+    text-transform: uppercase;
+    /*color: #2ca5b9*/ }
+  .divider-section-title .divider {
+    position: relative;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 30px;
+    margin-top: 30px; }
+    .divider-section-title .divider:before {
+      position: absolute;
+      content: '';
+      width: 30px;
+      height: 30px;
+      border: 1px solid #f0f0f0;
+      left: 50%;
+      margin-left: -15px;
+      top: 50%;
+      background: #fff;
+      margin-top: -15px;
+      -webkit-transform: rotate(45deg);
+      -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg); }
+    .divider-section-title .divider:after {
+      position: absolute;
+      content: '';
+      width: 20px;
+      height: 20px;
+      border: 1px solid #2ca5b9;
+      left: 50%;
+      margin-left: -10px;
+      top: 50%;
+      background: #2ca5b9;
+      margin-top: -10px;
+      -webkit-transform: rotate(45deg);
+      -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg); }
+
+.rating-form {
+  padding: 10px;
+  background: #fff;
+  margin-top: 40px;
+  margin-bottom: 40px; }
+
+.item_divider {
+  margin-bottom: 20px; }
 
 /*# sourceMappingURL=style.css.map */

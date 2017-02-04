@@ -3,7 +3,7 @@
 .container
 	.row
 
-		.col-md-2.pull-left
+		.col-md-3.pull-left
 			div.panel-group
 				div(class="panel panel-info")
 					div.panel-heading Seller info
@@ -20,8 +20,9 @@
 				div(class="panel panel-info")
 					div.panel-heading Last Bids
 					div.panel-body(class="panel-price")
-						span(ng-bind="bid_user")
-						span(ng-bind="current_price")
+						div(ng-repeat="bid in bidlist | reverse")
+							span(ng-bind="bid.user")
+							span(ng-bind="bid.value" class="pull-right")
 
 
 				div(class="panel panel-info")
@@ -57,3 +58,17 @@
 
 		.col-md-3.col-md-offset-2
 			div(id="clockdiv" class="clockdiv" style="color:white;")
+
+
+
+
+		#flashModal.modal.fade(role='dialog')
+			.modal-dialog.modal-sm
+				.modal-content
+					.modal-header
+						button.close(type='button', data-dismiss='modal') ×
+						h4.modal-title Warning
+					.modal-body
+						p
+					.modal-footer
+						button.btn.btn-default(type='button', data-dismiss='modal') Close

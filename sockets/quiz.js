@@ -25,6 +25,17 @@ module.exports = function (io) {
     if (socket.request.user && socket.request.user.logged_in) {
        }
 
+       var job = new CronJob('0,30 * * * *', function() {
+           quiz.emit('reload:quiz');
+         }, function () {
+           /* This function is executed when the job stops */
+         },
+         true,
+         'Asia/Kolkata'
+       );
+
+
+
 
         socket.on('join:quiz',function(){
           quiz.room = 'quiz';
@@ -71,7 +82,6 @@ module.exports = function (io) {
                 Quiz.findOne({q_starttime:{ $lte: getUTC()},q_endtime:{$gt:getUTC()}} ,{'_id':0, 'q_question':1, 'q_op1':1, 'q_op2':1, 'q_op3':1, 'q_op4':1}, function(err,quiz){
                   if(quiz)
                   {
-                    console.log(quiz);
                     socket.emit('current:quiz',quiz);
                   }
                   else{
@@ -85,29 +95,54 @@ module.exports = function (io) {
 
 
 
-                socket.on('submit:quiz',function(){
+                socket.on('submit:quiz',function(data){
                   var curtime = new Date(getUTC());
                   var min = curtime.getUTCMinutes();
                   if(min>=0 && min<=19 || min>=30 && min<=49)
                   {
-                    console.log("You cannot play now");
-                      User.findOne({tek_userid: socket.request.user.username, quiz_flag:false} , function(err,user){
-                        if(err) throw err;
-                      if(user)
+                    Quiz.findOne({q_starttime:{ $lt: getUTC()},q_endtime:{$gt:getUTC()}},function(err,quiz){
+                    if(err) throw err;
+                    if(quiz)
+                    {
+                      if(data.choice==1) answer = quiz.q_op1;
+                      else if(data.choice==2) answer = quiz.q_op2;
+                      else if(data.choice==3) answer = quiz.q_op3;
+                      else if(data.choice==4) {answer = quiz.q_op4;}
+
+                      if(answer == quiz.q_ans)
                       {
-
-                      var cashbalance = user.u_cashbalance;
-                      cashbalance += slicePrizes[prize];
-                       User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance,wof_flag: true}}, function(err, rows){
+                        User.findOne({tek_userid: socket.request.user.username, quiz_flag:false} , function(err,user){
                           if(err) throw err;
-                            socket.emit('result:quiz',{rounds: rounds,degrees: degrees,prize: prize});
-                       });
-                     }
+                        if(user)
+                        {
+                        var cashbalance = user.u_cashbalance;
+                        cashbalance += 2000;
+                         User.update({tek_userid: user.tek_userid,quiz_flag:false},{$set: {u_cashbalance: cashbalance,quiz_flag: true}}, function(err, rows){
+                            if(err) throw err;
+                              socket.emit('result:quiz',{message:"CORRECT. YOU JUST WON $2000"});
+                         });
+                       }
+                    });
+                      }
+                      else {
+                        User.findOne({tek_userid: socket.request.user.username, quiz_flag:false} , function(err,user){
+                          if(err) throw err;
+                          if(user)
+                          {
+                          User.update({tek_userid: user.tek_userid,quiz_flag: false},{$set: {quiz_flag: true}}, function(err, rows){
+                           if(err) throw err;
+                           socket.emit('result:quiz',{message:"INCORRECT"});
+                         });
+                         }
+                         else {
+                           socket.emit('result:quiz',{message:"YOU HAVE ALREADY ATTEMPTED THE QUIZ"});
 
+                         }
+                      });
+                      }
+                    }
                   });
-
-                  }
-
+                }
                 });
 
 

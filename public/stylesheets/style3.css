@@ -19,18 +19,18 @@ body {
 	padding: 0;
 }
 #background {
-	background: url('/images/concert.jpg') no-repeat top center fixed;
+	background: url('/images/concert-2.jpg') no-repeat top center fixed;
 	background-size: cover;
 	margin: 0;
 	padding: 0;
 }
 #header {
-	background: url(../images/bg-header2.png) repeat-x top center;
+	background: url('/images/bg-header2.png') repeat-x top center;
 	margin: 0;
 	padding: 0;
 }
 #header > div {
-	background: url(../images/bg-header.png) no-repeat top center;
+	background: url('/images/bg-header.png') no-repeat top center;
 	margin: 0;
 	padding: 0;
 }
