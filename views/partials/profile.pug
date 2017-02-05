@@ -48,37 +48,53 @@ div(class="body-div")
 						.divider
 							| &#x9;&#x9;
 						div(class="col-md-4")
-							img(src="images/beginner.png")
-							p
+							img(data-ng-src="data:image/png;base64,{{badge.beg_imgpath}}")
+							p(class="badge_title")
 								| Beginner Badge
-							h5
-								| Earn it by winning your first auction, spinning the wheel of fortune once and answering a quiz once
+							ul(class="list-group")
+								li(class="list-group-item")
+									| Win your 1 auction
+									span(ng-show="badge.first_auc_var" class="glyphicon glyphicon-ok")
+								li(class="list-group-item")
+									| Spin the wheel of fortune once
+									span(ng-show="badge.first_wof_var" class="glyphicon glyphicon-ok")
+								li(class="list-group-item")
+									| Answer a quiz once
+									span(ng-show="badge.first_quiz_var" class="glyphicon glyphicon-ok")
 							h5
 								| Bonus Cash: $7000
 						div(class="col-md-4")
-							img(src="images/intermediate.png")
-							p
+							img(data-ng-src="data:image/png;base64,{{badge.int_imgpath}}")
+							p(class="badge_title")
 								| Intermediate Badge
-							h5
-								| Win 5 auctions
-							h5
-								| Spin the wheel of fortune 5 times
-							h5
-								| Play the quiz 5 times
+							ul(class="list-group")
+								li(class="list-group-item")
+									| Win 5 auctions
+									span(ng-show="badge.fifth_auc_var" class="glyphicon glyphicon-ok")
+								li(class="list-group-item")
+									| Spin the wheel of fortune 5 times
+									span(ng-show="badge.fifth_wof_var" class="glyphicon glyphicon-ok")
+								li(class="list-group-item")
+									| Play the quiz 5 times
+									span(ng-show="badge.fifth_quiz_var" class="glyphicon glyphicon-ok")
 							h5
 								| Bonus Cash: $15000
 						div(class="col-md-4")
-							img(src="images/advanced.png")
-							p
+							img(data-ng-src="data:image/png;base64,{{badge.adv_imgpath}}")
+							p(class="badge_title")
 								| Advanced Badge
-								h5
+							ul(class="list-group")
+								li(class="list-group-item")
 									| Win 10 auctions
-								h5
-									| Spin the wheel of fortune 5 times
-								h5
-									| Play the quiz 5 times
-								h5
-									| Bonus Cash: $15000
+									span(ng-show="badge.tenth_auc_var" class="glyphicon glyphicon-ok")
+								li(class="list-group-item")
+									| Spin the wheel of fortune 10 times
+									span(ng-show="badge.tenth_wof_var" class="glyphicon glyphicon-ok")
+								li(class="list-group-item")
+									| Play the quiz 10 times
+									span(ng-show="badge.tenth_quiz_var" class="glyphicon glyphicon-ok")
+							h5
+								| Bonus Cash: $30000
 
 		.divider-section-title.item_divider
 			h1 Items Inventory
@@ -117,7 +133,7 @@ div(class="body-div")
 									h4 Base Price: {{item.price}}
 									p {{item.desc}}
 									p.sub-text
-										a(href="#" data-toggle="modal" data-target="#itemModal_{{item.id}}") Actions
+										a(href="#" id="action_link" data-toggle="modal" data-target="#itemModal_{{item.id}}") Actions
 				// /Slider
 				#slider-thumbs.row.hidden-xs
 					// Bottom switcher of slider

@@ -1,6 +1,23 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+
+var badgeSchema = new Schema({
+    beginner:{
+      value: Boolean,
+      imgpath: String
+  },
+  intermediate:{
+    value: Boolean,
+    imgpath: String
+  },
+  advanced:{
+    value: Boolean,
+    imgpath: String
+  }
+});
+
+
 var userSchema = new Schema({
   tek_userid:{
     type: String,
@@ -50,7 +67,14 @@ var userSchema = new Schema({
   },
   rating:{
     type: Number
-  }
+  },
+  quiz_no_attempts:{
+    type: Number
+  },
+  wof_no_attempts:{
+    type: Number
+  },
+  badge: [badgeSchema]
 });
 
 var User=mongoose.model('user',userSchema);

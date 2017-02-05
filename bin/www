@@ -20,10 +20,6 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-//var io = require('socket.io').listen(server);
-//require('../sockets/base')(io);
-//require('../sockets/auction')(io);
-//require('../routes/index')(io);
 
 var io     = app.io;
 io.attach( server );

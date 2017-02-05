@@ -1,3 +1,4 @@
+var session = require('client-sessions');
 var CronJob = require('cron').CronJob;
 var fs = require('fs');
 var Item = require('../models/item');
@@ -13,6 +14,18 @@ var img = false;
 var nsp = io.of('/join');
 
 nsp.on('connection', function (socket) {
+
+var cookie_string = socket.request.headers.cookie;
+var req = { headers : {cookie : cookie_string} };
+session({ cookieName:'session',
+secret: '23dj9aud6y0jla9sje064ghglad956',
+duration: 30 * 60 * 1000,
+activeDuration: 5 * 60 * 1000,
+httpOnly: true,
+//secure: true,
+ephemeral: true
+})(req, {}, function(){})
+
 
 
     var job = new CronJob({
@@ -46,6 +59,8 @@ nsp.on('connection', function (socket) {
                 if(item[i].bid.length>0){
                   var size = item[i].bid.length;
                   var owner = item[i].bid[size-1].user_id;
+                  old_owner = item.i_owner;
+                  curr_cash = item[i].baseprice;
                 }
                 else {owner = "System Admin";}
                 Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice,i_actualprice:2*item[i].i_currentprice} }, {new:true},function (err, item) {
@@ -85,6 +100,16 @@ nsp.on('connection', function (socket) {
                           User.update({tek_userid: item[i].bid[size-1].user_id}, {$set:{u_cashbalance:cash, u_itempoints:u_itempoints},$inc:{u_itemswon: 1}},function(err,user){
                             if(err) throw err;
                           });
+                          User.findOne({tek_userid: old_owner},function(err,user){
+                            if(user)
+                            {
+                              var old_owner_cashbal = user.u_cashbalance + deduction - curr_cash;
+                                User.update({tek_userid: old_owner},{$set:{u_cashbalance: old_owner_cashbal},function(err,row){
+                                  if(err) throw err;
+                                }});
+                            }
+                          });
+
                         }
                       });
                     }
@@ -173,7 +198,7 @@ socket.on('send', function (data) {
       if(data.message!="" && data.message.length<100)
       {
         time = getUTC();
-      var chat_message = new Chat({message:data.message,from_user:'gary',time:time});
+      var chat_message = new Chat({message:data.message,from_user:req.session.user.username,time:time});
       chat_message.save(function(err,rows){
       if(err) throw err;
 

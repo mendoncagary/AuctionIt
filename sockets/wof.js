@@ -1,3 +1,4 @@
+var session = require('client-sessions');
 var CronJob = require('cron').CronJob;
 var User = require('../models/user');
 var fs = require('fs');
@@ -27,6 +28,19 @@ module.exports = function (io) {
   wof.on('connection', function (socket) {
 
 
+    var cookie_string = socket.request.headers.cookie;
+    var req = { headers : {cookie : cookie_string} };
+    session({ cookieName:'session',
+    secret: '23dj9aud6y0jla9sje064ghglad956',
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
+    httpOnly: true,
+    //secure: true,
+    ephemeral: true
+    })(req, {}, function(){})
+
+
+
 
             var job = new CronJob('0,30 * * * *', function() {
                 wof.emit('reload:wof');
@@ -40,14 +54,14 @@ module.exports = function (io) {
 
 
     if (socket.request.user && socket.request.user.logged_in) {
-       }
 
+       }
 
         socket.on('begin:wof',function(){
           wof.room = 'wheeloffortune';
           socket.join(wof.room);
 
-          User.findOne({tek_userid: socket.request.user.username, wof_flag:true} , function(err,user){
+          User.findOne({tek_userid: req.session.user.username, wof_flag:true} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -68,7 +82,7 @@ module.exports = function (io) {
             }
           });
 
-          User.findOne({tek_userid: socket.request.user.username, wof_flag:false} , function(err,user){
+          User.findOne({tek_userid: req.session.user.username, wof_flag:false} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -95,7 +109,7 @@ module.exports = function (io) {
           var min = curtime.getUTCMinutes();
           if(min>=0 && min<=19 || min>=30 && min<=49)
           {
-              User.findOne({tek_userid: socket.request.user.username, wof_flag:false} , function(err,user){
+              User.findOne({tek_userid: req.session.user.username, wof_flag:false} , function(err,user){
                 if(err) throw err;
               if(user)
               {
@@ -104,7 +118,7 @@ module.exports = function (io) {
                 var prize = slices - 1 - Math.floor(degrees / (360 / slices));
                 var cashbalance = user.u_cashbalance;
               cashbalance += slicePrizes[prize];
-               User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance,wof_flag: true}}, function(err, rows){
+               User.update({tek_userid: user.tek_userid},{$set: {u_cashbalance: cashbalance,wof_flag: true},$inc:{wof_no_attempts:1}}, function(err, rows){
                   if(err) throw err;
                     socket.emit('result:wof',{rounds: rounds,degrees: degrees,prize: prize});
                });

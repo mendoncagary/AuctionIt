@@ -76,7 +76,7 @@ else {
 exports.profile = function(req,res){
 
 
-            User.findOne({tek_userid: req.session.passport.user},function(err,user){
+            User.findOne({tek_userid: req.session.user.username},function(err,user){
               if(err) throw err;
 
               if(user)
@@ -102,12 +102,11 @@ exports.profile = function(req,res){
 exports.rating = function(req,res){
   if(req.body.value >=0 && req.body.value<=5)
   {
-            User.findOneAndUpdate({tek_userid: req.session.passport.user},{$set:{rating:req.body.value }},{new: true},function(err,user){
+            User.findOneAndUpdate({tek_userid: req.session.user.username},{$set:{rating:req.body.value }},{new: true},function(err,user){
               if(err) throw err;
 
               if(user)
               {
-                console.log(user);
                   res.json({
                     rating: user.rating
                 });
@@ -119,12 +118,11 @@ exports.rating = function(req,res){
 
 
 exports.rating_get = function(req,res){
-            User.findOne({tek_userid: req.session.passport.user},{'_id':0, 'rating':1},function(err,user){
+            User.findOne({tek_userid: req.session.user.username},{'_id':0, 'rating':1},function(err,user){
               if(err) throw err;
 
               if(user)
               {
-                console.log(user);
                   res.json({
                     rating: user.rating
                 });
@@ -144,13 +142,12 @@ exports.itemswon = function(req,res){
   var costprice_1 = {};
   var costprice_2 = {};
   var costprice_3 = {};
-  Item.find({i_is_won : true, 'bid.user_id': req.session.passport.user,i_owner: req.session.passport.user },'_id i_name i_baseprice i_desc i_imgpath',function(err,item){
+  Item.find({i_is_won : true, i_owner: req.session.user.username },'_id i_name i_baseprice i_desc i_imgpath',function(err,item){
   if(err) throw err;
   if(item.length>0)
   {
     for(var i in item)
     {
-      console.log(item);
       itemid[i] = item[i]._id;
       itemname[i] = item[i].i_name;
       itemprice[i] = item[i].i_baseprice;
@@ -215,6 +212,53 @@ var aucpoints = {};
 
 };
 
+
+exports.badges = function(req,res){
+
+  User.findOne({tek_userid: req.session.user.username},{'_id':0,'u_itemswon':1,'wof_no_attempts':1,'quiz_no_attempts':1, 'badge':1},function(err,user){
+    if(user)
+    {
+      var first_auc_var = false;
+      var fifth_auc_var = false;
+      var tenth_auc_var = false;
+      if(user.u_itemswon>0) {first_auc_var = true;}
+      if(user.u_itemswon>4) {fifth_auc_var = true;}
+      if(user.u_itemswon>9) {tenth_auc_var = true;}
+
+      var first_wof_var = false;
+      var fifth_wof_var = false;
+      var tenth_wof_var = false;
+      if(user.wof_no_attempts>0) {first_wof_var = true;}
+      if(user.wof_no_attempts>4) {fifth_wof_var = true;}
+      if(user.wof_no_attempts>9) {tenth_wof_var = true;}
+
+      var first_quiz_var = false;
+      var fifth_quiz_var = false;
+      var tenth_quiz_var = false;
+      if(user.quiz_no_attempts>0) {first_quiz_var = true;}
+      if(user.quiz_no_attempts>4) {fifth_quiz_var = true;}
+      if(user.quiz_no_attempts>9) {tenth_quiz_var = true;}
+
+      var beg_imgpath = fs.readFileSync('uploads/'+user.badge[0].beginner.imgpath);
+      var int_imgpath = fs.readFileSync('uploads/'+user.badge[0].intermediate.imgpath);
+      var adv_imgpath = fs.readFileSync('uploads/'+user.badge[0].advanced.imgpath);
+      res.json({
+        first_auc_var: first_auc_var,
+        fifth_auc_var: fifth_auc_var,
+        tenth_auc_var: tenth_auc_var,
+        first_wof_var: first_wof_var,
+        fifth_wof_var: fifth_wof_var,
+        tenth_wof_var: tenth_wof_var,
+        first_quiz_var: first_quiz_var,
+        fifth_quiz_var: fifth_quiz_var,
+        tenth_quiz_var: tenth_quiz_var,
+        beg_imgpath: beg_imgpath.toString('base64'),
+        int_imgpath: int_imgpath.toString('base64'),
+        adv_imgpath: adv_imgpath.toString('base64')
+      });
+    }
+  });
+};
 
 
 

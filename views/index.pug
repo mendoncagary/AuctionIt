@@ -21,6 +21,14 @@ html(lang='en')
   body(ng-app='AuctionApp' ng-controller='IndexController')
     div(id="background")
      div(id="header")
+       .col-md-1.div_tools
+         i#btnFullscreen(style="color:#E6C35C;",class="fa fa-arrows-alt fa-3x",aria-hidden="true")
+       .col-md-1.div_tools.pull-right
+         .speaker.pull-right
+         audio#player
+           source(src='http://sifidesign.com/audio/explosion.mp3', type='audio/mp3')
+           source(src='http://sifidesign.com/audio/explosion.ogg', type='audio/ogg')
+
        div
          div
            a(href="" ng-click="redirect('/')" class="logo")
@@ -40,14 +48,7 @@ html(lang='en')
 
              li
                a(href="" ng-click="redirect('leaderboard')" id="menu5") leaderboard
-     .container
-      .col-md-2.pull-left
-        i#btnFullscreen(style="color:#E6C35C;",class="fa fa-arrows-alt fa-3x",aria-hidden="true")
-      .col-md-2.pull-right
-        .speaker.pull-right
-        audio#player
-          source(src='http://sifidesign.com/audio/explosion.mp3', type='audio/mp3')
-          source(src='http://sifidesign.com/audio/explosion.ogg', type='audio/ogg')
+
 
 
 
@@ -66,7 +67,7 @@ html(lang='en')
                         img.img-circle(src='http://placehold.it/50/55C1E7/fff&text=U', alt='User Avatar')
                       .chat-body.clearfix
                         .header
-                          strong.primary-font {{message.name}}
+                          strong.primary-font(class="chat_name") {{message.name}}
                           small.pull-right.text-muted
                             span.glyphicon.glyphicon-time
                             | {{message.time}}
@@ -95,10 +96,10 @@ html(lang='en')
             a(href="http://facebook.com/teknack/") facebook
 
           li(id="twitter")
-            a(href="http://twitter.com/") twitter
+            a(href="https://twitter.com/TeknackDBIT") twitter
 
           li(id="googleplus")
-            a(href="http://google.com/") googleplus
+            a(href="http://plus.google.com/") googleplus
 
         p @ copyright 2017. all rights reserved.
 

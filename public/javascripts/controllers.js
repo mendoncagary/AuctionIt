@@ -6,11 +6,11 @@ controller('IndexController', function($scope,$location, socket) {
 
   $scope.tagline = "Penny's on the Dollar!";
   console.log(`%c
-    ___              __  _             ______
-    /   | __  _______/ /_(_)___  ____  /  _/ /_
+      ___              __  _             ______
+     /   | __  _______/ /_(_)___  ____  /  _/ /_
     / /| |/ / / / ___/ __/ / __ \\/ __ \\ / // __/
-    / ___ / /_/ / /__/ /_/ / /_/ / / / // // /_
-    /_/  |_\\__,_/\\___/\\__/_/\\____/_/ /_/___/\\__/
+   / ___ / /_/ / /__/ /_/ / /_/ / / / // // /_
+  /_/  |_\\__,_/\\___/\\__/_/\\____/_/ /_/___/\\__/
 
     `+
     `%c Hi there, welcome to AuctionIt.
@@ -273,6 +273,11 @@ controller('IndexController', function($scope,$location, socket) {
     },function(response){
     });
 
+    $http.get('/api/badges')
+    .then(function(response) {
+    $scope.badge = response.data;
+  },function (response){
+    });
 
 
     $(document).on('click','.dur_but', function(){

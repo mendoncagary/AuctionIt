@@ -1,3 +1,4 @@
+var session = require('client-sessions');
 var CronJob = require('cron').CronJob;
 var User = require('../models/user');
 var Quiz = require('../models/quiz');
@@ -22,6 +23,20 @@ module.exports = function (io) {
 
   quiz.on('connection', function (socket) {
 
+
+        var cookie_string = socket.request.headers.cookie;
+        var req = { headers : {cookie : cookie_string} };
+        session({ cookieName:'session',
+        secret: '23dj9aud6y0jla9sje064ghglad956',
+        duration: 30 * 60 * 1000,
+        activeDuration: 5 * 60 * 1000,
+        httpOnly: true,
+        //secure: true,
+        ephemeral: true
+        })(req, {}, function(){})
+
+
+
     if (socket.request.user && socket.request.user.logged_in) {
        }
 
@@ -41,7 +56,7 @@ module.exports = function (io) {
           quiz.room = 'quiz';
           socket.join(quiz.room);
 
-          User.findOne({tek_userid: socket.request.user.username, quiz_flag:true} , function(err,user){
+          User.findOne({tek_userid: req.session.user.username, quiz_flag:true} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -61,7 +76,7 @@ module.exports = function (io) {
             }
           });
 
-          User.findOne({tek_userid: socket.request.user.username, quiz_flag:false} , function(err,user){
+          User.findOne({tek_userid: req.session.user.username, quiz_flag:false} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -111,13 +126,13 @@ module.exports = function (io) {
 
                       if(answer == quiz.q_ans)
                       {
-                        User.findOne({tek_userid: socket.request.user.username, quiz_flag:false} , function(err,user){
+                        User.findOne({tek_userid: req.session.user.username, quiz_flag:false} , function(err,user){
                           if(err) throw err;
                         if(user)
                         {
                         var cashbalance = user.u_cashbalance;
                         cashbalance += 2000;
-                         User.update({tek_userid: user.tek_userid,quiz_flag:false},{$set: {u_cashbalance: cashbalance,quiz_flag: true}}, function(err, rows){
+                         User.update({tek_userid: user.tek_userid,quiz_flag:false},{$set: {u_cashbalance: cashbalance,quiz_flag: true}, $inc:{quiz_no_attempts: 1}}, function(err, rows){
                             if(err) throw err;
                               socket.emit('result:quiz',{message:"CORRECT. YOU JUST WON $2000"});
                          });
@@ -125,7 +140,7 @@ module.exports = function (io) {
                     });
                       }
                       else {
-                        User.findOne({tek_userid: socket.request.user.username, quiz_flag:false} , function(err,user){
+                        User.findOne({tek_userid: req.session.user.username, quiz_flag:false} , function(err,user){
                           if(err) throw err;
                           if(user)
                           {
