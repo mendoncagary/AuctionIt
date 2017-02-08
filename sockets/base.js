@@ -19,8 +19,8 @@ var cookie_string = socket.request.headers.cookie;
 var req = { headers : {cookie : cookie_string} };
 session({ cookieName:'session',
 secret: '23dj9aud6y0jla9sje064ghglad956',
-duration: 30 * 60 * 1000,
-activeDuration: 5 * 60 * 1000,
+duration: 24 *60 * 60 * 1000,
+activeDuration: 24 *60 * 60 * 1000,
 httpOnly: true,
 //secure: true,
 ephemeral: true

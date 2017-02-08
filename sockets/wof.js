@@ -32,8 +32,8 @@ module.exports = function (io) {
     var req = { headers : {cookie : cookie_string} };
     session({ cookieName:'session',
     secret: '23dj9aud6y0jla9sje064ghglad956',
-    duration: 30 * 60 * 1000,
-    activeDuration: 5 * 60 * 1000,
+    duration: 24 *60 * 60 * 1000,
+    activeDuration: 24 *60 * 60 * 1000,
     httpOnly: true,
     //secure: true,
     ephemeral: true
@@ -70,14 +70,18 @@ module.exports = function (io) {
               day = curtime.getUTCDate();
               if(day<10){ day = "0"+day;}
 
-
               if(min>=0 && min<=29)
               {
-                socket.emit('countdown:wof',{day: day,hour:curtime.getUTCHours(),min:30});
+                var hour = curtime.getUTCHours();
+                if(hour<10){ hour = "0"+hour;}
+                socket.emit('countdown:wof',{day:day, hour:hour, min:30});
               }
               else if(min>=30 && min<=49)
               {
-                  socket.emit('countdown:wof',{day:day,hour:curtime.getUTCHours()+1,min:"00"});
+                  var hour = curtime.getUTCHours() +1;
+                  if(hour<10){ hour = "0"+hour;}
+
+                  socket.emit('countdown:wof',{day:day,hour:hour, min:"00"});
               }
             }
           });
@@ -94,11 +98,15 @@ module.exports = function (io) {
 
               if(min>=20 && min<=29)
               {
-                socket.emit('countdown:wof',{day:day,hour:curtime.getUTCHours(),min:30});
+                var hour = curtime.getUTCHours();
+                if(hour<10){ hour = "0"+hour;}
+                socket.emit('countdown:wof',{day:day,hour:hour,min:30});
               }
               else if(min>=50 && min<=59)
               {
-                  socket.emit('countdown:wof',{day:day,hour:curtime.getUTCHours()+1,min:"00"});
+                var hour = curtime.getUTCHours()+1;
+                if(hour<10){ hour = "0"+hour;}
+                  socket.emit('countdown:wof',{day:day,hour:hour,min:"00"});
               }
             }
         });

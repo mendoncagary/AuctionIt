@@ -1,12 +1,12 @@
 @font-face {
 	font-family: 'Philosopher-Regular';
-	src: url('../fonts/Philosopher-Regular/Philosopher-Regular.eot');
-	src: url('../fonts/Philosopher-Regular/Philosopher-Regular.woff') format('woff'), url('../fonts/Philosopher-Regular/Philosopher-Regular.ttf') format('truetype'), url('../fonts/Philosopher-Regular/Philosopher-Regular.svg') format('svg');
+	src: url('/fonts/Philosopher-Regular/Philosopher-Regular.eot');
+	src: url('/fonts/Philosopher-Regular/Philosopher-Regular.woff') format('woff'), url('/fonts/Philosopher-Regular/Philosopher-Regular.ttf') format('truetype'), url('/fonts/Philosopher-Regular/Philosopher-Regular.svg') format('svg');
 }
 @font-face {
 	font-family: 'Philosopher-Bold';
-	src: url('../fonts/Philosopher-Bold/Philosopher-Bold.eot');
-	src: url('../fonts/Philosopher-Bold/Philosopher-Bold.woff') format('woff'), url('../fonts/Philosopher-Bold/Philosopher-Bold.ttf') format('truetype'), url('../fonts/Philosopher-Bold/Philosopher-Bold.svg') format('svg');
+	src: url('/fonts/Philosopher-Bold/Philosopher-Bold.eot');
+	src: url('/fonts/Philosopher-Bold/Philosopher-Bold.woff') format('woff'), url('/fonts/Philosopher-Bold/Philosopher-Bold.ttf') format('truetype'), url('/fonts/Philosopher-Bold/Philosopher-Bold.svg') format('svg');
 }
 body {
 	background: url(../images/bg-body.jpg) repeat;
@@ -164,7 +164,6 @@ body {
 	display: block;
 	left: 0;
 	position: absolute;
-	top: -112px;
 	z-index: 1;
 }
 #body div div .section {

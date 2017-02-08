@@ -2,7 +2,7 @@
 
 angular.module('AuctionIt.directives', []).
 
-directive("myProfileDirective", function($timeout) {
+directive("myProfileDirective", ["$timeout", function($timeout) {
     return {
         restrict: "A",
         link: function(scope, elem, attrs) {
@@ -11,10 +11,10 @@ directive("myProfileDirective", function($timeout) {
               },1000);
             }
         };
-}).
+}]).
 
 
-directive("countdownDirective", function($timeout) {
+directive("countdownDirective", ["$timeout", function($timeout) {
     return {
         restrict: "A",
         link: function(scope, elem, attrs) {
@@ -28,16 +28,15 @@ directive("countdownDirective", function($timeout) {
         },0);
             }
         };
-}).
+}]).
 
 
-directive("quizDirective", function($timeout) {
+directive("quizDirective", ["$timeout", function($timeout) {
     return {
         restrict: "A",
         link: function(scope, elem, attrs) {
         $timeout(function(){
-          console.log("sdad");
         },1000);
             }
         };
-});
+}]);

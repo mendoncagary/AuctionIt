@@ -2,7 +2,7 @@
 
 angular.module('AuctionIt.controllers', []).
 
-controller('IndexController', function($scope,$location, socket) {
+controller('IndexController', ["$scope", "$location", "socket", function($scope,$location, socket) {
 
   $scope.tagline = "Penny's on the Dollar!";
   console.log(`%c
@@ -19,7 +19,7 @@ controller('IndexController', function($scope,$location, socket) {
 
     $scope.redirect = function(a){
       $location.path('/'+a);
-    }
+    };
 
 
     $scope.messages = [];
@@ -47,17 +47,104 @@ controller('IndexController', function($scope,$location, socket) {
     });
 
 
+     socket.on('end', function(data){
+       window.location.reload(true);
+     });
 
-  }).
 
-  controller('MainController', function($rootScope) {
+    var mouseovertimer;
+    var audiostatus = 'off';
+
+    $(document).on('mouseenter', '.speaker', function() {
+      if (!mouseovertimer) {
+        mouseovertimer = window.setTimeout(function() {
+          mouseovertimer = null;
+          if (!$('.speaker').hasClass("speakerplay")) {
+            $('#player')[0].load();
+            $('#player')[0].play();
+            $('.speaker').addClass('speakerplay');
+            return false;
+          }
+        }, 1000);
+      }
+    });
+
+    $(document).on('mouseleave', '.speaker', function() {
+      if (mouseovertimer) {
+        window.clearTimeout(mouseovertimer);
+        mouseovertimer = null;
+      }
+    });
+
+    $(document).on('click touchend', '.speaker', function() {
+      if (!$('.speaker').hasClass("speakerplay")) {
+        if (audiostatus == 'off') {
+          $('.speaker').addClass('speakerplay');
+          $('#player')[0].load();
+          $('#player')[0].play();
+          window.clearTimeout(mouseovertimer);
+          audiostatus = 'on';
+          return false;
+        } else if (audiostatus == 'on') {
+          $('.speaker').addClass('speakerplay');
+          $('#player')[0].play();
+        }
+      } else if ($('.speaker').hasClass("speakerplay")) {
+        $('#player')[0].pause();
+        $('.speaker').removeClass('speakerplay');
+        window.clearTimeout(mouseovertimer);
+        audiostatus = 'on';
+      }
+    });
+
+    $('#player').on('ended', function() {
+      $('.speaker').removeClass('speakerplay');
+      audiostatus = 'off';
+    });
+
+
+    function toggleFullscreen(elem) {
+      elem = elem || document.documentElement;
+      if (!document.fullscreenElement && !document.mozFullScreenElement &&
+        !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+          elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+
+    $(document).on('click','#btnFullscreen',function() {
+      toggleFullscreen();
+    });
+
+
+  }]).
+
+  controller('MainController', ["$rootScope", function($rootScope) {
     $rootScope.bgimg = "'/images/front.png'";
-  }).
 
-  controller('JoinController', function($rootScope, $scope, socket,$route,$interval,$templateCache,$timeout) {
-    $rootScope.bgimg = "'/images/studio.png'";
+}]).
 
-    $scope.tagline = 'Buy and Sell!';
+controller('JoinController',["$rootScope", "$scope", "socket","$route","$interval","$templateCache","$timeout" , function($rootScope, $scope, socket,$route,$interval,$templateCache,$timeout) {
+   $rootScope.bgimg = "'/images/studio.png'";
+
+   $scope.tagline = 'Buy and Sell!';
 
     socket.emit('join:area');
 
@@ -88,9 +175,9 @@ controller('IndexController', function($scope,$location, socket) {
       $('#cgrid').click(function(event){event.preventDefault();$('#cproducts .item').removeClass('list-group-item');$('#cproducts .item').addClass('grid-group-item');});
     });
 
-  }).
+  }]).
 
-  controller('AuctionController', function($rootScope, $routeParams, $http, $scope, socketa) {
+  controller('AuctionController', ["$rootScope", "$routeParams", "$http", "$scope", "socketa", function($rootScope, $routeParams, $http, $scope, socketa) {
 
 
     $rootScope.bgimg = "'/images/spotlight.png'";
@@ -121,7 +208,6 @@ controller('IndexController', function($scope,$location, socket) {
         });
       }
     },function (error){
-      console.log(error);
     });
 
 
@@ -143,23 +229,21 @@ controller('IndexController', function($scope,$location, socket) {
     socketa.on('flash:auction',function(data){
       $('#flashModal').modal();
       $('#flashModal .modal-body p').html(data.message);
-      $('#cash_prrob')
     });
 
     $('.btn-bid').click(function(){
       socketa.emit('bid', {value : this.id,id: $routeParams.id });
     });
 
-  }).
+  }]).
 
 
-  controller('WheelController', function($rootScope,$scope,socketb,$timeout,$route) {
+  controller('WheelController', ["$rootScope", "$scope", "socketb", "$timeout", "$route", function($rootScope,$scope,socketb,$timeout,$route) {
 
     $rootScope.bgimg = "'/images/back.png'";
 
     socketb.on('reload:wof',function(){
       $route.reload();
-      console.log("rel");
     });
     socketb.emit('begin:wof');
 
@@ -239,23 +323,22 @@ controller('IndexController', function($scope,$location, socket) {
         $timeout(function(){$route.reload();
         },3000);
       }
-    }
+    };
 
     game = new Phaser.Game(450, 450, Phaser.CANVAS, "gameArea");
     game.state.add("PlayGame",playGame);
     game.state.start("PlayGame");
 
-  }).
+  }]).
 
 
-  controller('ProfileController', function($rootScope, $scope,$timeout,$route, $http,socketc) {
+  controller('ProfileController', ["$rootScope", "$scope", "$timeout", "$route", "$http", "socketc", function($rootScope, $scope,$timeout,$route, $http,socketc) {
     $rootScope.bgimg = "'/images/back.png'";
 
     $http.get('/api/profile/')
     .then(function(success) {
       $scope.user = success.data;
     },function (error){
-      console.log(error);
     });
 
     $scope.inv_message = "You have no items in your inventory";
@@ -336,7 +419,7 @@ controller('IndexController', function($scope,$location, socket) {
 
       $(document).on('click','[id^=carousel-selector-]', function(){
         var id = this.id.substr(this.id.lastIndexOf("-") + 1);
-        var id = parseInt(id);
+        id = parseInt(id);
         $('#itemCarousel').carousel(id);
       });
 
@@ -347,9 +430,9 @@ controller('IndexController', function($scope,$location, socket) {
     });
 
 
-  }).
+  }]).
 
-  controller('LeaderBoardController', function($rootScope, $scope, $http) {
+  controller('LeaderBoardController', ["$rootScope", "$scope", "$http", function($rootScope, $scope, $http) {
 
 
     $http.get('/api/leaderboard')
@@ -361,7 +444,6 @@ controller('IndexController', function($scope,$location, socket) {
         $scope.users[i] = response.data.users[m];
       }
     },function (error){
-      console.log(error);
     });
 
     $http.get('/api/rating')
@@ -386,14 +468,14 @@ controller('IndexController', function($scope,$location, socket) {
 
     });
 
-  }).
+  }]).
 
 
-  controller('InstructionsController', function($rootScope) {
+  controller('InstructionsController', ["$rootScope", function($rootScope) {
     $rootScope.bgimg = "'/images/back.png'";
-  }).
+  }]).
 
-  controller('QuizController', function($scope,socketd,$timeout,$route) {
+  controller('QuizController', ["$scope", "socketd", "$timeout", "$route", function($scope,socketd,$timeout,$route) {
 
     socketd.on('reload:quiz',function(){
       $route.reload();
@@ -465,4 +547,4 @@ controller('IndexController', function($scope,$location, socket) {
     });
 
 
-  });
+  }]);

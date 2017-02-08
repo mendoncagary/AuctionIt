@@ -2,7 +2,7 @@
 
 angular.module('AuctionIt.services', []).
 
-factory('socket', function ($rootScope) {
+factory('socket', ["$rootScope", function ($rootScope) {
   var socket = io('/join');
   return {
     on: function (eventName, callback) {
@@ -21,12 +21,12 @@ factory('socket', function ($rootScope) {
             callback.apply(socket, args);
           }
         });
-      })
+      });
     }
   };
-}).
+}]).
 
-factory('socketa', function ($rootScope) {
+factory('socketa', ["$rootScope", function ($rootScope) {
   var socketa = io('/auction');
   return {
     on: function (eventName, callback) {
@@ -45,12 +45,12 @@ factory('socketa', function ($rootScope) {
             callback.apply(socketa, args);
           }
         });
-      })
+      });
     }
   };
-}).
+}]).
 
-factory('socketb', function ($rootScope) {
+factory('socketb', ["$rootScope", function ($rootScope) {
   var socketb = io('/wheeloffortune');
   return {
     on: function (eventName, callback) {
@@ -69,12 +69,12 @@ factory('socketb', function ($rootScope) {
             callback.apply(socketb, args);
           }
         });
-      })
+      });
     }
   };
-}).
+}]).
 
-factory('socketc', function ($rootScope) {
+factory('socketc', ["$rootScope", function ($rootScope) {
   var socketc = io('/profile');
   return {
     on: function (eventName, callback) {
@@ -93,13 +93,13 @@ factory('socketc', function ($rootScope) {
             callback.apply(socketc, args);
           }
         });
-      })
+      });
     }
   };
-}).
+}]).
 
 
-factory('socketd', function ($rootScope) {
+factory('socketd', ["$rootScope", function ($rootScope) {
   var socketd = io('/quiz');
   return {
     on: function (eventName, callback) {
@@ -118,26 +118,7 @@ factory('socketd', function ($rootScope) {
             callback.apply(socketd, args);
           }
         });
-      })
+      });
     }
   };
-}).
-
-
-factory('Quiz', ['$http', function($http) {
-
-    return {
-        get : function() {
-            return $http.get('/api/quiz');
-        },
-
-        create : function(nerdData) {
-            return $http.post('/api/quiz', quizData);
-        },
-
-        delete : function(id) {
-            return $http.delete('/api/quiz/' + id);
-        }
-    }
-
 }]);

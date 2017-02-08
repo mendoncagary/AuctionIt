@@ -51,7 +51,7 @@ $(document).on('click touchend', '.speaker', function() {
       return false;
     } else if (audiostatus == 'on') {
       $('.speaker').addClass('speakerplay');
-      $('#player')[0].play()
+      $('#player')[0].play();
     }
   } else if ($('.speaker').hasClass("speakerplay")) {
     $('#player')[0].pause();

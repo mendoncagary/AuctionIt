@@ -46,8 +46,8 @@ app.io           = io;
 var sessionMiddleware = session({
 	cookieName: 'session',
 	secret: '23dj9aud6y0jla9sje064ghglad956',
-	duration: 60 * 60 * 1000,
-	activeDuration: 5 * 60 * 1000,
+	duration: 24 *60 * 60 * 1000,
+	activeDuration: 24 *60 * 60 * 1000,
 	httpOnly: true,
 	//secure: true,
 	ephemeral: true
