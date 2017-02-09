@@ -2,7 +2,7 @@
 
 angular.module('AuctionIt.controllers', []).
 
-controller('IndexController', ["$scope", "$location", "socket", function($scope,$location, socket) {
+controller('IndexController', ["$scope", "$location", "socket", "$route", function($scope,$location, socket,$route) {
 
   $scope.tagline = "Penny's on the Dollar!";
   console.log(`%c
@@ -48,7 +48,7 @@ controller('IndexController', ["$scope", "$location", "socket", function($scope,
 
 
      socket.on('end', function(data){
-       window.location.reload(true);
+       $route.reload();
      });
 
 
@@ -136,9 +136,8 @@ controller('IndexController', ["$scope", "$location", "socket", function($scope,
 
   }]).
 
-  controller('MainController', ["$rootScope", function($rootScope) {
-    $rootScope.bgimg = "'/images/front.png'";
-
+  controller('MainController', ["$rootScope",function($rootScope) {
+    $rootScope.bgimg = "'/images/front.jpg'";
 }]).
 
 controller('JoinController',["$rootScope", "$scope", "socket","$route","$interval","$templateCache","$timeout" , function($rootScope, $scope, socket,$route,$interval,$templateCache,$timeout) {
@@ -194,7 +193,7 @@ controller('JoinController',["$rootScope", "$scope", "socket","$route","$interva
         var img = new Image();
         img.onload = function(){
           var ctx = canvas.getContext('2d');
-          ctx.drawImage( img, 0, 0 ,400,300);
+          ctx.drawImage( img, 0, 0 ,350,350);
         };
         img.src = 'data:image/png;base64,' + $scope.item.item_image;
 
@@ -217,10 +216,9 @@ controller('JoinController',["$rootScope", "$scope", "socket","$route","$interva
     $scope.bidlist = [];
 
     socketa.on('priceUpdate', function(data) {
-      //$scope.current_price = data.currentPrice;
-      //$scope.bid_user = data.username;
       $scope.bidlist.push({user: data.username, value: data.bid_value});
     });
+
 
     socketa.on('currentPrice',function(data){
       $scope.current_price = data;

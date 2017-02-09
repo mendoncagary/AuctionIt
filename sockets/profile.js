@@ -13,12 +13,13 @@ module.exports = function (io) {
 
     var cookie_string = socket.request.headers.cookie;
     var req = { headers : {cookie : cookie_string} };
-    session({ cookieName:'session',
-    secret: '23dj9aud6y0jla9sje064ghglad956',
-    duration: 24 *60 * 60 * 1000,
-    activeDuration: 24 *60 * 60 * 1000,
+    session({ cookieName:'sess',
+    secret: '134klh389dbcbsldvn1mcbj',
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
     httpOnly: true,
-    //secure: true,ephemeral: true
+    //secure: true,
+    ephemeral: true
     })(req, {}, function(){})
 
 
@@ -44,7 +45,7 @@ module.exports = function (io) {
 
       if(valid)
       {
-        Item.findOne({_id : item.id, i_is_won: true, i_owner: req.session.user.username},function(err,item){
+        Item.findOne({_id : item.id, i_is_won: true, i_owner: req.sess.username},function(err,item){
           if(err) throw err;
           if(item){
             if(duration==20) cost = 10*item.i_baseprice/100;
@@ -52,7 +53,7 @@ module.exports = function (io) {
             else if(duration==40){
               cost = 30*item.i_baseprice/100;
             }
-            User.findOne({tek_userid:req.session.user.username},function(err,user){
+            User.findOne({tek_userid:req.sess.username},function(err,user){
               if(err) throw err;
               if(user)
               {
@@ -83,7 +84,7 @@ module.exports = function (io) {
                       var endDate = new Date();
                       endDate.setTime(dateMillis+timePeriodMillis);
 
-                      Item.findOneAndUpdate({_id : item.id, i_is_won: true,i_owner: req.session.user.username},{$set:{i_starttime:startDate,i_endtime:endDate,i_is_won:false,bid:[]}},function(err,item){
+                      Item.findOneAndUpdate({_id : item.id, i_is_won: true,i_owner: req.sess.username},{$set:{i_starttime:startDate,i_endtime:endDate,i_is_won:false,bid:[]}},function(err,item){
                         if(err) throw err;
                         if(item)
                         {
@@ -92,13 +93,13 @@ module.exports = function (io) {
                           else if(duration==40){
                             cost = 30*item.i_baseprice/100;
                           }
-                          User.findOne({tek_userid:req.session.user.username},function(err,user){
+                          User.findOne({tek_userid:req.sess.username},function(err,user){
                             if(err) throw err;
                             if(user)
                             {
                               var cashbalance = user.u_cashbalance;
                               var cashbalance = cashbalance - cost;
-                              User.update({tek_userid:req.session.user.username},{$set:{u_cashbalance:cashbalance},$inc:{u_itemssold:1}},{new: true}, function(err,user){
+                              User.update({tek_userid:req.sess.username},{$set:{u_cashbalance:cashbalance},$inc:{u_itemssold:1}},{new: true}, function(err,user){
                                 if(err) throw err;
                               });
                             }

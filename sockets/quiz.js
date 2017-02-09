@@ -26,8 +26,8 @@ module.exports = function (io) {
 
         var cookie_string = socket.request.headers.cookie;
         var req = { headers : {cookie : cookie_string} };
-        session({ cookieName:'session',
-        secret: '23dj9aud6y0jla9sje064ghglad956',
+        session({ cookieName:'sess',
+        secret: '134klh389dbcbsldvn1mcbj',
         duration: 30 * 60 * 1000,
         activeDuration: 5 * 60 * 1000,
         httpOnly: true,
@@ -56,7 +56,7 @@ module.exports = function (io) {
           quiz.room = 'quiz';
           socket.join(quiz.room);
 
-          User.findOne({tek_userid: req.session.user.username, quiz_flag:true} , function(err,user){
+          User.findOne({tek_userid: req.sess.username, quiz_flag:true} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -76,7 +76,7 @@ module.exports = function (io) {
             }
           });
 
-          User.findOne({tek_userid: req.session.user.username, quiz_flag:false} , function(err,user){
+          User.findOne({tek_userid: req.sess.username, quiz_flag:false} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -126,7 +126,7 @@ module.exports = function (io) {
 
                       if(answer == quiz.q_ans)
                       {
-                        User.findOne({tek_userid: req.session.user.username, quiz_flag:false} , function(err,user){
+                        User.findOne({tek_userid: req.sess.username, quiz_flag:false} , function(err,user){
                           if(err) throw err;
                         if(user)
                         {
@@ -140,7 +140,7 @@ module.exports = function (io) {
                     });
                       }
                       else {
-                        User.findOne({tek_userid: req.session.user.username, quiz_flag:false} , function(err,user){
+                        User.findOne({tek_userid: req.sess.username, quiz_flag:false} , function(err,user){
                           if(err) throw err;
                           if(user)
                           {
@@ -173,7 +173,6 @@ module.exports = function (io) {
 
     socket.on('disconnect',function(){
       socket.leave(quiz.room);
-      console.log("User left quiz");
     });
 
 });

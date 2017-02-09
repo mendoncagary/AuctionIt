@@ -11,12 +11,12 @@ var db = require('./config/db');
 var api = require('./routes/api');
 var admin = require('./routes/admin');
 var Tek_user = require('./models/tek_user');
-//var User = require('./models/user');
+var User = require('./models/user');
 
 var app = express();
 app.use(helmet());
 
-var flash = require('connect-flash');
+//var flash = require('connect-flash');
 var session = require('client-sessions');
 var cookie = require('cookie');
 
@@ -35,7 +35,7 @@ mongoose.connection.on('disconnected', function() {
 });
 
 
-app.use(flash());
+//app.use(flash());
 
 
 
@@ -44,10 +44,10 @@ var io           = socket_io();
 app.io           = io;
 
 var sessionMiddleware = session({
-	cookieName: 'session',
-	secret: '23dj9aud6y0jla9sje064ghglad956',
-	duration: 24 *60 * 60 * 1000,
-	activeDuration: 24 *60 * 60 * 1000,
+	cookieName: 'sess',
+	secret: '134klh389dbcbsldvn1mcbj',
+	duration: 30 * 60 * 1000,
+	activeDuration: 5 * 60 * 1000,
 	httpOnly: true,
 	//secure: true,
 	ephemeral: true
@@ -62,8 +62,9 @@ app.use(sessionMiddleware);
 
 
 function isLoggedIn(req, res, next) {
-	if (!req.user) {
+	if (!req.sess.username) {
 		res.redirect('/login');
+		//res.redirect('teknack.in/index.html');
 	} else {
 		next();
 	}
@@ -97,50 +98,27 @@ app.use(require('node-sass-middleware')({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*
-
-io.set('authorization', function (handshakeData, accept) {
-
-  if (handshakeData.headers.cookie) {
-
-    handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
-    handshakeData.sessionID = cookieParser.signedCookie(handshakeData.cookie['session'], '23dj9aud6y0jla9sje064ghglad956');
-    if (handshakeData.cookie['session'] == handshakeData.sessionID) {
-			console.log("true");
-      return accept('Cookie is invalid.', false);
-    }
-console.log("sdasd");
-  } else {
-    return accept('No cookie transmitted.', false);
-		console.log("fry");
-  }
-console.log("doasnad");
-  accept(null, true);
-});
-*/
 
 io.on('connection', function(socket) {
 console.log("connected");
 });
 
 
-
-
 app.use('/admin',admin);
 
 
 app.use(function(req, res, next) {
-	if (req.session && req.session.user) {
-		Tek_user.findOne({ username : req.session.user.username }, function(err, user) {
-			if (user) {
-				req.user = user;
-				delete req.user.password; // delete the password from the session
-				req.session.user = user;  //refresh the session value
-				res.locals.user = user;
-			}
+	if (req.sess && req.sess.username) {
+	//	User.findOne({ tek_userid : req.sess.username }, function(err, user) {
+		//	if (user) {
+				//req.user = user;
+				//delete req.user.password; // delete the password from the session
+				//req.session.user = user;  //refresh the session value
+				//res.locals.user = user;
+			//}
 			// finishing processing the middleware and run the route
 			next();
-		});
+	//	});
 	} else {
 		next();
 	}
@@ -150,9 +128,9 @@ app.use(function(req, res, next) {
 
 app.get('/', isLoggedIn, routes.index);
 app.get('/login', function(req, res){
-	if(!req.user)
+	if(!req.sess.username)
 	{
-		res.render('login', {title: 'AuctionIt', message : req.flash('loginMessage') });
+		res.render('login', {title: 'AuctionIt' });
 	}
 	else{
 		res.redirect('/');
@@ -170,7 +148,7 @@ app.get('/api/badges', isLoggedIn, api.badges);
 
 
 app.get('/logout', function(req, res) {
-	req.session.reset();
+	req.sess.reset();
 	res.redirect('/');
 });
 
@@ -182,8 +160,7 @@ app.post('/login', function(req, res) {
 			res.render('login', { error: 'Invalid email or password.' });
 		} else {
 			if (req.body.password === user.password) {
-				// sets a cookie with the user's info
-				req.session.user = user;
+				req.sess.username = user.username;
 				res.redirect('/');
 			} else {
 				res.render('login', { error: 'Invalid email or password.' });

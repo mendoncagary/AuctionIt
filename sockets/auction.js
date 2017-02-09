@@ -1,3 +1,4 @@
+var session = require('client-sessions');
 var User = require('../models/user');
 var Item = require('../models/item');
 var fs = require('fs');
@@ -7,6 +8,18 @@ module.exports = function (io) {
   var auction = io.of('/auction');
 
   auction.on('connection', function (socket) {
+
+    var cookie_string = socket.request.headers.cookie;
+    var req = { headers : {cookie : cookie_string} };
+    session({ cookieName:'sess',
+    secret: '134klh389dbcbsldvn1mcbj',
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
+    httpOnly: true,
+    //secure: true,
+    ephemeral: true
+    })(req, {}, function(){})
+
 
 
     socket.on('join:auction',function(data){
@@ -29,14 +42,14 @@ module.exports = function (io) {
             {
               for(var i in item.bid)
               {
-                username = item.bid[i].first_name;
+                username = item.bid[i].user_id;
                 bid_value = item.bid[i].value;
                 socket.emit('priceUpdate',{bid_value: bid_value,username: username});
               }
             }
             else {
               username = "No User has placed bid";
-              socket.emit('priceUpdate',{bid_value: 0, username: username});
+              socket.emit('priceUpdate',{bid_value: '', username: username});
             }
 
           }
@@ -47,13 +60,13 @@ module.exports = function (io) {
 
       socket.on('bid', function (data) {
 
-        User.findOne({tek_userid: req.session.user.username},function(err,user){
+        User.findOne({tek_userid: req.sess.username},function(err,user){
           if(err) throw err;
           if(user)
           {
             user_cashbal = user.u_cashbalance;
 
-            c_user = req.session.user.username;
+            c_user = req.sess.username;
             if(data.value == 'but_1')
             {
               var bidvalue = baseprice;
@@ -75,14 +88,14 @@ module.exports = function (io) {
               {
                 if(row.i_owner !== c_user && user_cashbal >=currentPrice)
                 {
-                  var bid = { value: currentPrice, user_id: req.session.user.username,first_name: socket.request.user.first_name};
+                  var bid = { value: currentPrice, user_id: req.sess.username};
 
                   Item.findOneAndUpdate({i_starttime:{ $lt: getUTC()},i_endtime:{$gt:getUTC()}, i_is_won: false, _id:data.id}, { $set: { i_bidvalue: bidvalue,i_currentprice: currentPrice}, $push:{bid : bid}} ,{new: true}, function(err,item){
                     if(err) throw err;
                     if(item.bid.length>0)
                     {
                       var size = item.bid.length;
-                      auction.in(data.id).emit('priceUpdate',{bid_value:currentPrice,username: item.bid[size-1].first_name});
+                      auction.in(data.id).emit('priceUpdate',{bid_value:currentPrice,username: item.bid[size-1].user_id});
                       auction.in(data.id).emit('currentPrice',currentPrice);
                     }
 

@@ -17,10 +17,10 @@ nsp.on('connection', function (socket) {
 
 var cookie_string = socket.request.headers.cookie;
 var req = { headers : {cookie : cookie_string} };
-session({ cookieName:'session',
-secret: '23dj9aud6y0jla9sje064ghglad956',
-duration: 24 *60 * 60 * 1000,
-activeDuration: 24 *60 * 60 * 1000,
+session({ cookieName:'sess',
+secret: '134klh389dbcbsldvn1mcbj',
+duration: 30 * 60 * 1000,
+activeDuration: 5 * 60 * 1000,
 httpOnly: true,
 //secure: true,
 ephemeral: true
@@ -63,7 +63,9 @@ ephemeral: true
                   curr_cash = item[i].baseprice;
                 }
                 else {owner = "System Admin";}
-                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice,i_actualprice:2*item[i].i_currentprice} }, {new:true},function (err, item) {
+                actual_price = 2*item[i].i_currentprice;
+                console.log(actual_price);
+                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice,i_actualprice:actual_price} }, {new:true},function (err, item) {
                   if(err) throw err;
                   });
                     if(item[i].bid.length>0)
@@ -170,14 +172,6 @@ ephemeral: true
     });
 
 
-    //socket.emit('login');
-
-  	//socket.on('username', function(username){
-      //  socket.username = username;
-   //});
-
-
-
 socket.on('join:game',function(){
   Chat.find({},{} ,{ limit:10, sort:{ _id: -1}},function(err,chat){
   if(err) throw err;
@@ -198,14 +192,13 @@ socket.on('send', function (data) {
       if(data.message!="" && data.message.length<100)
       {
         time = getUTC();
-      var chat_message = new Chat({message:data.message,from_user:req.session.user.username,time:time});
+      var chat_message = new Chat({message:data.message,from_user:req.sess.username,time:time});
       chat_message.save(function(err,rows){
       if(err) throw err;
 
 
     Chat.findOne({}, {}, { sort: { _id : -1 } }, function(err, chat) {
     if(err) throw err;
-    console.log('Selected:', chat);
       d=getUTC();
   nsp.emit('message',{message: chat.message,time:timeDifference(d,chat.time),name:chat.from_user});
   });
@@ -213,7 +206,7 @@ socket.on('send', function (data) {
 }
 else
 {
-socket.emit('message',{message: data.message,time:'Maximum message size is 100 characters.Message could not be sent',name:'gary'});
+socket.emit('message',{message: data.message,time:'Maximum message size is 100 characters.Message could not be sent',name:req.sess.username});
 }
 });
 });
@@ -256,12 +249,6 @@ function getDateTime() {
 
 }
 
-/*function setValue(value) {
-  item = value;
-  //console.log(item);
-  post_item = 1;
-
-}*/
 function timeDifference(current, previous) {
 
     var msPerMinute = 60 * 1000;

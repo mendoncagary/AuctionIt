@@ -30,10 +30,10 @@ module.exports = function (io) {
 
     var cookie_string = socket.request.headers.cookie;
     var req = { headers : {cookie : cookie_string} };
-    session({ cookieName:'session',
-    secret: '23dj9aud6y0jla9sje064ghglad956',
-    duration: 24 *60 * 60 * 1000,
-    activeDuration: 24 *60 * 60 * 1000,
+    session({ cookieName:'sess',
+    secret: '134klh389dbcbsldvn1mcbj',
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
     httpOnly: true,
     //secure: true,
     ephemeral: true
@@ -61,7 +61,7 @@ module.exports = function (io) {
           wof.room = 'wheeloffortune';
           socket.join(wof.room);
 
-          User.findOne({tek_userid: req.session.user.username, wof_flag:true} , function(err,user){
+          User.findOne({tek_userid: req.sess.username, wof_flag:true} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -86,7 +86,7 @@ module.exports = function (io) {
             }
           });
 
-          User.findOne({tek_userid: req.session.user.username, wof_flag:false} , function(err,user){
+          User.findOne({tek_userid: req.sess.username, wof_flag:false} , function(err,user){
             if(err) throw err;
             if(user){
               var curtime = new Date(getUTC());
@@ -117,7 +117,7 @@ module.exports = function (io) {
           var min = curtime.getUTCMinutes();
           if(min>=0 && min<=19 || min>=30 && min<=49)
           {
-              User.findOne({tek_userid: req.session.user.username, wof_flag:false} , function(err,user){
+              User.findOne({tek_userid: req.sess.username, wof_flag:false} , function(err,user){
                 if(err) throw err;
               if(user)
               {
@@ -141,10 +141,8 @@ module.exports = function (io) {
 
 
 
-
     socket.on('disconnect',function(){
       socket.leave(wof.room);
-      console.log("User disconnected");
     });
 
 });

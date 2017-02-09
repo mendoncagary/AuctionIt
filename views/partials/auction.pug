@@ -2,73 +2,74 @@
 
 .container
 	.row
+		div(class="about col-md-10 leader_back")
 
-		.col-md-3.pull-left
-			div.panel-group
-				div(class="panel panel-info")
-					div.panel-heading Seller info
-					div.panel-body(class="panel-seller")
-						span(ng-bind="item.item_owner")
+			.col-md-4.pull-left
+				div.panel-group
+					div(class="panel panel-info")
+						div.panel-heading.panel_head_auc Seller info
+						div.panel-body(class="panel-seller")
+							span(ng-bind="item.item_owner")
 
-				div(class="panel panel-info")
-					div.panel-heading Place a Bid
-					div.panel-body(class="panel-bid")
-						button(type="button" ng-bind="item.curBidValue1" id="but_1" class="btn-bid btn btn-lg btn-default")
-						button(type="button" ng-bind="item.curBidValue2" id="but_2" class="btn-bid btn btn-lg btn-default")
-						button(type="button" ng-bind="item.curBidValue3" id="but_3" class="btn-bid btn btn-lg btn-default")
+					div(class="panel panel-info")
+						div.panel-heading.panel_head_auc Place a Bid
+						div.panel-body(class="panel-bid")
+							button(type="button" ng-bind="item.curBidValue1" id="but_1" class="btn-bid btn btn-lg btn-default")
+							button(type="button" ng-bind="item.curBidValue2" id="but_2" class="btn-bid btn btn-lg btn-default")
+							button(type="button" ng-bind="item.curBidValue3" id="but_3" class="btn-bid btn btn-lg btn-default")
 
-				div(class="panel panel-info")
-					div.panel-heading Last Bids
-					div.panel-body(class="panel-price")
-						div(ng-repeat="bid in bidlist | reverse")
-							span(ng-bind="bid.user")
-							span(ng-bind="bid.value" class="pull-right")
-
-
-				div(class="panel panel-info")
-					div.panel-heading Current Price
-					div.panel-body(id="current_price" class="panel-price")
-						img(alt="Rupee" src="/images/rupee_micro.png")
-						span(ng-bind="current_price")
-
-		.col-md-5
-			canvas(id="canvas" class="auction_canvas" width="400" height="300")
+					div(class="panel panel-info")
+						div.panel-heading.panel_head_auc Last Bids
+						div.panel-body(class="panel-price")
+							div(ng-repeat="bid in bidlist | reverse")
+								span(title="{{bid.user}}" style="width:140px !important;" ng-bind="bid.user")
+								span(title="{{bid.value}}" ng-bind="bid.value"  class="pull-right")
 
 
+					div(class="panel panel-info")
+						div.panel-heading.panel_head_auc Current Price
+						div.panel-body(id="current_price" class="panel-price")
+							span.auction_text $
+							span.auction_text(ng-bind="current_price")
 
-		.col-md-3
-			div.panel-group
-				div(class="panel panel-info")
-					div.panel-heading Item Name
-					div.panel-body(id="item_name" class="panel-name" ng-bind="item.item_name")
-
-				div(class="panel panel-info")
-					div.panel-heading Base Price
-					div.panel-body(id="item_price" class="panel-price")
-						img(alt="Rupee" src="/images/rupee_micro.png")
-						span(ng-bind="item.item_price")
-
-				div(class="panel panel-info")
-					div.panel-heading Description
-					div.panel-body(id="item_desc" class="panel-desc" ng-bind="item.item_desc")
+			.col-md-5
+				canvas(id="canvas" class="auction_canvas" width="350" height="380")
+				div(id="clockdiv" class="clockdiv col-md-10 col-md-offset-1" style="color:white")
 
 
+			.col-md-3
+				div.panel-group
+					div(class="panel panel-info")
+						div.panel-heading.panel_head_auc Item Name
+						div.panel-body(id="item_name" class="panel-name" ng-bind="item.item_name")
 
+					div(class="panel panel-info")
+						div.panel-heading.panel_head_auc Base Price
+						div.panel-body(id="item_price" class="panel-price")
+							span.auction_text $
+							span.auction_text(ng-bind="item.item_price")
 
-
-		.col-md-3.col-md-offset-2
-			div(id="clockdiv" class="clockdiv" style="color:white;")
+					div(class="panel panel-info")
+						div.panel-heading.panel_head_auc Description
+						div.panel-body(id="item_desc" class="panel-desc" ng-bind="item.item_desc")
 
 
 
 
-		#flashModal.modal.fade(role='dialog')
-			.modal-dialog.modal-sm
-				.modal-content
-					.modal-header
-						button.close(type='button', data-dismiss='modal') ×
-						h4.modal-title Warning
-					.modal-body
-						p
-					.modal-footer
-						button.btn.btn-default(type='button', data-dismiss='modal') Close
+
+
+
+
+
+
+
+			#flashModal.modal.fade(role='dialog')
+				.modal-dialog.modal-sm
+					.modal-content
+						.modal-header
+							button.close(type='button', data-dismiss='modal') ×
+							h4.modal-title Warning
+						.modal-body
+							p
+						.modal-footer
+							button.btn.btn-default(type='button', data-dismiss='modal') Close

@@ -28,7 +28,7 @@ gulp.task('compress', function (cb) {
 
 
 gulp.task('lint', function() {
-  return gulp.src('public/javascripts/gulp/*.js')
+  return gulp.src('public/javascripts/*.js')
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'))
     .pipe(jshint.reporter('fail'));

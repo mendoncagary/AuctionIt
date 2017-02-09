@@ -7,9 +7,6 @@ var bidSchema = new Schema({
   },
   user_id: {
     type: String
-  },
-  first_name: {
-    type: String
   }
 });
 
@@ -53,6 +50,9 @@ var itemSchema = new Schema({
   },
   i_owner:{
     type:String
+  },
+  i_actualprice:{
+    type: Number
   }
 
 });

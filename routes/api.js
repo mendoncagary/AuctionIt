@@ -76,14 +76,14 @@ else {
 exports.profile = function(req,res){
 
 
-            User.findOne({tek_userid: req.session.user.username},function(err,user){
+            User.findOne({tek_userid: req.sess.username},function(err,user){
               if(err) throw err;
 
               if(user)
               {
                   res.json({
                 userid : user.tek_userid,
-                username :  user.tek_name,
+                //username :  user.tek_name,
                 cashbal :  user.u_cashbalance,
                 auction_points : user.u_itempoints,
                 items_won : user.u_itemswon,
@@ -102,7 +102,7 @@ exports.profile = function(req,res){
 exports.rating = function(req,res){
   if(req.body.value >=0 && req.body.value<=5)
   {
-            User.findOneAndUpdate({tek_userid: req.session.user.username},{$set:{rating:req.body.value }},{new: true},function(err,user){
+            User.findOneAndUpdate({tek_userid: req.sess.username},{$set:{rating:req.body.value }},{new: true},function(err,user){
               if(err) throw err;
 
               if(user)
@@ -118,7 +118,7 @@ exports.rating = function(req,res){
 
 
 exports.rating_get = function(req,res){
-            User.findOne({tek_userid: req.session.user.username},{'_id':0, 'rating':1},function(err,user){
+            User.findOne({tek_userid: req.sess.username},{'_id':0, 'rating':1},function(err,user){
               if(err) throw err;
 
               if(user)
@@ -142,7 +142,7 @@ exports.itemswon = function(req,res){
   var costprice_1 = {};
   var costprice_2 = {};
   var costprice_3 = {};
-  Item.find({i_is_won : true, i_owner: req.session.user.username },'_id i_name i_baseprice i_desc i_imgpath',function(err,item){
+  Item.find({i_is_won : true, i_owner: req.sess.username },'_id i_name i_baseprice i_desc i_imgpath',function(err,item){
   if(err) throw err;
   if(item.length>0)
   {
@@ -215,7 +215,7 @@ var aucpoints = {};
 
 exports.badges = function(req,res){
 
-  User.findOne({tek_userid: req.session.user.username},{'_id':0,'u_itemswon':1,'wof_no_attempts':1,'quiz_no_attempts':1, 'badge':1},function(err,user){
+  User.findOne({tek_userid: req.sess.username},{'_id':0,'u_itemswon':1,'wof_no_attempts':1,'quiz_no_attempts':1, 'badge':1},function(err,user){
     if(user)
     {
       var first_auc_var = false;

@@ -742,4 +742,14 @@ label .glyphicon {
 .wof_back {
   width: 955px !important; }
 
+.leader_back {
+  width: 960px; }
+
+.panel_head_auc {
+  background-color: #B00E1E !important;
+  color: #fff !important; }
+
+.auction_text {
+  font-size: 18px; }
+
 /*# sourceMappingURL=style.css.map */

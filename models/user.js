@@ -23,9 +23,6 @@ var userSchema = new Schema({
     type: String,
     unique: true
   },
-  tek_name:{
-      type: String,
-  },
   u_firstvisit:{
     type: Boolean
   },
