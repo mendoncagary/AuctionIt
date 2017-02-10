@@ -198,7 +198,7 @@ controller('JoinController',["$rootScope", "$scope", "socket","$route","$interva
         img.src = 'data:image/png;base64,' + $scope.item.item_image;
 
         $scope.endtime = "2017-"+$scope.item.item_endmonth+"-"+$scope.item.item_enddate+" "+$scope.item.item_endhour+":"+$scope.item.item_endmin+":"+$scope.item.item_endsec;
-        var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
+        var nextYear = moment.tz($scope.endtime, "Etc/UTC");
 
         $('#clockdiv').countdown(nextYear.toDate(), function(event) {
           $(this).html(event.strftime(
@@ -249,7 +249,7 @@ controller('JoinController',["$rootScope", "$scope", "socket","$route","$interva
     socketb.on('countdown:wof',function(data){
       $scope.flash =true;
       $scope.endtime = "2017-02-"+data.day+" "+data.hour+":"+data.min;
-      var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
+      var nextYear = moment.tz($scope.endtime, "Etc/UTC");
       $('#clockdiv').countdown(nextYear.toDate(), function(event) {
         $(this).html(event.strftime(
           "<div><span class='days'>%-d</span><div class='smalltext'>Day%!d</div></div><div><span class='hours'>%H</span><div class='smalltext'>Hour%!H</div></div><div><span class='minutes'>%M</span><div class='smalltext'>Minute%!M</div></div><div><span class='seconds'>%S</span><div class='smalltext'>Seconds</div></div>"
@@ -503,7 +503,7 @@ controller('JoinController',["$rootScope", "$scope", "socket","$route","$interva
       $('#flash_div').show();
       $('#flash_message').hide();
       $scope.endtime = "2017-02-"+data.day+" "+data.hour+":"+data.min;
-      var nextYear = moment.tz($scope.endtime, "Asia/Kolkata");
+      var nextYear = moment.tz($scope.endtime, "Etc/UTC");
       $('#clockdiv').countdown(nextYear.toDate(), function(event) {
         $(this).html(event.strftime(
           "<div><span class='days'>%-d</span><div class='smalltext'>Day%!d</div></div><div><span class='hours'>%H</span><div class='smalltext'>Hour%!H</div></div><div><span class='minutes'>%M</span><div class='smalltext'>Minute%!M</div></div><div><span class='seconds'>%S</span><div class='smalltext'>Seconds</div></div>"

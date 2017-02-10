@@ -245,7 +245,7 @@ function timeDifference(current, previous) {
 function getUTC()
 {
   var current = getDateTime().toString().split(/[- :]/);
-  var date =  new Date(Date.UTC(current[0], current[1]-1, current[2],current[3], current[4], current[5]));
+  var date =  new Date(current[0], current[1]-1, current[2],current[3], current[4], current[5]);
 return date;
 }
 
