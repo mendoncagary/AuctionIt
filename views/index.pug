@@ -25,9 +25,9 @@ html(lang='en')
          i#btnFullscreen(style="color:#E6C35C;",class="fa fa-arrows-alt fa-3x",aria-hidden="true")
        .col-md-1.div_tools.pull-right
          .speaker.pull-right
-         audio#player
-           source(src='http://sifidesign.com/audio/explosion.mp3', type='audio/mp3')
-           source(src='http://sifidesign.com/audio/explosion.ogg', type='audio/ogg')
+         audio#player(loop)
+           source(src='/audio/explosion.mp3', type='audio/mp3')
+           source(src='/audio/explosion.ogg', type='audio/ogg')
 
        div
          div

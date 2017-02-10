@@ -35,7 +35,7 @@ ephemeral: true
         if(err) throw err;
        if(item.length>0)
         {
-          Item.update({i_starttime : getUTC(),i_flag: 0},{$set: {i_flag: 1}},{new:true}, function(err,item){
+          Item.update({i_starttime : getUTC(),i_flag: 0},{$set: {i_flag: 1}},{multi:true}, function(err,item){
             if(err) throw err;
           });
           for(var i in item)
@@ -65,7 +65,7 @@ ephemeral: true
                 else {owner = "System Admin";}
                 actual_price = 2*item[i].i_currentprice;
                 console.log(actual_price);
-                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice,i_actualprice:actual_price} }, {new:true},function (err, item) {
+                Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice,i_actualprice:actual_price} }, {multi:true},function (err, item) {
                   if(err) throw err;
                   });
                     if(item[i].bid.length>0)

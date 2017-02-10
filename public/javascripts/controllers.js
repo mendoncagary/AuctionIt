@@ -14,7 +14,7 @@ controller('IndexController', ["$scope", "$location", "socket", "$route", functi
 
     `+
     `%c Hi there, welcome to AuctionIt.
-    `, 'background: #ffff; color: #17855E', 'background: #ffff; color: #B51616');
+    `, 'background: #ffff; color: #B00E1E', 'background: #ffff; color: #17855E');
 
 
     $scope.redirect = function(a){
@@ -42,7 +42,7 @@ controller('IndexController', ["$scope", "$location", "socket", "$route", functi
       {
         var text = $('#btn-input').val();
         socket.emit('send', { message: text });
-        $("#btn-input").val('');
+        //$("#btn-input").val('');
       }
     });
 
