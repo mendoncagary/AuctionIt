@@ -4,6 +4,8 @@ var fs = require('fs');
 var Item = require('../models/item');
 var Chat = require('../models/chat');
 var User = require('../models/user');
+var request = require('request');
+
 
 module.exports = function (io) {
 
@@ -26,7 +28,7 @@ httpOnly: true,
 ephemeral: true
 })(req, {}, function(){})
 
-
+console.log(getUTC());
 
     var job = new CronJob({
       cronTime: '* * * * * *',
@@ -64,7 +66,6 @@ ephemeral: true
                 }
                 else {owner = "System Admin";}
                 actual_price = 2*item[i].i_currentprice;
-                console.log(actual_price);
                 Item.update({i_endtime: getUTC(),i_is_won:false},{$set:{i_is_won:true, i_flag:0, i_owner: owner, i_baseprice:item[i].i_currentprice,i_actualprice:actual_price} }, {multi:true},function (err, item) {
                   if(err) throw err;
                   });
@@ -101,6 +102,9 @@ ephemeral: true
                           var cash = user.u_cashbalance - deduction;
                           User.update({tek_userid: item[i].bid[size-1].user_id}, {$set:{u_cashbalance:cash, u_itempoints:u_itempoints},$inc:{u_itemswon: 1}},function(err,user){
                             if(err) throw err;
+                          });
+                          request.updateScore(auctionIt,u_itempoints,item[i].bid[size-1].user_id,function(newscore){
+
                           });
                           User.findOne({tek_userid: old_owner},function(err,user){
                             if(user)
@@ -166,7 +170,7 @@ ephemeral: true
 
 
       socket.on('disconnect', function(){
-        console.log('join disconnected');
+
       });
 
     });

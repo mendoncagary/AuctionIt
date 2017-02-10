@@ -14,10 +14,13 @@ module.exports = function(io) {
         });
       }
       else {
-        var user = new User({tek_userid: req.sess.username,u_firstvisit: true, u_cashbalance: 30000, u_itemswon: 0, u_itemssold: 0, u_itempoints: 0, u_quizlevel: 1, chat_status: true, quiz_attempt_status: true, wof_status: true, wof_flag: false, quiz_flag: false,wof_no_attempts: 0, quiz_no_attempts: 0});
-        user.badge.beginner= false;
-        user.badge.intermediate= false;
-        user.badge.advanced= false;
+        var user = new User();
+        var badge = user.badge.create({beginner:{value:false,imgpath:'badge/beginnerfaded.png'},intermediate:{value:false,imgpath:'badge/intermediatefaded.png'},advanced:{value:false,imgpath:'badge/advancedfaded.png'}});
+        var user = new User({tek_userid: req.sess.username,u_firstvisit: true, u_cashbalance: 30000, u_itemswon: 0, u_itemssold: 0, u_itempoints: 0, u_quizlevel: 1, chat_status: true, quiz_attempt_status: true, wof_status: true, wof_flag: false, quiz_flag: false,wof_no_attempts: 0, quiz_no_attempts: 0, badge:badge});
+
+        //user.badge[0].beginner= false;
+        //user.badge[0].intermediate= false;
+        //user.badge[0].advanced= false;
         user.save(function(err,rows){
           if(err) throw err;
         });
@@ -35,17 +38,23 @@ module.exports = function(io) {
         var int_imgpath = 'badge/intermediatefaded.png';
         var adv_imgpath = 'badge/advancedfaded.png';
         var user_cashbal = user.u_cashbalance;
+
+        quiz_level = 1;
         if(user.quiz_no_attempts>10) quiz_level = 2;
         else if(user.quiz_no_attempts>20) quiz_level = 3;
         else if(user.quiz_no_attempts>40) quiz_level = 4;
         else if(user.quiz_no_attempts>80) quiz_level = 5;
 
+        if(quiz_level!==1){
+          User.update({tek_userid: req.sess.username},{$set:{u_quizlevel: quiz_level}},{new: true}, function(err,user){
+            if(err) throw err;
+          });
+         }
 
         if(user.u_itemswon>0 && user.wof_no_attempts>0 && user.quiz_no_attempts>0 && user.badge[0].beginner.value == false){
           beginner_badge = true;
           beg_imgpath  = 'badge/beginner.png';
           user_cashbal += 7000;
-          console.log("beginner");
         }
         if(user.u_itemswon>4 && user.wof_no_attempts>4 && user.quiz_no_attempts>4 && user.badge[0].intermediate.value == false){
           intermediate_badge = true;
@@ -59,9 +68,11 @@ module.exports = function(io) {
         }
         if(beginner_badge == true || intermediate_badge == true || advanced_badge == true)
         {
+
+
           var u = new User();
           var badge = u.badge.create({beginner:{value:beginner_badge,imgpath:beg_imgpath}, intermediate:{value:intermediate_badge,imgpath:int_imgpath},advanced:{value:advanced_badge,imgpath:adv_imgpath}});
-          User.update({tek_userid: req.sess.username},{$set:{badge:badge,u_cashbalance: user_cashbal, u_quizlevel: quiz_level}},{new: true}, function(err,user){
+          User.update({tek_userid: req.sess.username},{$set:{badge:badge,u_cashbalance: user_cashbal}},{new: true}, function(err,user){
             if(err) throw err;
           });
         }

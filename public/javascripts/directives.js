@@ -22,7 +22,7 @@ directive("countdownDirective", ["$timeout", function($timeout) {
           $('[data-countdown]').each(function() {
             var $this = $(this), finalDate = $(this).data('countdown');
             $this.countdown(finalDate, function(event) {
-              $this.html(event.strftime("<div><span class='hours'>%H</span><div class='smalltext'>Hour%!H</div></div><div><span class='minutes'>%M</span><div class='smalltext'>Minute%!M</div></div><div><span class='seconds'>%S</span><div class='smalltext'>Seconds</div></div>"));
+              $this.html(event.strftime("<div><span class='days'>%D</span><div class='smalltext'>Day%!D</div></div><div><span class='hours'>%H</span><div class='smalltext'>Hour%!H</div></div><div><span class='minutes'>%M</span><div class='smalltext'>Minute%!M</div></div><div><span class='seconds'>%S</span><div class='smalltext'>Seconds</div></div>"));
             });
           });
         },0);

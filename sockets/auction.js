@@ -117,7 +117,6 @@ module.exports = function (io) {
 
       socket.on('disconnect',function(){
         socket.leave(auction.room);
-        console.log("auction disconnected");
       });
 
     });

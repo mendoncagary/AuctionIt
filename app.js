@@ -100,7 +100,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 io.on('connection', function(socket) {
-console.log("connected");
+
 });
 
 

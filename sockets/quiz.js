@@ -144,7 +144,7 @@ module.exports = function (io) {
                           if(err) throw err;
                           if(user)
                           {
-                          User.update({tek_userid: user.tek_userid,quiz_flag: false},{$set: {quiz_flag: true}}, function(err, rows){
+                          User.update({tek_userid: user.tek_userid,quiz_flag: false},{$set: {quiz_flag: true},$inc:{quiz_no_attempts: 1}}, function(err, rows){
                            if(err) throw err;
                            socket.emit('result:quiz',{message:"INCORRECT"});
                          });

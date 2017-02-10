@@ -272,7 +272,7 @@ controller('JoinController',["$rootScope", "$scope", "socket","$route","$interva
     playGame.prototype = {
 
       preload: function(){
-        game.load.image("wheel", "images/wheel1.png");
+        game.load.image("wheel", "images/wheel.png");
         game.load.image("pin", "images/pin.png");
         game.load.image("spin", "images/spin.jpg");
       },
@@ -323,7 +323,7 @@ controller('JoinController',["$rootScope", "$scope", "socket","$route","$interva
       }
     };
 
-    game = new Phaser.Game(450, 450, Phaser.CANVAS, "gameArea");
+    game = new Phaser.Game(550, 550, Phaser.CANVAS, "gameArea");
     game.state.add("PlayGame",playGame);
     game.state.start("PlayGame");
 
@@ -456,7 +456,7 @@ controller('JoinController',["$rootScope", "$scope", "socket","$route","$interva
       max: 5,
       step: 0.1,
       hoverChangeStars: false,
-      starCaptions: {1: '1 star', 1.5: '1.5 star', 2: '2 star', 2.5: '2.5 star', 3: '3 star', 3.5: '3.5 star', 4: '4 star', 4.5:'4.5 star', 5:'5 star'}
+      starCaptions: {0.5:'0.5 star', 1: '1 star', 1.5: '1.5 star', 2: '2 star', 2.5: '2.5 star', 3: '3 star', 3.5: '3.5 star', 4: '4 star', 4.5:'4.5 star', 5:'5 star'}
     }).on("rating.change", function(event, value, caption) {
       $http.put('/api/rating',JSON.stringify({value: value}),'application/json')
       .then(function(response) {

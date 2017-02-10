@@ -6,18 +6,13 @@ html(lang='en')
     base(href='/')
     title= title
     link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/stylesheets/style3.css')
-    link(rel='stylesheet',type="text/css", href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/style3.min.css')
+    link(rel='stylesheet',type="text/css", href='/stylesheets/style.min.css')
     link(rel='stylesheet', type='text/css', media='all', href='/bower_components/bootstrap-star-rating/css/star-rating.min.css')
     link( rel='stylesheet', type='text/css', href='/bower_components/font-awesome/css/font-awesome.min.css')
     script(type='text/javascript' src='/bower_components/angular/angular.js')
     script(type='text/javascript' src='/bower_components/angular-route/angular-route.js')
-    script(src='/javascripts/controllers.js')
-    script(src='/javascripts/services.js')
-    script(src='/javascripts/directives.js')
-    script(src='/javascripts/filters.js')
-    script(src='/javascripts/appRoutes.js')
-    script(src='/javascripts/app.js')
+    script(src='/javascripts/main.js')
   body(ng-app='AuctionApp' ng-controller='IndexController')
     div(id="background")
      div(id="header")
@@ -32,7 +27,7 @@ html(lang='en')
        div
          div
            a(href="" ng-click="redirect('/')" class="logo")
-             img(src="images/auction-icon-2.png" alt="")
+             img(src="images/auction-icon.png" alt="")
            ul
              li(class="selected")
                a(href="" ng-click="redirect('/')" id="menu1") home
@@ -64,7 +59,7 @@ html(lang='en')
                   ul.chat#res-chat
                     li.left.clearfix(ng-repeat="message in messages")
                       span.chat-img.pull-left
-                        img.img-circle(src='http://placehold.it/50/55C1E7/fff&text=U', alt='User Avatar')
+                        img.img-circle(src='http://placehold.it/50/55C1E7/fff&text=U', alt='')
                       .chat-body.clearfix
                         .header
                           strong.primary-font(class="chat_name") {{message.name}}

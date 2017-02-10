@@ -61,5 +61,6 @@ div(class="body-div")
 									.col-xs-8.col-md-4
 										p.lead
 											| ${{item.price}}
-									.col-xs-16.col-md-8.pull-right
-										div(countdown-directive data-countdown="{{item.time_1}} {{item.time_2}}" class='smallclock pull-right' style='color:white;')
+								.row
+									.col-xs-12.col-md-12.pull-right
+											div(countdown-directive data-countdown="{{item.time_1}} {{item.time_2}}" class='smallclock pull-right' style='color:white;')
