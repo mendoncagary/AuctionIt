@@ -28,7 +28,7 @@ httpOnly: true,
 ephemeral: true
 })(req, {}, function(){})
 
-console.log(getUTC());
+
 
     var job = new CronJob({
       cronTime: '* * * * * *',
