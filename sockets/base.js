@@ -125,7 +125,7 @@ ephemeral: true
           });
       },
       start: false,
-      timeZone: 'Asia/Kolkata'
+      timeZone: 'Etc/UTC'
     });
     job.start();
 

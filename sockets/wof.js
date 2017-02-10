@@ -14,7 +14,7 @@ module.exports = function (io) {
             /* This function is executed when the job stops */
           },
           true,
-          'Asia/Kolkata'
+          'Etc/UTC'
         );
 
 
@@ -48,7 +48,7 @@ module.exports = function (io) {
                 /* This function is executed when the job stops */
               },
               true,
-              'Asia/Kolkata'
+              'Etc/UTC'
             );
 
 
