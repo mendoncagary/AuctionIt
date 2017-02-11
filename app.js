@@ -14,7 +14,9 @@ var Tek_user = require('./models/tek_user');
 var User = require('./models/user');
 
 var app = express();
-app.use(helmet());
+app.use(helmet({
+  frameguard: false
+}));
 
 //var flash = require('connect-flash');
 var session = require('client-sessions');
