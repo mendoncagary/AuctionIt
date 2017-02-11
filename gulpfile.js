@@ -18,7 +18,7 @@ gulp.task('annotate', function () {
 
 gulp.task('compress', function (cb) {
   pump([
-        gulp.src('public/javascripts/gulp/*.js'),
+        gulp.src('public/javascripts/gulp/main.js'),
         uglify(),
         gulp.dest('public/javascripts/gulp')
     ],
