@@ -103,9 +103,7 @@ ephemeral: true
                           User.update({tek_userid: item[i].bid[size-1].user_id}, {$set:{u_cashbalance:cash, u_itempoints:u_itempoints},$inc:{u_itemswon: 1}},function(err,user){
                             if(err) throw err;
                           });
-                          request.updateScore(auctionIt,u_itempoints,item[i].bid[size-1].user_id,function(newscore){
-
-                          });
+                          
                           User.findOne({tek_userid: old_owner},function(err,user){
                             if(user)
                             {
