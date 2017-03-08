@@ -65,8 +65,8 @@ app.use(sessionMiddleware);
 
 function isLoggedIn(req, res, next) {
 	if (!req.sess.username) {
-		//res.redirect('/login');
-		res.redirect('http://teknack.in');
+		res.redirect('/login');
+		//res.redirect('http://teknack.in');
 	} else {
 		next();
 	}
