@@ -29,6 +29,7 @@ $ npm start
 A demo of this project is at [http://auctionit-game.herokuapp.com](http://auctionit-game.herokuapp.com)
 
 Username: garylm
+
 Password: yrag
 
 # License

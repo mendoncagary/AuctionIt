@@ -24,6 +24,12 @@ $ mongod.exe
 ```bash
 $ npm start
 ```
+### Demo
+
+A demo of this project is at [http://auctionit-game.herokuapp.com](http://auctionit-game.herokuapp.com)
+
+Username: garylm
+Password: yrag
 
 # License
 See the [LICENSE](LICENSE) file for details
